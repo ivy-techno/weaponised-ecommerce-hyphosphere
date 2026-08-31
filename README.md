@@ -40,6 +40,8 @@ Live corpus ingestion, authenticated private research materials, richer source p
 
 ## Release checklist
 
+- See [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) for the timed walkthrough and [RELEASE-CHECKLIST.md](./RELEASE-CHECKLIST.md) for submission readiness.
+
 - [x] Local build succeeds.
 - [x] Human interface and WebMCP actions share domain logic.
 - [x] Deterministic principal investigation exists.
@@ -49,4 +51,3 @@ Live corpus ingestion, authenticated private research materials, richer source p
 - [ ] Official WebMCP environment test on the deployed version.
 - [ ] Public under-three-minute demo video with audio.
 - [ ] Final third-party asset and submission review.
-
