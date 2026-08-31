@@ -391,9 +391,9 @@ export default function Home() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <div className="brand-lockup"><AppMark /><div><div className="brand-name">hyphosphere</div><div className="brand-caption">research terrain / prototype 01</div></div></div>
+        <div className="brand-lockup"><AppMark /><div><div className="brand-name">hyphosphere</div></div></div>
         <div className="topbar-center"><div className="command-search"><Search size={16} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search the terrain" aria-label="Search the terrain" /><span className="keycap">⌘ K</span></div></div>
-        <div className="topbar-actions"><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} title={webmcpReady ? 'WebMCP ready' : 'WebMCP awaiting compatible browser'} /><span className="topbar-status">{webmcpReady ? 'agent link ready' : 'local corpus'}</span><button className="avatar-button" aria-label="Open researcher profile">AR</button></div>
+        <div className="topbar-actions"><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} title={webmcpReady ? 'WebMCP ready' : 'WebMCP awaiting compatible browser'} /><span className="topbar-status">{webmcpReady ? 'agent link ready' : 'local corpus'}</span><button className="avatar-button" aria-label="Open Hyphosphere controls"><Compass size={15} /></button></div>
         <button className="mobile-menu" onClick={() => setMobileNavOpen((open) => !open)} aria-label="Toggle navigation"><PanelRight size={18} /></button>
       </header>
 
