@@ -259,3 +259,81 @@ button { cursor: pointer; }
   .research-node:nth-of-type(odd) .node-card.card-left { left: auto; right: 18px; }
   .research-node:nth-of-type(odd) .node-card.card-up { top: auto; bottom: 25px; }
 }
+
+/* Distinct reading surfaces: Thread is sequential; Map is spatial. */
+.thread-view, .map-view { min-width: 0; min-height: 680px; }
+.thread-view { padding: 27px 28px 24px; background: rgb(251 253 249 / 75%); border: 1px solid #cbdad5; border-radius: 14px; box-shadow: var(--shadow); }
+.surface-header { display: flex; justify-content: space-between; align-items: start; gap: 24px; }
+.surface-header h2 { max-width: 540px; margin: 10px 0 7px; font-family: var(--display); font-size: 28px; line-height: 1; letter-spacing: -.06em; }
+.surface-header p { max-width: 610px; margin: 0; color: var(--ink-soft); font-size: 12px; line-height: 1.5; }
+.surface-header-meta { display: grid; justify-items: end; align-content: start; gap: 5px; min-width: 90px; }
+.surface-header-meta strong { color: var(--teal-deep); font-family: var(--display); font-size: 38px; line-height: .85; letter-spacing: -.08em; }
+.surface-header-meta span { color: var(--ink-faint); font-size: 9px; white-space: nowrap; }
+.thread-toolbar { display: flex; align-items: center; gap: 12px; margin-top: 27px; padding: 10px 0; color: var(--ink-faint); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 9px; letter-spacing: .04em; }
+.thread-toolbar > span:first-child { display: flex; align-items: center; gap: 6px; color: var(--teal-deep); font-size: 9px; font-weight: 700; letter-spacing: .12em; }
+.thread-toolbar > span:nth-child(2) { margin-left: auto; }
+.thread-toolbar button { display: flex; align-items: center; gap: 5px; padding: 0; color: var(--teal-deep); background: transparent; border: 0; font-size: 9px; font-weight: 700; }
+.thread-path { max-width: 900px; margin: 18px auto 0; }
+.thread-step-wrap { position: relative; }
+.thread-connection { display: grid; grid-template-columns: 42px auto; align-items: center; gap: 10px; min-height: 28px; }
+.thread-connection span { grid-column: 2; width: max-content; padding: 3px 6px; color: var(--ink-faint); background: #eef4f0; border: 1px solid #dce7e2; border-radius: 4px; font-size: 8px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.thread-connection i { grid-column: 1; grid-row: 1; justify-self: center; width: 1px; height: 28px; background: #c5d9d3; }
+.connection-line.connection-verified { background: var(--teal); }.connection-line.connection-supported { background: var(--amber); }.connection-line.connection-inferred { background: repeating-linear-gradient(to bottom, var(--violet) 0, var(--violet) 4px, transparent 4px, transparent 8px); }.connection-line.connection-disputed { background: repeating-linear-gradient(to bottom, var(--coral) 0, var(--coral) 1px, transparent 1px, transparent 5px); }
+.thread-step { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px 0; }
+.thread-step-index { width: 30px; height: 30px; display: grid; place-items: center; justify-self: center; color: var(--teal-deep); background: #dceee7; border: 1px solid #c6ded4; border-radius: 50%; font-family: var(--display); font-size: 11px; font-weight: 800; }
+.thread-step-card { min-width: 0; display: grid; gap: 6px; padding: 14px 16px; color: var(--ink); background: #f6faf6; border: 1px solid #d6e3de; border-radius: 9px; text-align: left; transition: 180ms ease; }
+.thread-step-card:hover, .thread-step.is-selected .thread-step-card { background: #eef8f3; border-color: #9ac8bb; box-shadow: 0 8px 20px rgb(45 72 66 / 8%); outline: none; }
+.thread-step-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--ink-faint); font-size: 8px; font-weight: 700; letter-spacing: .1em; }
+.thread-step-card strong { font-family: var(--display); font-size: 17px; letter-spacing: -.05em; }
+.thread-step-card > span:not(.thread-step-top) { color: var(--ink-soft); font-size: 10px; }
+.thread-step-card p { margin: 1px 0 0; color: var(--ink-faint); font-size: 10px; line-height: 1.4; }
+.thread-inspect { display: flex; align-items: center; gap: 4px; padding: 0 2px; color: var(--teal-deep); background: transparent; border: 0; font-size: 9px; font-weight: 700; white-space: nowrap; }
+.thread-inspect:hover { color: var(--coral); }
+.thread-footer { display: flex; align-items: end; justify-content: space-between; gap: 20px; max-width: 900px; margin: 20px auto 0; padding-top: 17px; border-top: 1px solid var(--line); }
+.thread-footer p { max-width: 610px; margin: 7px 0 0; color: var(--ink-soft); font-size: 10px; line-height: 1.45; }
+.thread-footer .follow-button { flex: 0 0 auto; }
+.map-view { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 14px; padding: 0; background: transparent; border: 0; box-shadow: none; }
+.map-view .surface-header { padding: 26px 26px 0; }
+.map-view .research-canvas { min-height: 570px; }
+.research-canvas { overflow: hidden; isolation: isolate; }
+.research-node { z-index: 5; }
+.node-card.is-compact { width: max-content; min-width: 92px; max-width: 128px; padding: 7px 8px; gap: 3px; }
+.node-card.is-compact strong { font-size: 10px; white-space: normal; }
+.node-card.is-compact small { color: var(--ink-faint); font-size: 8px; }
+.node-card.is-compact .node-card-top, .node-card.is-compact em, .node-card.is-compact .evidence-pill { display: none; }
+.research-node.is-selected { z-index: 9; }
+.map-view .node-card { pointer-events: none; }
+
+@media (max-width: 900px) {
+  .thread-view, .map-view { min-height: 620px; }
+  .surface-header { display: block; }
+  .surface-header-meta { display: flex; align-items: baseline; justify-content: start; gap: 7px; margin-top: 18px; }
+  .surface-header-meta strong { font-size: 31px; }
+  .surface-header-meta span { white-space: normal; }
+  .thread-step { grid-template-columns: 34px minmax(0, 1fr); gap: 9px; }
+  .thread-inspect { grid-column: 2; justify-self: start; }
+  .thread-connection { grid-template-columns: 34px auto; }
+  .map-view .surface-header { padding: 22px 18px 0; }
+  .map-view .research-canvas { min-height: 600px; }
+}
+
+@media (max-width: 640px) {
+  .thread-view { min-height: 610px; padding: 20px 15px 18px; border-radius: 10px; }
+  .surface-header h2 { font-size: 25px; }
+  .thread-toolbar { flex-wrap: wrap; gap: 8px; }
+  .thread-toolbar > span:nth-child(2) { margin-left: 0; }
+  .thread-toolbar button { width: 100%; }
+  .thread-path { margin-top: 13px; }
+  .thread-step { grid-template-columns: 29px minmax(0, 1fr); gap: 7px; }
+  .thread-step-index { width: 25px; height: 25px; font-size: 9px; }
+  .thread-step-card { padding: 11px; }
+  .thread-step-card strong { font-size: 14px; }
+  .thread-step-card p { font-size: 9px; }
+  .thread-footer { display: block; margin-top: 15px; }
+  .thread-footer .follow-button { margin-top: 14px; }
+  .map-view { min-height: 610px; gap: 8px; }
+  .map-view .surface-header { padding: 20px 16px 0; }
+  .map-view .research-canvas { min-height: 590px; border-radius: 10px; }
+  .node-card.is-compact { min-width: 70px; max-width: 105px; padding: 5px 6px; }
+  .node-card.is-compact strong { font-size: 9px; }
+}
