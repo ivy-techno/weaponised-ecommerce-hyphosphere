@@ -31,9 +31,8 @@
 - [ ] Confirm the public repository link and access permissions.
 - [ ] Record and review the under-three-minute demo with audio.
 - [ ] Capture final screenshots showing the opening terrain, evidence drawer, comparison, and saved Discovery.
-- [ ] Confirm the custom domain is active, or submit the working deployed Sites URL while DNS validation completes.
+- [x] Custom domain is active at `https://hyphosphere.site` with SSL enabled.
 
 ## Recording notes
 
 Use [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) and the working deployed URL. Avoid presenting future Observatory features as if they are implemented in this prototype.
-
