@@ -43,6 +43,7 @@ type ResearchNode = {
   x: number;
   y: number;
   preview: string;
+  inclusionReason: string;
   subtext: string;
   accent: string;
 };
@@ -67,6 +68,7 @@ const nodes: ResearchNode[] = [
     x: 14,
     y: 28,
     preview: 'A repeated onboarding pattern across two regional cases.',
+    inclusionReason: 'Included as a case anchor: it gives the investigation a concrete repeated pattern to begin from.',
     subtext: 'Case 04 / fieldwork',
     accent: 'teal',
   },
@@ -80,6 +82,7 @@ const nodes: ResearchNode[] = [
     x: 17,
     y: 72,
     preview: 'A structurally similar activity with a different public story.',
+    inclusionReason: 'Included as a comparison case: its different public story tests whether the pattern recurs.',
     subtext: 'Case 11 / fieldwork',
     accent: 'teal',
   },
@@ -93,6 +96,7 @@ const nodes: ResearchNode[] = [
     x: 45,
     y: 43,
     preview: 'The ordinary infrastructure element hiding in plain sight.',
+    inclusionReason: 'Included as a service record: it is the ordinary commercial layer that may connect otherwise separate cases.',
     subtext: 'Hosted workflow / commercial',
     accent: 'amber',
   },
@@ -106,6 +110,7 @@ const nodes: ResearchNode[] = [
     x: 69,
     y: 25,
     preview: 'A recurrence pattern invisible at the level of individual cases.',
+    inclusionReason: 'Included as a dataset: repeated rows test whether the service appears beyond a single case.',
     subtext: '38 rows / 2021–2024',
     accent: 'violet',
   },
@@ -119,6 +124,7 @@ const nodes: ResearchNode[] = [
     x: 76,
     y: 59,
     preview: 'A public account that adds sequence, but not direct proof.',
+    inclusionReason: 'Included as reporting: it supplies public sequence and context while remaining indirect evidence.',
     subtext: 'Archived webpage / capture 18',
     accent: 'coral',
   },
@@ -132,6 +138,7 @@ const nodes: ResearchNode[] = [
     x: 48,
     y: 77,
     preview: 'A small artefact that extends the trail backwards.',
+    inclusionReason: 'Included as a platform artefact: the capture may extend the trail to an earlier occurrence.',
     subtext: 'Screenshot / platform artefact',
     accent: 'pink',
   },
@@ -145,6 +152,7 @@ const nodes: ResearchNode[] = [
     x: 83,
     y: 82,
     preview: 'A possible shared layer; one source contradicts the match.',
+    inclusionReason: 'Included as infrastructure: it tests whether the visible pattern reaches a deeper technical layer, while keeping the match disputed.',
     subtext: 'Infrastructure record / disputed',
     accent: 'slate',
   },
@@ -452,7 +460,7 @@ export default function Home() {
         </aside>
 
         <section className="main-stage">
-          <div className="story-intro"><div className="story-intro-kicker"><span className="story-dot" /><span>THE CHALLENGE</span></div><div className="story-intro-text"><strong>A student researcher. A challenge.</strong><p>Find and map the digital infrastructure enabling online information operations. Gather diverse traces and begin to understand the links between cases, platforms, services, datasets, and reporting.</p></div><div className="story-intro-role"><span>YOUR ROLE</span><strong>Choose a clue → follow the link → check the evidence</strong></div></div>
+          <div className="story-intro"><div className="story-intro-kicker"><span className="story-dot" /><span>THESIS PROOF OF CONCEPT</span></div><div className="story-intro-text"><strong>A student researcher. A challenge.</strong><p>Find and map the digital infrastructure enabling online information operations. Gather diverse traces and begin to understand the links between cases, platforms, services, datasets, and reporting. This is a first glimpse of a larger online observatory of digital phenomena: its direction remains open, and building the instrument is already part of the discovery.</p></div><div className="story-intro-role"><span>YOUR ROLE</span><strong>Choose a clue → follow the link → check the evidence</strong><small>Build the instrument while the inquiry takes shape.</small></div></div>
           <div className="stage-heading"><div><div className="eyebrow"><span>INVESTIGATION 01</span><span className="eyebrow-line" /><span>START HERE</span></div><h1>Find what is shared.</h1><p>Hyphosphere helps you test whether the same service, platform, or infrastructure appears across different cases. Start with Atlas Relay, follow the relationship, and inspect what supports it.</p></div><div className="stage-heading-actions"><button className={`quiet-button ${evidenceOnly ? 'is-selected' : ''}`} onClick={toggleVerified}><Filter size={15} /> {evidenceOnly ? 'Verified only' : 'Full terrain'}</button><button className="primary-button" onClick={saveDiscovery}><Bookmark size={15} /> {saved ? 'Saved' : 'Save discovery'}</button></div></div>
           <div className="orientation-panel"><div className="orientation-copy"><span className="eyebrow-label">START WITH ONE RELATIONSHIP</span><strong>{followed ? 'The shared layer is now visible.' : 'Trace Atlas Relay across two cases.'}</strong><p>{followed ? 'Atlas Relay has revealed two more objects. Check what supports each connection before you save the finding.' : 'Northline cohort and Lantern House tell different stories. Atlas Relay is the ordinary layer worth testing between them.'}</p><span className="orientation-agent-note">RESEARCH CONCEPTS = ideas to test · RESEARCH ARTIFACTS = sources to inspect</span></div><div className="orientation-steps"><div><b>01</b><span>Choose a clue<small>Atlas Relay is selected</small></span></div><div><b>02</b><span>Follow it<small>Reveal related objects</small></span></div><div><b>03</b><span>Check evidence<small>Keep uncertainty visible</small></span></div><div><b>04</b><span>Save a finding<small>Export the trail</small></span></div></div><button className="orientation-cta" onClick={() => { setView('thread'); followNode('service'); }}>{followed ? 'Continue the path' : 'Start with Atlas Relay'} <ChevronRight size={15} /></button></div>
           <div className="view-switcher" role="tablist" aria-label="Investigation views">{(['thread', 'map', 'terrain', 'evidence', 'compare'] as View[]).map((tab) => <button key={tab} className={view === tab ? 'is-active' : ''} onClick={() => changeView(tab)} role="tab" aria-selected={view === tab}>{tab === 'thread' ? 'Followed path' : tab === 'map' ? 'Relationship map' : tab === 'terrain' ? 'Source layers' : tab === 'evidence' ? 'Evidence' : 'Compare'}</button>)}<span className="view-switcher-hint"><Sparkles size={13} /> one investigation, many ways to see it</span></div>
@@ -463,7 +471,7 @@ export default function Home() {
         </section>
       </div>
 
-      {evidenceOpen && <dialog open className="evidence-drawer" aria-label="Evidence inspection"><div className="drawer-head"><div><span className="eyebrow-label">WHY IS THIS CONNECTED?</span><h2>{selected.label}</h2></div><button className="icon-button" onClick={() => setEvidenceOpen(false)} aria-label="Close evidence drawer"><X size={17} /></button></div><div className="drawer-object"><div className={`object-icon object-${selected.accent}`}><NodeIcon kind={selected.kind} /></div><div><span>{selected.kind}</span><strong>{selected.source}</strong></div><EvidencePill state={selected.evidence} /></div><div className="drawer-section"><span className="drawer-label">BASIS</span><p>{selected.preview} {selected.evidence === 'disputed' ? 'This connection needs inspection before it can carry the investigation forward.' : 'The trail keeps this distinction visible as it expands.'}</p></div><div className="drawer-section"><span className="drawer-label">SUPPORTING MATERIAL</span><div className="source-stack"><div><FileText size={15} /><span>Research object preview<strong>{selected.source}</strong></span><span className="source-state">local corpus</span></div><div><Clock3 size={15} /><span>Capture context<strong>{selected.subtext}</strong></span><span className="source-state">retained</span></div></div></div><div className="drawer-section"><span className="drawer-label">PROVENANCE NOTE</span><div className="provenance-note"><CircleHelp size={15} /><p>Evidence class is preserved from the demo corpus. Inference is not promoted to verification by following the path.</p></div></div><div className="drawer-footer"><button className="quiet-button" onClick={() => followNode(selected.id)}><Link2 size={15} /> Follow this</button><button className="primary-button" onClick={saveDiscovery}><Bookmark size={15} /> Save discovery</button></div></dialog>}
+      {evidenceOpen && <dialog open className="evidence-drawer" aria-label="Evidence inspection"><div className="drawer-head"><div><span className="eyebrow-label">WHY IS THIS CONNECTED?</span><h2>{selected.label}</h2></div><button className="icon-button" onClick={() => setEvidenceOpen(false)} aria-label="Close evidence drawer"><X size={17} /></button></div><div className="drawer-object"><div className={`object-icon object-${selected.accent}`}><NodeIcon kind={selected.kind} /></div><div><span>{selected.kind}</span><strong>{selected.source}</strong></div><EvidencePill state={selected.evidence} /></div><div className="drawer-section"><span className="drawer-label">BASIS</span><p>{selected.preview} {selected.evidence === 'disputed' ? 'This connection needs inspection before it can carry the investigation forward.' : 'The trail keeps this distinction visible as it expands.'}</p></div><div className="drawer-section"><span className="drawer-label">WHY THIS IS INCLUDED</span><p>{selected.inclusionReason}</p></div><div className="drawer-section"><span className="drawer-label">SUPPORTING MATERIAL</span><div className="source-stack"><div><FileText size={15} /><span>Research object preview<strong>{selected.source}</strong></span><span className="source-state">local corpus</span></div><div><Clock3 size={15} /><span>Capture context<strong>{selected.subtext}</strong></span><span className="source-state">retained</span></div></div></div><div className="drawer-section"><span className="drawer-label">PROVENANCE NOTE</span><div className="provenance-note"><CircleHelp size={15} /><p>Evidence class is preserved from the demo corpus. Inference is not promoted to verification by following the path.</p></div></div><div className="drawer-footer"><button className="quiet-button" onClick={() => followNode(selected.id)}><Link2 size={15} /> Follow this</button><button className="primary-button" onClick={saveDiscovery}><Bookmark size={15} /> Save discovery</button></div></dialog>}
       {toast && <output className="toast"><Check size={15} /> {toast}</output>}
       {saved && <div className="saved-card"><div className="saved-card-top"><span><Bookmark size={14} /> SAVED DISCOVERY</span><button onClick={() => setSaved(false)} aria-label="Dismiss saved discovery"><X size={14} /></button></div><strong>The service beneath the surface</strong><p>7 objects · 4 evidence states · trail preserved</p><button onClick={exportDiscovery}><Download size={14} /> Export Markdown</button></div>}
     </main>
@@ -488,7 +496,7 @@ function MapView(props: { nodes: ResearchNode[]; edges: ResearchEdge[]; selected
 
 function CorpusView({ mode, selectedId, onSelect, onOpenEvidence, onChangeMode }: { mode: 'concepts' | 'artifacts'; selectedId: string; onSelect: (id: string) => void; onOpenEvidence: (id: string) => void; onChangeMode: (mode: 'concepts' | 'artifacts') => void }) {
   const concepts = mode === 'concepts';
-  return <div className="corpus-view"><div className="surface-header"><div><span className="eyebrow-label">{concepts ? 'RESEARCH CONCEPTS' : 'RESEARCH ARTIFACTS'}</span><h2>{concepts ? 'The ideas that shape the investigation.' : 'The source objects you can inspect.'}</h2><p>{concepts ? 'Concepts are interpretive handles: they help a person recognise a pattern, but they are not evidence by themselves.' : 'Artifacts are the inspectable material behind a claim: cases, reports, datasets, platform captures, services, and infrastructure records.'}</p></div><div className="surface-header-meta"><strong>{concepts ? '04' : '07'}</strong><span>{concepts ? 'concept records' : 'artifact records'}</span></div></div><div className="corpus-switch"><button className={concepts ? 'is-active' : ''} onClick={() => onChangeMode('concepts')}>Research concepts</button><button className={!concepts ? 'is-active' : ''} onClick={() => onChangeMode('artifacts')}>Research artifacts</button></div>{concepts ? <div className="concept-grid">{conceptRecords.map((record, index) => <article className={`concept-card concept-${record.accent}`} key={record.label}><div className="concept-index">0{index + 1}</div><div><strong>{record.label}</strong><p>{record.detail}</p><small>{record.note}</small></div></article>)}</div> : <div className="artifact-list">{nodes.map((node) => <button key={node.id} className={`artifact-row ${selectedId === node.id ? 'is-selected' : ''}`} onClick={() => { onSelect(node.id); onOpenEvidence(node.id); }}><span className={`artifact-icon artifact-${node.accent}`}><NodeIcon kind={node.kind} /></span><span className="artifact-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small><p>{node.preview}</p></span><EvidencePill state={node.evidence} /><ChevronRight size={15} /></button>)}</div>}<div className="corpus-note"><Database size={15} /><span><strong>Working index</strong>{concepts ? ' These concepts explain what the investigation is looking for.' : ' These artifacts are the current deterministic demo material; a comprehensive research repository is the next ingestion layer.'}</span></div></div>;
+  return <div className="corpus-view"><div className="surface-header"><div><span className="eyebrow-label">{concepts ? 'RESEARCH CONCEPTS' : 'RESEARCH ARTIFACTS'}</span><h2>{concepts ? 'The ideas that shape the investigation.' : 'The source objects you can inspect.'}</h2><p>{concepts ? 'Concepts are interpretive handles: they help a person recognise a pattern, but they are not evidence by themselves.' : 'Artifacts are the inspectable material behind a claim: cases, reports, datasets, platform captures, services, and infrastructure records.'}</p></div><div className="surface-header-meta"><strong>{concepts ? '04' : '07'}</strong><span>{concepts ? 'concept records' : 'artifact records'}</span></div></div>{!concepts && <div className="corpus-method-note"><div className="corpus-method-icon"><Database size={15} /></div><div><span className="eyebrow-label">HOW TO READ THIS INDEX</span><p>Each artifact is a source record, not a conclusion. Select one to inspect what was reported or captured, where it came from, and why it has been included.</p></div></div>}<div className="corpus-switch"><button className={concepts ? 'is-active' : ''} onClick={() => onChangeMode('concepts')}>Research concepts</button><button className={!concepts ? 'is-active' : ''} onClick={() => onChangeMode('artifacts')}>Research artifacts</button></div>{concepts ? <div className="concept-grid">{conceptRecords.map((record, index) => <article className={`concept-card concept-${record.accent}`} key={record.label}><div className="concept-index">0{index + 1}</div><div><strong>{record.label}</strong><p>{record.detail}</p><small>{record.note}</small></div></article>)}</div> : <div className="artifact-list">{nodes.map((node) => <button key={node.id} className={`artifact-row ${selectedId === node.id ? 'is-selected' : ''}`} onClick={() => { onSelect(node.id); onOpenEvidence(node.id); }} aria-label={`Open source record for ${node.label}`}><span className={`artifact-icon artifact-${node.accent}`}><NodeIcon kind={node.kind} /></span><span className="artifact-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small><p>{node.preview}</p><em>Why included: {node.inclusionReason}</em></span><EvidencePill state={node.evidence} /><ChevronRight size={15} /></button>)}</div>}<div className="corpus-note"><Database size={15} /><span><strong>Working index</strong>{concepts ? ' These concepts explain what the investigation is looking for.' : ' These artifacts are the current deterministic demo material; a comprehensive research repository is the next ingestion layer.'}</span></div></div>;
 }
 
 function TerrainView({ onFollow, onInspect, followed }: { onFollow: () => void; onInspect: (label: string) => void; followed: boolean }) {
