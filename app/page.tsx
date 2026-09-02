@@ -171,7 +171,7 @@ const edges: ResearchEdge[] = [
     id: 'service-greybox',
     from: 'service',
     to: 'greybox',
-    label: 'recurs in',
+    label: 'appears in',
     evidence: 'verified',
     rationale: 'Atlas Relay appears in 11 rows of the Greybox traces dataset.',
   },
@@ -483,7 +483,7 @@ function MapCanvas({ nodes: visibleNodes, edges: visibleEdges, selectedId, visib
 
 function MapView(props: { nodes: ResearchNode[]; edges: ResearchEdge[]; selectedId: string; visibleNodeIds: Set<string>; followed: boolean; evidenceOnly: boolean; onSelect: (id: string) => void; onFollow: (id: string) => void; onOpenEvidence: (id: string) => void; onToggleVerified: () => void }) {
   const selected = nodeById(props.selectedId);
-  return <div className="map-surface-shell"><MapCanvas {...props} /><aside className="map-inspector"><span className="eyebrow-label">SELECTED OBJECT</span><div className={`map-inspector-icon object-${selected.accent}`}><NodeIcon kind={selected.kind} /></div><strong>{selected.label}</strong><span>{selected.kind} · {selected.source}</span><EvidencePill state={selected.evidence} /><p>{selected.preview}</p><div className="map-inspector-actions"><button className="quiet-button" onClick={() => props.onOpenEvidence(selected.id)}>Inspect evidence</button><button className="follow-button" onClick={() => props.onFollow(selected.id)}><span className="follow-glyph"><ArrowUpRight size={14} /></span>Follow this</button></div></aside></div>;
+  return <div className="map-surface-shell"><div className="map-explainer"><div className="map-explainer-icon"><Network size={19} /></div><div className="map-explainer-copy"><span className="eyebrow-label">WHAT THIS NETWORK IS SHOWING</span><strong>An information operation can look highly visible while occupying only a tiny layer of a giant ecommerce stack.</strong><p>Atlas Relay is the small connective service being tested here—not the whole operation. The lines show where that layer touches cases, datasets, platform artefacts, and infrastructure, with uncertainty carried by every relationship.</p></div><div className="map-stack-model" aria-label="From visible public story to buried commercial infrastructure"><span className="map-stack-label">VISIBLE → BURIED</span><div className="stack-step stack-visible"><b>01</b><span>Public story / IO</span></div><div className="stack-step stack-service"><b>02</b><span>Shared service / Atlas Relay</span></div><div className="stack-step stack-infrastructure"><b>03</b><span>Giant ecommerce stack</span></div></div></div><MapCanvas {...props} /><aside className="map-inspector"><span className="eyebrow-label">SELECTED OBJECT</span><div className={`map-inspector-icon object-${selected.accent}`}><NodeIcon kind={selected.kind} /></div><strong>{selected.label}</strong><span>{selected.kind} · {selected.source}</span><EvidencePill state={selected.evidence} /><p>{selected.preview}</p><div className="map-inspector-actions"><button className="quiet-button" onClick={() => props.onOpenEvidence(selected.id)}>Inspect evidence</button><button className="follow-button" onClick={() => props.onFollow(selected.id)}><span className="follow-glyph"><ArrowUpRight size={14} /></span>Follow this</button></div></aside></div>;
 }
 
 function CorpusView({ mode, selectedId, onSelect, onOpenEvidence, onChangeMode }: { mode: 'concepts' | 'artifacts'; selectedId: string; onSelect: (id: string) => void; onOpenEvidence: (id: string) => void; onChangeMode: (mode: 'concepts' | 'artifacts') => void }) {
