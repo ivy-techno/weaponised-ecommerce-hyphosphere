@@ -620,6 +620,17 @@ body { overflow-x: hidden; }
 .map-view .node-card { font-size: 10px; }
 .map-view .node-card strong { max-height: 2.4em; overflow: hidden; }
 
+/* Compact desktop containment: keep the first-arrival surface readable before the mobile breakpoint. */
+@media (max-width: 1200px) {
+  .stage-heading { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 18px; }
+  .stage-heading-actions { justify-content: flex-start; padding-bottom: 0; }
+  .orientation-panel { grid-template-columns: minmax(0, 1fr); gap: 13px; }
+  .orientation-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .orientation-cta { grid-column: auto; justify-self: start; }
+  .canvas-toolbar { height: auto; min-height: 45px; flex-wrap: wrap; padding-block: 9px; }
+  .canvas-toolbar-spacer { min-width: 10px; }
+}
+
 /* External source previews keep a quick encounter separate from the original link. */
 .example-dialog { width: 100%; max-width: none; height: 100%; max-height: none; position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; margin: 0; padding: 20px; background: rgb(24 49 52 / 47%); border: 0; }
 .example-dialog::backdrop { background: rgb(24 49 52 / 47%); }
