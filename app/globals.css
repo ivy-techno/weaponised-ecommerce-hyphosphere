@@ -229,6 +229,12 @@ button { cursor: pointer; }
 
 /* Clarity and layering overrides for the guided investigation surface. */
 .app-shell { overflow-x: clip; overflow-y: visible; }
+.main-stage { width: 100%; overflow-x: clip; }
+.story-intro, .stage-heading, .view-switcher, .stage-content, .orientation-panel { width: 100%; }
+.orientation-panel, .orientation-copy, .orientation-steps, .orientation-cta, .orientation-steps > div { min-width: 0; }
+.orientation-copy strong, .orientation-copy p, .orientation-agent-note, .orientation-steps span, .orientation-steps small { overflow-wrap: anywhere; }
+.orientation-steps { width: 100%; }
+.orientation-cta { max-width: 100%; white-space: normal; text-align: center; }
 .agent-brief { margin-top: 17px; padding-top: 14px; border-top: 1px solid #d4e0dc; }
 .agent-brief > span { color: var(--violet); font-size: 8px; font-weight: 800; letter-spacing: .13em; }
 .agent-brief p { margin-top: 7px; color: var(--ink-soft); }
