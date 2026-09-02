@@ -305,6 +305,17 @@ button { cursor: pointer; }
 .map-view .node-card { pointer-events: none; }
 .map-view .node-card { display: none; }
 .map-view .canvas-callout { width: 230px; }
+.map-surface-shell { min-width: 0; min-height: 680px; position: relative; overflow: hidden; background: rgb(251 253 249 / 75%); border: 1px solid #cbdad5; border-radius: 14px; box-shadow: var(--shadow); }
+.map-surface-shell > .map-view { min-height: 680px; }
+.map-surface-shell .map-view .research-canvas { margin-right: 240px; }
+.map-inspector { width: 216px; position: absolute; top: 126px; right: 14px; bottom: 14px; z-index: 12; display: grid; align-content: start; gap: 9px; padding: 15px; color: var(--ink-soft); background: #f8fbf7; border: 1px solid #cbded6; border-radius: 10px; box-shadow: 0 8px 22px rgb(47 81 75 / 9%); }
+.map-inspector > .eyebrow-label { margin-bottom: 3px; }
+.map-inspector-icon { width: 34px; height: 34px; display: grid; place-items: center; color: var(--white); border-radius: 8px; }
+.map-inspector > strong { color: var(--ink); font-family: var(--display); font-size: 17px; letter-spacing: -.05em; }
+.map-inspector > span:not(.eyebrow-label):not(.evidence-pill) { color: var(--ink-faint); font-size: 9px; line-height: 1.35; }
+.map-inspector > p { margin: 2px 0 6px; color: var(--ink-soft); font-size: 10px; line-height: 1.45; }
+.map-inspector-actions { display: grid; gap: 7px; padding-top: 12px; border-top: 1px solid var(--line); }
+.map-inspector-actions .quiet-button, .map-inspector-actions .follow-button { width: 100%; height: 33px; font-size: 9px; }
 .evidence-drawer { margin: 0; }
 .saved-card ~ .toast { bottom: 178px; }
 .evidence-summary .quiet-button { height: 30px; margin-top: 3px; padding-inline: 9px; font-size: 9px; }
@@ -328,6 +339,8 @@ button { cursor: pointer; }
   .thread-connection { grid-template-columns: 34px auto; }
   .map-view .surface-header { padding: 22px 18px 0; }
   .map-view .research-canvas { min-height: 600px; }
+  .map-surface-shell .map-view .research-canvas { margin-right: 225px; }
+  .map-inspector { width: 201px; }
 }
 
 @media (max-width: 640px) {
@@ -347,6 +360,10 @@ button { cursor: pointer; }
   .map-view { min-height: 610px; gap: 8px; }
   .map-view .surface-header { padding: 20px 16px 0; }
   .map-view .research-canvas { min-height: 590px; border-radius: 10px; }
+  .map-surface-shell { min-height: 0; border-radius: 10px; }
+  .map-surface-shell > .map-view { min-height: 0; }
+  .map-surface-shell .map-view .research-canvas { margin-right: 0; }
+  .map-inspector { width: auto; position: static; margin: 0 12px 12px; padding: 13px; }
   .node-card.is-compact { min-width: 70px; max-width: 105px; padding: 5px 6px; }
   .node-card.is-compact strong { font-size: 9px; }
   .map-view .canvas-callout { width: 165px; }
