@@ -423,13 +423,25 @@ const conceptRecords = [
   { label: 'Structural comparison', detail: 'Cases can resemble one another without being the same case.', note: 'Similarity is not proof of a shared cause.', accent: 'coral' },
 ];
 
-const terrainItems = [
-  { label: 'Reporting', count: 3, detail: 'headlines + archive captures', color: 'coral', icon: FileText },
-  { label: 'Archived webpages', count: 2, detail: 'capture dates + origin', color: 'amber', icon: Archive },
-  { label: 'Datasets', count: 1, detail: '38 rows · 6 fields', color: 'violet', icon: Database },
-  { label: 'Platform artefacts', count: 4, detail: 'screenshots + fragments', color: 'pink', icon: Layers2 },
-  { label: 'Commercial services', count: 2, detail: 'service records', color: 'teal', icon: Globe2 },
-  { label: 'Infrastructure', count: 1, detail: 'DNS observation', color: 'slate', icon: Network },
+type TerrainLayer = {
+  label: string;
+  count: number;
+  detail: string;
+  color: string;
+  icon: typeof FileText;
+  description: string;
+  role: string;
+  objectIds: string[];
+  sourceIds: string[];
+};
+
+const terrainItems: TerrainLayer[] = [
+  { label: 'Reporting', count: 3, detail: 'headlines + archive captures', color: 'coral', icon: FileText, description: 'Public accounts and investigative narratives: the visible layer that gives a case its sequence and context.', role: 'Reporting tells us what became legible to the public; it is a starting point, not the enabling stack itself.', objectIds: ['longarc'], sourceIds: ['graphika-cheap-tricks', 'tactical-tech-influence-industry'] },
+  { label: 'Archived webpages', count: 2, detail: 'capture dates + origin', color: 'amber', icon: Archive, description: 'Captured pages preserve what a source or interface looked like at a particular moment.', role: 'Archives let a researcher inspect origin, timing, and disappearance rather than relying on memory.', objectIds: ['longarc'], sourceIds: ['disinfodex'] },
+  { label: 'Datasets', count: 1, detail: '38 rows · 6 fields', color: 'violet', icon: Database, description: 'Structured rows let recurring entities, dates, and relationships be compared across cases.', role: 'A dataset can surface recurrence that is hard to see in one public story.', objectIds: ['greybox'], sourceIds: ['ira-troll-archive', 'ocp-data-registry', 'amazon-copurchase-network', 'ecommerce-dark-patterns'] },
+  { label: 'Platform artefacts', count: 4, detail: 'screenshots + fragments', color: 'pink', icon: Layers2, description: 'Screenshots, fragments, ads, and platform disclosures show what users actually encountered.', role: 'These are the visible traces an operation leaves on a platform, not an explanation of the whole system.', objectIds: ['invite'], sourceIds: ['meta-cib-pakistan', 'disinfodex'] },
+  { label: 'Commercial services', count: 2, detail: 'service records', color: 'teal', icon: Globe2, description: 'Service records point to ordinary commercial layers that can recur beneath very different public stories.', role: 'The shared service is the small connective layer being tested in this proof of concept.', objectIds: ['service'], sourceIds: ['tactical-tech-influence-industry', 'amazon-copurchase-network'] },
+  { label: 'Infrastructure', count: 1, detail: 'DNS observation', color: 'slate', icon: Network, description: 'DNS and hosting observations reach underneath a visible platform or message.', role: 'Infrastructure is where the investigation can test the deeper ecommerce stack without treating a match as proof.', objectIds: ['harbor'], sourceIds: [] },
 ];
 
 const evidenceCopy: Record<EvidenceState, { label: string; color: string; note: string }> = {
@@ -466,6 +478,7 @@ export default function Home() {
   const [followed, setFollowed] = useState(false);
   const [evidenceOpen, setEvidenceOpen] = useState(false);
   const [exampleSourceId, setExampleSourceId] = useState<string | null>(null);
+  const [selectedTerrainLabel, setSelectedTerrainLabel] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [toast, setToast] = useState('');
   const [agentMessage, setAgentMessage] = useState('');
@@ -502,6 +515,7 @@ export default function Home() {
 
   const selected = nodeById(selectedId);
   const exampleSource = externalSources.find((source) => source.id === exampleSourceId);
+  const selectedTerrainLayer = terrainItems.find((item) => item.label === selectedTerrainLabel) ?? null;
   const visibleNodeIds = useMemo(() => {
     const ids = new Set(['northline', 'lantern', 'service', 'greybox', 'longarc']);
     if (followed) {
@@ -574,7 +588,9 @@ export default function Home() {
   }, []);
 
   const inspectTerrain = useCallback((label: string) => {
-    announce(`${label} layer selected. The investigation remains anchored to the shared trail.`);
+    const layer = terrainItems.find((item) => item.label === label);
+    setSelectedTerrainLabel(label);
+    announce(`${label} layer selected. ${layer?.role ?? 'Inspect the related material below.'}`);
   }, [announce]);
 
   const saveDiscovery = useCallback(() => {
@@ -695,7 +711,7 @@ export default function Home() {
           <div className="orientation-panel"><div className="orientation-copy"><span className="eyebrow-label">START WITH ONE RELATIONSHIP</span><strong>{followed ? 'The shared layer is now visible.' : 'Trace Atlas Relay across two cases.'}</strong><p>{followed ? 'Atlas Relay has revealed two more objects. Check what supports each connection before you save the finding.' : 'Northline cohort and Lantern House tell different stories. Atlas Relay is the ordinary layer worth testing between them.'}</p><span className="orientation-agent-note">RESEARCH CONCEPTS = ideas to test · RESEARCH ARTIFACTS = sources to inspect</span></div><div className="orientation-steps"><div><b>01</b><span>Choose a clue<small>Atlas Relay is selected</small></span></div><div><b>02</b><span>Follow it<small>Reveal related objects</small></span></div><div><b>03</b><span>Check evidence<small>Keep uncertainty visible</small></span></div><div><b>04</b><span>Save a finding<small>Export the trail</small></span></div></div><button className="orientation-cta" onClick={() => { setView('thread'); followNode('service'); }}>{followed ? 'Continue the path' : 'Start with Atlas Relay'} <ChevronRight size={15} /></button></div>
           <div className="view-switcher" role="tablist" aria-label="Investigation views">{(['thread', 'map', 'terrain', 'evidence', 'compare'] as View[]).map((tab) => <button key={tab} className={view === tab ? 'is-active' : ''} onClick={() => changeView(tab)} role="tab" aria-selected={view === tab}>{tab === 'thread' ? 'Followed path' : tab === 'map' ? 'Relationship map' : tab === 'terrain' ? 'Source layers' : tab === 'evidence' ? 'Evidence' : 'Compare'}</button>)}<span className="view-switcher-hint"><Sparkles size={13} /> one investigation, many ways to see it</span></div>
           <div className="stage-content">
-            {view === 'terrain' ? <TerrainView onFollow={() => followNode('service')} onInspect={inspectTerrain} followed={followed} /> : view === 'evidence' ? <EvidenceView selected={selected} edges={edges} onOpen={openEvidence} onFollow={followNode} evidenceOnly={evidenceOnly} /> : view === 'compare' ? <CompareView onFollow={() => followNode('service')} onSelectCase={(id) => { setSelectedId(id); announce(`${nodeById(id).label} selected for comparison.`); }} /> : view === 'concepts' ? <CorpusView mode="concepts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onChangeMode={changeView} /> : view === 'artifacts' ? <CorpusView mode="artifacts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onChangeMode={changeView} /> : view === 'thread' ? <ThreadView selectedId={selectedId} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} /> : <MapView nodes={filteredNodes} edges={filteredEdges} selectedId={selectedId} visibleNodeIds={visibleNodeIds} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} />}
+            {view === 'terrain' ? <TerrainView selectedLayer={selectedTerrainLayer} onFollow={() => followNode('service')} onInspect={inspectTerrain} onOpenObject={openEvidence} onOpenExample={openExample} followed={followed} /> : view === 'evidence' ? <EvidenceView selected={selected} edges={edges} onOpen={openEvidence} onFollow={followNode} evidenceOnly={evidenceOnly} /> : view === 'compare' ? <CompareView onFollow={() => followNode('service')} onSelectCase={(id) => { setSelectedId(id); announce(`${nodeById(id).label} selected for comparison.`); }} /> : view === 'concepts' ? <CorpusView mode="concepts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onChangeMode={changeView} /> : view === 'artifacts' ? <CorpusView mode="artifacts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onChangeMode={changeView} /> : view === 'thread' ? <ThreadView selectedId={selectedId} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} /> : <MapView nodes={filteredNodes} edges={filteredEdges} selectedId={selectedId} visibleNodeIds={visibleNodeIds} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} />}
             <aside className="trail-panel"><div className="panel-overline"><span>INVESTIGATION TRAIL</span><span className="trail-count">{trail.length.toString().padStart(2, '0')}</span></div><div className="trail-line" /><div className="trail-items">{trail.map((item, index) => <div key={`${item.label}-${index}`} className={`trail-item ${item.active ? 'is-active' : ''}`}><span className="trail-node" /><div><strong>{item.label}</strong><small>{item.detail}</small></div><time>{item.time}</time></div>)}</div><div className="trail-next"><div className="next-kicker"><ArrowUpRight size={13} /><span>POSSIBLE NEXT DIRECTION</span></div><p>{followed ? 'Where else does this service appear?' : 'Follow the selected relationship to reveal what is next.'}</p><button onClick={() => followNode(selectedId)}>{followed ? 'Trace backwards' : 'Follow this'} <ChevronRight size={15} /></button></div><button className="agent-note" onClick={() => setControlsOpen(true)} aria-label="Open human and agent connection status"><span className="agent-note-heading"><span className="agent-pulse" /> AGENT EXTENSION</span><p>{agentMessage || 'An agent can extend the path through structured tools while you keep the evidentiary judgement.'}</p><small>Open connection status →</small></button></aside>
           </div>
         </section>
@@ -746,8 +762,18 @@ function CorpusView({ mode, selectedId, onSelect, onOpenEvidence, onOpenExample,
   );
 }
 
-function TerrainView({ onFollow, onInspect, followed }: { onFollow: () => void; onInspect: (label: string) => void; followed: boolean }) {
-  return <div className="terrain-view"><div className="terrain-view-intro"><div><span className="eyebrow-label">SOURCE TERRAIN</span><h2>See the ecology behind the pattern.</h2><p>One investigation, six kinds of material. The terrain makes heterogeneity visible before the evidence is interpreted.</p></div><div className="terrain-total"><strong>13</strong><span>research objects</span></div></div><div className="terrain-mosaic">{terrainItems.map((item) => { const Icon = item.icon; return <button type="button" key={item.label} className={`terrain-tile tile-${item.color}`} onClick={() => onInspect(item.label)} aria-label={`Inspect ${item.label} source layer`}><div className="tile-icon"><Icon size={19} /></div><div><span>{item.label}</span><strong>{item.count.toString().padStart(2, '0')}</strong><small>{item.detail}</small></div><ArrowUpRight size={16} /></button>; })}</div><div className="terrain-note"><div className="terrain-note-icon"><Sparkles size={17} /></div><div><span>THE SCENE CHANGED</span><p>{followed ? 'Atlas Relay connects sources that do not usually appear in the same investigation.' : 'Follow Atlas Relay to reveal the platform artefact and disputed infrastructure record.'}</p></div><button onClick={onFollow}>{followed ? 'Trace the path' : 'Follow Atlas Relay'} <ChevronRight size={15} /></button></div></div>;
+function TerrainView({ selectedLayer, onFollow, onInspect, onOpenObject, onOpenExample, followed }: { selectedLayer: TerrainLayer | null; onFollow: () => void; onInspect: (label: string) => void; onOpenObject: (id: string) => void; onOpenExample: (id: string) => void; followed: boolean }) {
+  const objects = selectedLayer?.objectIds.map(nodeById) ?? [];
+  const sources = selectedLayer?.sourceIds.map((id) => externalSources.find((source) => source.id === id)).filter((source): source is ResearchSource => Boolean(source)) ?? [];
+
+  return (
+    <div className="terrain-view">
+      <div className="terrain-view-intro"><div><span className="eyebrow-label">SOURCE TERRAIN</span><h2>See the ecology behind the pattern.</h2><p>One investigation, six kinds of material. Select a layer to see what it contains, why it matters, and where to investigate next.</p></div><div className="terrain-total"><strong>13</strong><span>research objects</span></div></div>
+      <div className="terrain-mosaic">{terrainItems.map((item) => { const Icon = item.icon; const isSelected = selectedLayer?.label === item.label; return <button type="button" key={item.label} className={`terrain-tile tile-${item.color} ${isSelected ? 'is-selected' : ''}`} onClick={() => onInspect(item.label)} aria-label={`Inspect ${item.label} source layer`} aria-pressed={isSelected}><div className="tile-icon"><Icon size={19} /></div><div><span>{item.label}</span><strong>{item.count.toString().padStart(2, '0')}</strong><small>{item.detail}</small></div><ArrowUpRight size={16} /></button>; })}</div>
+      {selectedLayer ? <section className="terrain-layer-detail" aria-live="polite"><div className="terrain-layer-detail-head"><div><span className="eyebrow-label">SELECTED SOURCE LAYER</span><h3>{selectedLayer.label}</h3><p>{selectedLayer.description}</p></div><div className="terrain-layer-role"><span>WHY IT MATTERS</span><p>{selectedLayer.role}</p></div></div><div className="terrain-layer-detail-grid"><div className="terrain-related-group"><span className="eyebrow-label">IN THIS DEMO</span><div className="terrain-object-list">{objects.map((node) => <button type="button" className="terrain-object-row" key={node.id} onClick={() => onOpenObject(node.id)}><span className={`artifact-icon artifact-${node.accent}`}><NodeIcon kind={node.kind} /></span><span className="terrain-object-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small><em>{node.preview}</em></span><span className="terrain-object-action">Inspect evidence <ChevronRight size={13} /></span></button>)}</div></div><div className="terrain-related-group"><span className="eyebrow-label">EXTERNAL STARTING POINTS</span>{sources.length ? <div className="terrain-source-list">{sources.map((source) => <article className="terrain-source-row" key={source.id}><div className="terrain-source-copy"><span>{source.kind}</span><strong>{source.title}</strong><small>{source.provider}</small></div><div className="terrain-source-actions"><button className="source-example-button" onClick={() => onOpenExample(source.id)}><Eye size={13} /> Example</button><a className="source-original-link" href={source.url} target="_blank" rel="noreferrer">Original <ExternalLink size={13} /></a></div></article>)}</div> : <p className="terrain-no-sources">No external link is attached to this layer yet. Inspect the local record to continue the trail.</p>}</div></div></section> : <div className="terrain-empty-state"><Compass size={16} /><span>Choose a source layer to reveal its related artifacts, explanation, and external starting points.</span></div>}
+      <div className="terrain-note"><div className="terrain-note-icon"><Sparkles size={17} /></div><div><span>THE SCENE CHANGED</span><p>{followed ? 'Atlas Relay connects sources that do not usually appear in the same investigation.' : 'Follow Atlas Relay to reveal the platform artefact and disputed infrastructure record.'}</p></div><button onClick={onFollow}>{followed ? 'Trace the path' : 'Follow Atlas Relay'} <ChevronRight size={15} /></button></div>
+    </div>
+  );
 }
 
 function EvidenceView({ selected, edges: allEdges, onOpen, onFollow, evidenceOnly }: { selected: ResearchNode; edges: ResearchEdge[]; onOpen: (id: string) => void; onFollow: (id: string) => void; evidenceOnly: boolean }) {
