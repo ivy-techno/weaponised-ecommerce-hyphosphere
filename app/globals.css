@@ -303,6 +303,19 @@ button { cursor: pointer; }
 .node-card.is-compact .node-card-top, .node-card.is-compact em, .node-card.is-compact .evidence-pill { display: none; }
 .research-node.is-selected { z-index: 9; }
 .map-view .node-card { pointer-events: none; }
+.map-view .node-card { display: none; }
+.map-view .canvas-callout { width: 230px; }
+.evidence-drawer { margin: 0; }
+.saved-card ~ .toast { bottom: 178px; }
+.evidence-summary .quiet-button { height: 30px; margin-top: 3px; padding-inline: 9px; font-size: 9px; }
+.evidence-row { grid-template-columns: 1.35fr .7fr 1.75fr auto; }
+.evidence-relationship { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.evidence-relationship strong { color: var(--ink); font-size: 10px; }
+.evidence-relationship small { color: var(--ink-faint); font-size: 9px; }
+.evidence-basis { min-width: 0; color: var(--ink-soft); font-size: 10px; line-height: 1.35; }
+.evidence-row-actions { display: flex; align-items: center; gap: 7px; }
+.evidence-row-actions button { display: flex; align-items: center; gap: 3px; padding: 0; color: var(--teal-deep); background: transparent; border: 0; font-size: 9px; font-weight: 700; white-space: nowrap; }
+.evidence-row-actions button:hover { color: var(--coral); }
 
 @media (max-width: 900px) {
   .thread-view, .map-view { min-height: 620px; }
@@ -336,6 +349,9 @@ button { cursor: pointer; }
   .map-view .research-canvas { min-height: 590px; border-radius: 10px; }
   .node-card.is-compact { min-width: 70px; max-width: 105px; padding: 5px 6px; }
   .node-card.is-compact strong { font-size: 9px; }
+  .map-view .canvas-callout { width: 165px; }
+  .evidence-summary .quiet-button { margin-top: 7px; }
+  .evidence-row-actions { gap: 9px; }
 }
 
 /* WE repository surfaces keep concepts and artifacts visibly separate. */
