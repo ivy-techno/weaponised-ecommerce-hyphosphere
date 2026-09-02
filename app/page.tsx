@@ -315,6 +315,44 @@ const externalSources: ResearchSource[] = [
       accent: 'coral',
     },
   },
+  {
+    id: 'disinfodex',
+    title: 'Disinfodex',
+    provider: 'Historical platform takedown index',
+    kind: 'HISTORICAL INDEX',
+    description: 'A historical index of platform disclosures and takedowns across services including Facebook, Twitter, Google/YouTube, and Reddit.',
+    whyIncluded: 'Keeps the visible moderation and takedown layer in view while inviting the researcher to ask what wider infrastructure made each operation possible.',
+    access: 'Historical snapshots via Internet Archive; current domain is not treated as authoritative',
+    url: 'https://web.archive.org/web/*/https://disinfodex.org/',
+    tags: ['disinfodex', 'takedowns', 'platforms', 'moderation', 'cib', 'influence operations', 'historical archive'],
+    example: {
+      label: 'ILLUSTRATIVE TAKEDOWN RECORD',
+      title: 'The removal is the visible event',
+      text: 'A platform disclosure can name accounts, narratives, dates, and policy actions. That public event is an important surface trace; the observatory question is what services and supply chains surrounded it.',
+      fields: [{ label: 'surface', value: 'accounts + takedown' }, { label: 'inspect', value: 'actor · narrative · date' }, { label: 'question', value: 'what remains unseen?' }],
+      note: 'This is an explanatory preview, not a reproduced takedown record. The link opens historical snapshots rather than treating the current domain as a live database.',
+      accent: 'coral',
+    },
+  },
+  {
+    id: 'tactical-tech-influence-industry',
+    title: 'The Influence Industry',
+    provider: 'Tactical Tech · Our Data Our Selves',
+    kind: 'RESEARCH PROJECT',
+    description: 'A research project mapping the global business of using personal data and digital influence in elections through practices, actors, and country contexts.',
+    whyIncluded: 'Provides a bridge between visible political messaging and the commercial ecosystem of data brokers, consultants, platforms, targeting, and persuasion.',
+    access: 'Open project overview and related reporting',
+    url: 'https://ourdataourselves.tacticaltech.org/posts/influence-industry/',
+    tags: ['tactical tech', 'influence industry', 'data brokers', 'political advertising', 'elections', 'platforms', 'cambridge analytica'],
+    example: {
+      label: 'ILLUSTRATIVE INDUSTRY MAP',
+      title: 'The campaign has a supply chain',
+      text: 'A political message sits inside an ecosystem of data, analysis, targeting, persuasion, consultants, start-ups, and platforms. The point is not to collapse them into one actor, but to make the enabling field inspectable.',
+      fields: [{ label: 'practice', value: 'profile → target → persuade' }, { label: 'actors', value: 'brokers · consultants · platforms' }, { label: 'question', value: 'where does value move?' }],
+      note: 'This is a visual reading aid based on the project’s organising questions, not a quotation from the source.',
+      accent: 'violet',
+    },
+  },
 ];
 
 const edges: ResearchEdge[] = [
@@ -623,7 +661,7 @@ export default function Home() {
       <header className="topbar">
         <div className="brand-lockup"><AppMark /><div><div className="brand-name">hyphosphere</div></div></div>
         <div className="topbar-center"><div className="command-search-wrap"><div className="command-search"><Search size={16} /><input ref={searchInputRef} value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search objects and sources" aria-label="Search research objects and external sources" /><span className="keycap">⌘ K</span></div>{search.trim() && <div className="search-results" aria-label="Research search results"><div className="search-results-heading">RESEARCH INDEX · LOCAL + EXTERNAL</div>{searchResults.nodes.map((node) => <button key={node.id} className="search-result-row" onClick={() => { setSelectedId(node.id); setView('map'); setSearch(''); announce(`${node.label} selected in the relationship map.`); }}><span className="search-result-kind">OBJECT</span><span className="search-result-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small></span><ChevronRight size={14} /></button>)}{searchResults.sources.map((source) => <div key={source.id} className="search-result-row search-result-source"><span className="search-result-kind search-result-kind-source">SOURCE</span><span className="search-result-copy"><strong>{source.title}</strong><small>{source.provider} · {source.kind}</small></span><span className="search-result-actions"><button className="search-preview-button" onClick={() => { openExample(source.id); setSearch(''); }}>Example</button><a className="search-open-link" href={source.url} target="_blank" rel="noreferrer" aria-label={`Open original source for ${source.title}`}><ExternalLink size={14} /></a></span></div>)}{!searchResults.nodes.length && !searchResults.sources.length && <div className="search-empty">No matching objects or sources. Try “troll,” “procurement,” “OCCRP,” or “ecommerce.”</div>}</div>}</div></div>
-        <div className="topbar-actions"><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} title={webmcpReady ? 'WebMCP ready' : 'WebMCP awaiting compatible browser'} /><span className="topbar-status">{webmcpReady ? 'agent link ready' : 'local corpus'}</span><div className="controls-wrap"><button className="avatar-button" onClick={() => setControlsOpen((open) => !open)} aria-expanded={controlsOpen} aria-label="Open Hyphosphere controls"><Compass size={15} /></button>{controlsOpen && <div className="controls-popover" aria-live="polite"><span>HYPHOSPHERE CONTROLS</span><strong>{webmcpReady ? 'WebMCP connection ready' : 'Deterministic corpus active'}</strong><button onClick={() => { setControlsOpen(false); announce('Controls closed. Your investigation remains in focus.'); }}>Close</button></div>}</div></div>
+        <div className="topbar-actions"><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} title={webmcpReady ? 'WebMCP ready' : 'WebMCP awaiting compatible browser'} /><button className={`topbar-status agent-status-link ${webmcpReady ? 'is-ready' : ''}`} onClick={() => setControlsOpen(true)} aria-expanded={controlsOpen} aria-label="Open human and agent connection status">{webmcpReady ? 'agent link ready' : 'local corpus'}</button><div className="controls-wrap"><button className="avatar-button" onClick={() => setControlsOpen((open) => !open)} aria-expanded={controlsOpen} aria-label="Open Hyphosphere controls"><Compass size={15} /></button>{controlsOpen && <div className="controls-popover" aria-live="polite"><span>HYPHOSPHERE CONTROLS</span><strong>{webmcpReady ? 'WebMCP connection ready' : 'Deterministic corpus active'}</strong><p>{webmcpReady ? 'An agent can use the same follow, evidence, terrain, save, and search actions shown here.' : 'This view is self-contained. A compatible WebMCP-enabled browser may expose the site controls to an agent.'}</p><button onClick={() => { setControlsOpen(false); announce('Controls closed. Your investigation remains in focus.'); }}>Close</button></div>}</div></div>
         <button className="mobile-menu" onClick={() => setMobileNavOpen((open) => !open)} aria-label="Toggle navigation"><PanelRight size={18} /></button>
       </header>
 
@@ -648,7 +686,7 @@ export default function Home() {
             <div className="sidebar-divider" /><div className="sidebar-heading">NOTEBOOK</div>
             <button className="notebook-link" onClick={() => announce(saved ? 'Saved discovery is available in the notebook card.' : 'No saved discoveries yet. Save the current finding to begin.') }><Bookmark size={15} /> <span>Saved discoveries</span><small>{saved ? '01' : '00'}</small></button><button className="notebook-link" onClick={() => announce('The source shelf is represented by the six source classes in Terrain.') }><Archive size={15} /> <span>Source shelf</span><small>12</small></button>
           </div>
-          <div className="sidebar-footer"><div className="demo-label"><span className="demo-dot" /> DEMO CORPUS</div><p>Deterministic material for a guided investigation.</p><div className="agent-brief"><span>HUMAN + AGENT</span><p>You choose what to follow. An agent can operate the same terrain controls and surface evidence; you decide what counts.</p></div></div>
+          <div className="sidebar-footer"><div className="demo-label"><span className="demo-dot" /> DEMO CORPUS</div><p>Deterministic material for a guided investigation.</p><button className="agent-brief" onClick={() => setControlsOpen(true)} aria-label="Open human and agent connection status"><span>HUMAN + AGENT</span><p>You choose what to follow. An agent can operate the same terrain controls and surface evidence; you decide what counts.</p><small>Open connection status →</small></button></div>
         </aside>
 
         <section className="main-stage">
@@ -658,7 +696,7 @@ export default function Home() {
           <div className="view-switcher" role="tablist" aria-label="Investigation views">{(['thread', 'map', 'terrain', 'evidence', 'compare'] as View[]).map((tab) => <button key={tab} className={view === tab ? 'is-active' : ''} onClick={() => changeView(tab)} role="tab" aria-selected={view === tab}>{tab === 'thread' ? 'Followed path' : tab === 'map' ? 'Relationship map' : tab === 'terrain' ? 'Source layers' : tab === 'evidence' ? 'Evidence' : 'Compare'}</button>)}<span className="view-switcher-hint"><Sparkles size={13} /> one investigation, many ways to see it</span></div>
           <div className="stage-content">
             {view === 'terrain' ? <TerrainView onFollow={() => followNode('service')} onInspect={inspectTerrain} followed={followed} /> : view === 'evidence' ? <EvidenceView selected={selected} edges={edges} onOpen={openEvidence} onFollow={followNode} evidenceOnly={evidenceOnly} /> : view === 'compare' ? <CompareView onFollow={() => followNode('service')} onSelectCase={(id) => { setSelectedId(id); announce(`${nodeById(id).label} selected for comparison.`); }} /> : view === 'concepts' ? <CorpusView mode="concepts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onChangeMode={changeView} /> : view === 'artifacts' ? <CorpusView mode="artifacts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onChangeMode={changeView} /> : view === 'thread' ? <ThreadView selectedId={selectedId} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} /> : <MapView nodes={filteredNodes} edges={filteredEdges} selectedId={selectedId} visibleNodeIds={visibleNodeIds} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} />}
-            <aside className="trail-panel"><div className="panel-overline"><span>INVESTIGATION TRAIL</span><span className="trail-count">{trail.length.toString().padStart(2, '0')}</span></div><div className="trail-line" /><div className="trail-items">{trail.map((item, index) => <div key={`${item.label}-${index}`} className={`trail-item ${item.active ? 'is-active' : ''}`}><span className="trail-node" /><div><strong>{item.label}</strong><small>{item.detail}</small></div><time>{item.time}</time></div>)}</div><div className="trail-next"><div className="next-kicker"><ArrowUpRight size={13} /><span>POSSIBLE NEXT DIRECTION</span></div><p>{followed ? 'Where else does this service appear?' : 'Follow the selected relationship to reveal what is next.'}</p><button onClick={() => followNode(selectedId)}>{followed ? 'Trace backwards' : 'Follow this'} <ChevronRight size={15} /></button></div><div className="agent-note"><div className="agent-note-heading"><span className="agent-pulse" /> AGENT EXTENSION</div><p>{agentMessage || 'An agent can extend the path through structured tools while you keep the evidentiary judgement.'}</p></div></aside>
+            <aside className="trail-panel"><div className="panel-overline"><span>INVESTIGATION TRAIL</span><span className="trail-count">{trail.length.toString().padStart(2, '0')}</span></div><div className="trail-line" /><div className="trail-items">{trail.map((item, index) => <div key={`${item.label}-${index}`} className={`trail-item ${item.active ? 'is-active' : ''}`}><span className="trail-node" /><div><strong>{item.label}</strong><small>{item.detail}</small></div><time>{item.time}</time></div>)}</div><div className="trail-next"><div className="next-kicker"><ArrowUpRight size={13} /><span>POSSIBLE NEXT DIRECTION</span></div><p>{followed ? 'Where else does this service appear?' : 'Follow the selected relationship to reveal what is next.'}</p><button onClick={() => followNode(selectedId)}>{followed ? 'Trace backwards' : 'Follow this'} <ChevronRight size={15} /></button></div><button className="agent-note" onClick={() => setControlsOpen(true)} aria-label="Open human and agent connection status"><span className="agent-note-heading"><span className="agent-pulse" /> AGENT EXTENSION</span><p>{agentMessage || 'An agent can extend the path through structured tools while you keep the evidentiary judgement.'}</p><small>Open connection status →</small></button></aside>
           </div>
         </section>
       </div>
