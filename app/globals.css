@@ -524,7 +524,9 @@ body { overflow-x: hidden; }
 .compare-grid { min-width: 0; grid-template-columns: minmax(0, 1fr) minmax(98px, 118px) minmax(0, 1fr); gap: 10px; }
 .case-panel { min-width: 0; overflow: hidden; }
 .case-panel-top, .case-panel-top > div, .case-panel-top strong { min-width: 0; }
-.case-panel-top strong, .compare-list > div > span, .shared-pill { overflow-wrap: anywhere; }
+.case-panel-top strong { overflow-wrap: break-word; word-break: normal; hyphens: auto; line-height: 1.15; }
+.compare-list > div > span, .shared-pill { overflow-wrap: anywhere; }
+.case-panel-top .evidence-pill { flex: 0 0 auto; }
 .shared-pill { max-width: 100%; justify-content: center; }
 
 @media (max-width: 900px) {
