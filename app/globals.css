@@ -725,3 +725,7 @@ body { overflow-x: hidden; }
 @media (max-width: 900px) {
   .problem-framing { grid-template-columns: 1fr; gap: 12px; }
 }
+
+.webmcp-explainer { min-width: 0; margin-top: 10px; padding-top: 9px; border-top: 1px solid #cbded6; }
+.webmcp-explainer > span { color: var(--violet); font-size: 8px; font-weight: 800; letter-spacing: .12em; }
+.webmcp-explainer > p { max-width: 650px; margin: 5px 0 0; color: var(--ink-soft); font-size: 9px; line-height: 1.4; }
