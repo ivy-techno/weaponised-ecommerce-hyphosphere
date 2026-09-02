@@ -540,3 +540,8 @@ body { overflow-x: hidden; }
   .map-view .node-card { width: 104px; max-width: 104px; }
   .map-view .node-card strong { font-size: 9px !important; }
 }
+
+/* SVG labels use the map's 100-unit coordinate system; keep them readable after stretching. */
+.edge-group text { font-size: 1.35px; letter-spacing: .01em; }
+.map-view .node-card { font-size: 10px; }
+.map-view .node-card strong { max-height: 2.4em; overflow: hidden; }
