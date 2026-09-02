@@ -565,7 +565,8 @@ body { overflow-x: hidden; }
 }
 
 /* Hard containment rules for the remaining dense views. */
-.terrain-view, .evidence-view, .compare-view { overflow: hidden; }
+.evidence-view, .compare-view { overflow: hidden; }
+.terrain-view { overflow: visible; }
 .terrain-mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .terrain-tile { min-width: 0; grid-template-columns: auto minmax(0, 1fr) auto; overflow: hidden; }
 .terrain-tile > div:nth-child(2), .terrain-tile span, .terrain-tile small { min-width: 0; overflow-wrap: anywhere; }
