@@ -548,6 +548,13 @@ body { overflow-x: hidden; }
 .stage-content > * { min-width: 0; max-width: 100%; }
 .trail-panel { min-width: 0; max-width: 100%; overflow: hidden; }
 .trail-item strong, .trail-item small { min-width: 0; overflow-wrap: anywhere; }
+.trail-panel > *, .trail-next, .trail-next p, .agent-note, .agent-note p { min-width: 0; max-width: 100%; }
+.trail-next { overflow: hidden; }
+.trail-next .next-kicker { min-width: 0; align-items: flex-start; line-height: 1.35; }
+.trail-next .next-kicker > svg { flex: 0 0 auto; }
+.trail-next .next-kicker > span { min-width: 0; overflow-wrap: anywhere; }
+.trail-next p { overflow-wrap: anywhere; }
+.trail-next button { min-width: 0; flex-wrap: wrap; white-space: normal; }
 
 @media (max-width: 1120px) {
   .stage-content { grid-template-columns: minmax(0, 1fr); }
