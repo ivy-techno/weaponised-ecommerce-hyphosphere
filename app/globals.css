@@ -584,6 +584,11 @@ body { overflow-x: hidden; }
 .evidence-row-actions { min-width: 0; flex-wrap: wrap; justify-content: start; }
 .compare-grid { min-width: 0; grid-template-columns: minmax(0, 1fr) minmax(98px, 118px) minmax(0, 1fr); gap: 10px; }
 .case-panel { min-width: 0; overflow: hidden; }
+.case-panel.is-selected { border-color: var(--teal); box-shadow: 0 0 0 3px rgb(34 123 119 / 13%), 0 10px 25px rgb(45 72 66 / 9%); transform: translateY(-2px); }
+.case-panel.case-b.is-selected { border-color: var(--amber); box-shadow: 0 0 0 3px rgb(206 155 72 / 13%), 0 10px 25px rgb(45 72 66 / 9%); }
+.case-focus-status { display: block; margin-top: 9px; color: var(--ink-faint); font-size: 8px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.case-panel.is-selected .case-focus-status { color: var(--teal-deep); }
+.case-panel.case-b.is-selected .case-focus-status { color: #9c6b29; }
 .case-panel-top, .case-panel-top > div, .case-panel-top strong { min-width: 0; }
 .case-panel-top strong { overflow-wrap: break-word; word-break: normal; hyphens: auto; line-height: 1.15; }
 .compare-list > div > span, .shared-pill { overflow-wrap: anywhere; }
