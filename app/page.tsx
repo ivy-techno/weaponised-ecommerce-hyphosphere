@@ -59,6 +59,16 @@ type ResearchSource = {
   access: string;
   url: string;
   tags: string[];
+  example: ResearchExample;
+};
+
+type ResearchExample = {
+  label: string;
+  title: string;
+  text: string;
+  fields: Array<{ label: string; value: string }>;
+  note: string;
+  accent: string;
 };
 
 type ResearchEdge = {
@@ -182,6 +192,14 @@ const externalSources: ResearchSource[] = [
     access: 'Open repository',
     url: 'https://github.com/fivethirtyeight/russian-troll-tweets',
     tags: ['political trolls', 'influence operations', 'twitter', 'ira', 'social media'],
+    example: {
+      label: 'ILLUSTRATIVE RECORD',
+      title: 'The post is the visible trace',
+      text: 'A short political message can look like an isolated utterance. The archive makes it possible to inspect the account, timestamp, language, and surrounding activity that turn that surface into a research object.',
+      fields: [{ label: 'surface', value: 'post + reply activity' }, { label: 'inspect', value: 'account · time · language' }, { label: 'question', value: 'what carried it outward?' }],
+      note: 'This is an explanatory preview, not a quoted tweet. Open the original repository to inspect the records.',
+      accent: 'coral',
+    },
   },
   {
     id: 'occrp-aleph',
@@ -193,6 +211,14 @@ const externalSources: ResearchSource[] = [
     access: 'Public interface; some material requires access',
     url: 'https://aleph.occrp.org/',
     tags: ['occrp', 'aleph', 'companies', 'leaks', 'public records', 'investigative reporting'],
+    example: {
+      label: 'ILLUSTRATIVE QUERY',
+      title: 'A name becomes a trail',
+      text: 'A company, person, document, or address can become a starting point. Relationship and timeline views help a researcher move from a single record toward the wider network around it.',
+      fields: [{ label: 'start with', value: 'entity or document' }, { label: 'follow', value: 'people · companies · records' }, { label: 'question', value: 'which links recur?' }],
+      note: 'This preview explains the research use of Aleph; the external database remains the source of record.',
+      accent: 'amber',
+    },
   },
   {
     id: 'ocp-data-registry',
@@ -204,6 +230,14 @@ const externalSources: ResearchSource[] = [
     access: 'Open downloads',
     url: 'https://ocp-data-registry.readthedocs.io/en/latest/',
     tags: ['ocp', 'open contracting', 'procurement', 'vendors', 'contracts', 'infrastructure'],
+    example: {
+      label: 'ILLUSTRATIVE CONTRACT TRACE',
+      title: 'The commercial layer leaves paperwork',
+      text: 'A procurement record can look mundane on its own. Linked vendors, buyers, dates, and project descriptions make the commercial infrastructure around an activity available for comparison.',
+      fields: [{ label: 'record', value: 'buyer + vendor + award' }, { label: 'connect', value: 'contract · project · date' }, { label: 'question', value: 'what infrastructure repeats?' }],
+      note: 'The card is a reading aid, not a claim about a particular contract. Open the registry for original records.',
+      accent: 'violet',
+    },
   },
   {
     id: 'meta-cib-pakistan',
@@ -215,6 +249,14 @@ const externalSources: ResearchSource[] = [
     access: 'Open indicators',
     url: 'https://github.com/facebook/threat-research/blob/main/indicators/meta-h1-2026-pakistan-based-cib-network.md',
     tags: ['meta', 'cib', 'influence operations', 'facebook', 'instagram', 'advertising'],
+    example: {
+      label: 'ILLUSTRATIVE AD TRAIL',
+      title: 'The advert is only the surface',
+      text: 'A paid post may look like an ordinary advert. Accounts, Pages, Instagram assets, and distribution signals can show how a public message sits inside a larger coordination pattern.',
+      fields: [{ label: 'surface', value: 'post + paid placement' }, { label: 'inspect', value: 'account · Page · audience' }, { label: 'question', value: 'which service enabled reach?' }],
+      note: 'This is a stylised example, not a reproduced Meta asset. Open the original report for documented indicators.',
+      accent: 'pink',
+    },
   },
   {
     id: 'graphika-cheap-tricks',
@@ -226,6 +268,14 @@ const externalSources: ResearchSource[] = [
     access: 'Public summary; full material may be gated',
     url: 'https://www.graphika.com/reports/cheap-tricks',
     tags: ['graphika', 'reporting', 'ai', 'influence operations', 'network analysis', 'attribution'],
+    example: {
+      label: 'ILLUSTRATIVE REPORT VIEW',
+      title: 'Reporting connects the fragments',
+      text: 'A research report can bring platform traces, timing, attribution indicators, and cross-platform movement into one interpretable account without making every connection equally certain.',
+      fields: [{ label: 'combine', value: 'traces + timing + context' }, { label: 'compare', value: 'platforms · accounts · narratives' }, { label: 'question', value: 'what is established?' }],
+      note: 'The preview describes the report’s analytical role; use the original publication for its findings and caveats.',
+      accent: 'teal',
+    },
   },
   {
     id: 'amazon-copurchase-network',
@@ -237,6 +287,14 @@ const externalSources: ResearchSource[] = [
     access: 'Open dataset',
     url: 'https://newsnap.stanford.edu/data/com-Amazon.html',
     tags: ['amazon', 'ecommerce', 'commerce stack', 'product network', 'stanford'],
+    example: {
+      label: 'ILLUSTRATIVE COMMERCE GRAPH',
+      title: 'Recommendation is a network too',
+      text: '“Customers who bought this item also bought” turns an ordinary shopping interface into a visible network of products and behaviour—the kind of stack that can surround a much smaller information-operation trace.',
+      fields: [{ label: 'surface', value: 'product recommendation' }, { label: 'connect', value: 'item → related item' }, { label: 'question', value: 'what does the stack make visible?' }],
+      note: 'The example paraphrases the dataset’s relationship type; open Stanford SNAP for the original data and methodology.',
+      accent: 'amber',
+    },
   },
   {
     id: 'ecommerce-dark-patterns',
@@ -248,6 +306,14 @@ const externalSources: ResearchSource[] = [
     access: 'Open repository',
     url: 'https://github.com/yamanalab/ec-darkpattern',
     tags: ['ecommerce', 'dark patterns', 'interfaces', 'persuasion', 'user behaviour'],
+    example: {
+      label: 'ILLUSTRATIVE INTERFACE TRACE',
+      title: 'A choice can be designed before it is made',
+      text: 'A brightly framed button, a preselected option, or a hurried checkout can steer behaviour without looking like an information operation. This adjacent dataset helps keep the commercial interface layer in view.',
+      fields: [{ label: 'surface', value: 'button · prompt · checkout' }, { label: 'inspect', value: 'choice architecture' }, { label: 'question', value: 'who benefits from the design?' }],
+      note: 'This is an explanatory mock-up, not a captured interface. Open the repository for the dataset and coding approach.',
+      accent: 'coral',
+    },
   },
 ];
 
@@ -361,6 +427,7 @@ export default function Home() {
   const [evidenceOnly, setEvidenceOnly] = useState(false);
   const [followed, setFollowed] = useState(false);
   const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const [exampleSourceId, setExampleSourceId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [toast, setToast] = useState('');
   const [agentMessage, setAgentMessage] = useState('');
@@ -381,6 +448,11 @@ export default function Home() {
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setExampleSourceId(null);
+        setEvidenceOpen(false);
+        setControlsOpen(false);
+      }
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         searchInputRef.current?.focus();
@@ -391,6 +463,7 @@ export default function Home() {
   }, []);
 
   const selected = nodeById(selectedId);
+  const exampleSource = externalSources.find((source) => source.id === exampleSourceId);
   const visibleNodeIds = useMemo(() => {
     const ids = new Set(['northline', 'lantern', 'service', 'greybox', 'longarc']);
     if (followed) {
@@ -445,6 +518,13 @@ export default function Home() {
     setSelectedId(targetId);
     setEvidenceOpen(true);
     setAgentMessage(`Evidence drawer opened for ${nodeById(targetId).label}.`);
+  }, []);
+
+  const openExample = useCallback((sourceId: string) => {
+    const source = externalSources.find((item) => item.id === sourceId);
+    if (!source) return;
+    setExampleSourceId(sourceId);
+    setAgentMessage(`Example preview opened for ${source.title}.`);
   }, []);
 
   const toggleVerified = useCallback(() => {
@@ -534,6 +614,7 @@ export default function Home() {
   const changeView = (nextView: View) => {
     setView(nextView);
     setEvidenceOpen(false);
+    setExampleSourceId(null);
     setMobileNavOpen(false);
   };
 
@@ -541,7 +622,7 @@ export default function Home() {
     <main className="app-shell">
       <header className="topbar">
         <div className="brand-lockup"><AppMark /><div><div className="brand-name">hyphosphere</div></div></div>
-        <div className="topbar-center"><div className="command-search-wrap"><div className="command-search"><Search size={16} /><input ref={searchInputRef} value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search objects and sources" aria-label="Search research objects and external sources" /><span className="keycap">⌘ K</span></div>{search.trim() && <div className="search-results" aria-label="Research search results"><div className="search-results-heading">RESEARCH INDEX · LOCAL + EXTERNAL</div>{searchResults.nodes.map((node) => <button key={node.id} className="search-result-row" onClick={() => { setSelectedId(node.id); setView('map'); setSearch(''); announce(`${node.label} selected in the relationship map.`); }}><span className="search-result-kind">OBJECT</span><span className="search-result-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small></span><ChevronRight size={14} /></button>)}{searchResults.sources.map((source) => <a key={source.id} className="search-result-row" href={source.url} target="_blank" rel="noreferrer"><span className="search-result-kind search-result-kind-source">SOURCE</span><span className="search-result-copy"><strong>{source.title}</strong><small>{source.provider} · {source.kind}</small></span><ExternalLink size={14} /></a>)}{!searchResults.nodes.length && !searchResults.sources.length && <div className="search-empty">No matching objects or sources. Try “troll,” “procurement,” “OCCRP,” or “ecommerce.”</div>}</div>}</div></div>
+        <div className="topbar-center"><div className="command-search-wrap"><div className="command-search"><Search size={16} /><input ref={searchInputRef} value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search objects and sources" aria-label="Search research objects and external sources" /><span className="keycap">⌘ K</span></div>{search.trim() && <div className="search-results" aria-label="Research search results"><div className="search-results-heading">RESEARCH INDEX · LOCAL + EXTERNAL</div>{searchResults.nodes.map((node) => <button key={node.id} className="search-result-row" onClick={() => { setSelectedId(node.id); setView('map'); setSearch(''); announce(`${node.label} selected in the relationship map.`); }}><span className="search-result-kind">OBJECT</span><span className="search-result-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small></span><ChevronRight size={14} /></button>)}{searchResults.sources.map((source) => <div key={source.id} className="search-result-row search-result-source"><span className="search-result-kind search-result-kind-source">SOURCE</span><span className="search-result-copy"><strong>{source.title}</strong><small>{source.provider} · {source.kind}</small></span><span className="search-result-actions"><button className="search-preview-button" onClick={() => { openExample(source.id); setSearch(''); }}>Example</button><a className="search-open-link" href={source.url} target="_blank" rel="noreferrer" aria-label={`Open original source for ${source.title}`}><ExternalLink size={14} /></a></span></div>)}{!searchResults.nodes.length && !searchResults.sources.length && <div className="search-empty">No matching objects or sources. Try “troll,” “procurement,” “OCCRP,” or “ecommerce.”</div>}</div>}</div></div>
         <div className="topbar-actions"><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} title={webmcpReady ? 'WebMCP ready' : 'WebMCP awaiting compatible browser'} /><span className="topbar-status">{webmcpReady ? 'agent link ready' : 'local corpus'}</span><div className="controls-wrap"><button className="avatar-button" onClick={() => setControlsOpen((open) => !open)} aria-expanded={controlsOpen} aria-label="Open Hyphosphere controls"><Compass size={15} /></button>{controlsOpen && <div className="controls-popover" aria-live="polite"><span>HYPHOSPHERE CONTROLS</span><strong>{webmcpReady ? 'WebMCP connection ready' : 'Deterministic corpus active'}</strong><button onClick={() => { setControlsOpen(false); announce('Controls closed. Your investigation remains in focus.'); }}>Close</button></div>}</div></div>
         <button className="mobile-menu" onClick={() => setMobileNavOpen((open) => !open)} aria-label="Toggle navigation"><PanelRight size={18} /></button>
       </header>
@@ -576,7 +657,7 @@ export default function Home() {
           <div className="orientation-panel"><div className="orientation-copy"><span className="eyebrow-label">START WITH ONE RELATIONSHIP</span><strong>{followed ? 'The shared layer is now visible.' : 'Trace Atlas Relay across two cases.'}</strong><p>{followed ? 'Atlas Relay has revealed two more objects. Check what supports each connection before you save the finding.' : 'Northline cohort and Lantern House tell different stories. Atlas Relay is the ordinary layer worth testing between them.'}</p><span className="orientation-agent-note">RESEARCH CONCEPTS = ideas to test · RESEARCH ARTIFACTS = sources to inspect</span></div><div className="orientation-steps"><div><b>01</b><span>Choose a clue<small>Atlas Relay is selected</small></span></div><div><b>02</b><span>Follow it<small>Reveal related objects</small></span></div><div><b>03</b><span>Check evidence<small>Keep uncertainty visible</small></span></div><div><b>04</b><span>Save a finding<small>Export the trail</small></span></div></div><button className="orientation-cta" onClick={() => { setView('thread'); followNode('service'); }}>{followed ? 'Continue the path' : 'Start with Atlas Relay'} <ChevronRight size={15} /></button></div>
           <div className="view-switcher" role="tablist" aria-label="Investigation views">{(['thread', 'map', 'terrain', 'evidence', 'compare'] as View[]).map((tab) => <button key={tab} className={view === tab ? 'is-active' : ''} onClick={() => changeView(tab)} role="tab" aria-selected={view === tab}>{tab === 'thread' ? 'Followed path' : tab === 'map' ? 'Relationship map' : tab === 'terrain' ? 'Source layers' : tab === 'evidence' ? 'Evidence' : 'Compare'}</button>)}<span className="view-switcher-hint"><Sparkles size={13} /> one investigation, many ways to see it</span></div>
           <div className="stage-content">
-            {view === 'terrain' ? <TerrainView onFollow={() => followNode('service')} onInspect={inspectTerrain} followed={followed} /> : view === 'evidence' ? <EvidenceView selected={selected} edges={edges} onOpen={openEvidence} onFollow={followNode} evidenceOnly={evidenceOnly} /> : view === 'compare' ? <CompareView onFollow={() => followNode('service')} onSelectCase={(id) => { setSelectedId(id); announce(`${nodeById(id).label} selected for comparison.`); }} /> : view === 'concepts' ? <CorpusView mode="concepts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onChangeMode={changeView} /> : view === 'artifacts' ? <CorpusView mode="artifacts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onChangeMode={changeView} /> : view === 'thread' ? <ThreadView selectedId={selectedId} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} /> : <MapView nodes={filteredNodes} edges={filteredEdges} selectedId={selectedId} visibleNodeIds={visibleNodeIds} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} />}
+            {view === 'terrain' ? <TerrainView onFollow={() => followNode('service')} onInspect={inspectTerrain} followed={followed} /> : view === 'evidence' ? <EvidenceView selected={selected} edges={edges} onOpen={openEvidence} onFollow={followNode} evidenceOnly={evidenceOnly} /> : view === 'compare' ? <CompareView onFollow={() => followNode('service')} onSelectCase={(id) => { setSelectedId(id); announce(`${nodeById(id).label} selected for comparison.`); }} /> : view === 'concepts' ? <CorpusView mode="concepts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onChangeMode={changeView} /> : view === 'artifacts' ? <CorpusView mode="artifacts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onChangeMode={changeView} /> : view === 'thread' ? <ThreadView selectedId={selectedId} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} /> : <MapView nodes={filteredNodes} edges={filteredEdges} selectedId={selectedId} visibleNodeIds={visibleNodeIds} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} />}
             <aside className="trail-panel"><div className="panel-overline"><span>INVESTIGATION TRAIL</span><span className="trail-count">{trail.length.toString().padStart(2, '0')}</span></div><div className="trail-line" /><div className="trail-items">{trail.map((item, index) => <div key={`${item.label}-${index}`} className={`trail-item ${item.active ? 'is-active' : ''}`}><span className="trail-node" /><div><strong>{item.label}</strong><small>{item.detail}</small></div><time>{item.time}</time></div>)}</div><div className="trail-next"><div className="next-kicker"><ArrowUpRight size={13} /><span>POSSIBLE NEXT DIRECTION</span></div><p>{followed ? 'Where else does this service appear?' : 'Follow the selected relationship to reveal what is next.'}</p><button onClick={() => followNode(selectedId)}>{followed ? 'Trace backwards' : 'Follow this'} <ChevronRight size={15} /></button></div><div className="agent-note"><div className="agent-note-heading"><span className="agent-pulse" /> AGENT EXTENSION</div><p>{agentMessage || 'An agent can extend the path through structured tools while you keep the evidentiary judgement.'}</p></div></aside>
           </div>
         </section>
@@ -585,6 +666,7 @@ export default function Home() {
       {evidenceOpen && <dialog open className="evidence-drawer" aria-label="Evidence inspection"><div className="drawer-head"><div><span className="eyebrow-label">WHY IS THIS CONNECTED?</span><h2>{selected.label}</h2></div><button className="icon-button" onClick={() => setEvidenceOpen(false)} aria-label="Close evidence drawer"><X size={17} /></button></div><div className="drawer-object"><div className={`object-icon object-${selected.accent}`}><NodeIcon kind={selected.kind} /></div><div><span>{selected.kind}</span><strong>{selected.source}</strong></div><EvidencePill state={selected.evidence} /></div><div className="drawer-section"><span className="drawer-label">BASIS</span><p>{selected.preview} {selected.evidence === 'disputed' ? 'This connection needs inspection before it can carry the investigation forward.' : 'The trail keeps this distinction visible as it expands.'}</p></div><div className="drawer-section"><span className="drawer-label">WHY THIS IS INCLUDED</span><p>{selected.inclusionReason}</p></div><div className="drawer-section"><span className="drawer-label">SUPPORTING MATERIAL</span><div className="source-stack"><div><FileText size={15} /><span>Research object preview<strong>{selected.source}</strong></span><span className="source-state">local corpus</span></div><div><Clock3 size={15} /><span>Capture context<strong>{selected.subtext}</strong></span><span className="source-state">retained</span></div></div></div><div className="drawer-section"><span className="drawer-label">PROVENANCE NOTE</span><div className="provenance-note"><CircleHelp size={15} /><p>Evidence class is preserved from the demo corpus. Inference is not promoted to verification by following the path.</p></div></div><div className="drawer-footer"><button className="quiet-button" onClick={() => followNode(selected.id)}><Link2 size={15} /> Follow this</button><button className="primary-button" onClick={saveDiscovery}><Bookmark size={15} /> Save discovery</button></div></dialog>}
       {toast && <output className="toast"><Check size={15} /> {toast}</output>}
       {saved && <div className="saved-card"><div className="saved-card-top"><span><Bookmark size={14} /> SAVED DISCOVERY</span><button onClick={() => setSaved(false)} aria-label="Dismiss saved discovery"><X size={14} /></button></div><strong>The service beneath the surface</strong><p>7 objects · 4 evidence states · trail preserved</p><button onClick={exportDiscovery}><Download size={14} /> Export Markdown</button></div>}
+      {exampleSource && <dialog open className="example-dialog" aria-label={`Example preview for ${exampleSource.title}`}><div className="example-dialog-card"><div className="example-dialog-head"><div><span className="eyebrow-label">EXAMPLE PREVIEW · {exampleSource.kind}</span><h2>{exampleSource.title}</h2></div><button className="icon-button" onClick={() => setExampleSourceId(null)} aria-label="Close example preview"><X size={17} /></button></div><p className="example-dialog-intro">{exampleSource.description}</p><div className={`example-artifact example-${exampleSource.example.accent}`}><div className="example-artifact-top"><span>{exampleSource.example.label}</span><span>EXPLANATORY MOCK-UP</span></div><strong>{exampleSource.example.title}</strong><p>{exampleSource.example.text}</p><div className="example-fields">{exampleSource.example.fields.map((field) => <div key={field.label}><span>{field.label}</span><strong>{field.value}</strong></div>)}</div></div><div className="example-dialog-note"><CircleHelp size={15} /><span>{exampleSource.example.note}</span></div><div className="example-dialog-actions"><button className="quiet-button" onClick={() => setExampleSourceId(null)}>Close preview</button><a className="primary-button" href={exampleSource.url} target="_blank" rel="noreferrer">Open original source <ExternalLink size={14} /></a></div></div></dialog>}
     </main>
   );
 }
@@ -605,9 +687,25 @@ function MapView(props: { nodes: ResearchNode[]; edges: ResearchEdge[]; selected
   return <div className="map-surface-shell"><div className="map-explainer"><div className="map-explainer-icon"><Network size={19} /></div><div className="map-explainer-copy"><span className="eyebrow-label">WHAT THIS NETWORK IS SHOWING</span><strong>An information operation can look highly visible while occupying only a tiny layer of a giant ecommerce stack.</strong><p>Atlas Relay is the small connective service being tested here—not the whole operation. The lines show where that layer touches cases, datasets, platform artefacts, and infrastructure, with uncertainty carried by every relationship.</p></div><div className="map-stack-model" aria-label="From visible public story to buried commercial infrastructure"><span className="map-stack-label">VISIBLE → BURIED</span><div className="stack-step stack-visible"><b>01</b><span>Public story / IO</span></div><div className="stack-step stack-service"><b>02</b><span>Shared service / Atlas Relay</span></div><div className="stack-step stack-infrastructure"><b>03</b><span>Giant ecommerce stack</span></div></div></div><MapCanvas {...props} /><aside className="map-inspector"><span className="eyebrow-label">SELECTED OBJECT</span><div className={`map-inspector-icon object-${selected.accent}`}><NodeIcon kind={selected.kind} /></div><strong>{selected.label}</strong><span>{selected.kind} · {selected.source}</span><EvidencePill state={selected.evidence} /><p>{selected.preview}</p><div className="map-inspector-actions"><button className="quiet-button" onClick={() => props.onOpenEvidence(selected.id)}>Inspect evidence</button><button className="follow-button" onClick={() => props.onFollow(selected.id)}><span className="follow-glyph"><ArrowUpRight size={14} /></span>Follow this</button></div></aside></div>;
 }
 
-function CorpusView({ mode, selectedId, onSelect, onOpenEvidence, onChangeMode }: { mode: 'concepts' | 'artifacts'; selectedId: string; onSelect: (id: string) => void; onOpenEvidence: (id: string) => void; onChangeMode: (mode: 'concepts' | 'artifacts') => void }) {
+function CorpusView({ mode, selectedId, onSelect, onOpenEvidence, onOpenExample, onChangeMode }: { mode: 'concepts' | 'artifacts'; selectedId: string; onSelect: (id: string) => void; onOpenEvidence: (id: string) => void; onOpenExample: (id: string) => void; onChangeMode: (mode: 'concepts' | 'artifacts') => void }) {
   const concepts = mode === 'concepts';
-  return <div className="corpus-view"><div className="surface-header"><div><span className="eyebrow-label">{concepts ? 'RESEARCH CONCEPTS' : 'RESEARCH ARTIFACTS'}</span><h2>{concepts ? 'The ideas that shape the investigation.' : 'The source objects you can inspect.'}</h2><p>{concepts ? 'Concepts are interpretive handles: they help a person recognise a pattern, but they are not evidence by themselves.' : 'Artifacts are the inspectable material behind a claim: cases, reports, datasets, platform captures, services, and infrastructure records.'}</p></div><div className="surface-header-meta"><strong>{concepts ? '04' : '07'}</strong><span>{concepts ? 'concept records' : 'artifact records'}</span></div></div>{!concepts && <div className="corpus-method-note"><div className="corpus-method-icon"><Database size={15} /></div><div><span className="eyebrow-label">HOW TO READ THIS INDEX</span><p>Each artifact is a source record, not a conclusion. Select one to inspect what was reported or captured, where it came from, and why it has been included.</p></div></div>}<div className="corpus-switch"><button className={concepts ? 'is-active' : ''} onClick={() => onChangeMode('concepts')}>Research concepts</button><button className={!concepts ? 'is-active' : ''} onClick={() => onChangeMode('artifacts')}>Research artifacts</button></div>{concepts ? <div className="concept-grid">{conceptRecords.map((record, index) => <article className={`concept-card concept-${record.accent}`} key={record.label}><div className="concept-index">0{index + 1}</div><div><strong>{record.label}</strong><p>{record.detail}</p><small>{record.note}</small></div></article>)}</div> : <div className="artifact-list">{nodes.map((node) => <button key={node.id} className={`artifact-row ${selectedId === node.id ? 'is-selected' : ''}`} onClick={() => { onSelect(node.id); onOpenEvidence(node.id); }} aria-label={`Open source record for ${node.label}`}><span className={`artifact-icon artifact-${node.accent}`}><NodeIcon kind={node.kind} /></span><span className="artifact-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small><p>{node.preview}</p><em>Why included: {node.inclusionReason}</em></span><EvidencePill state={node.evidence} /><ChevronRight size={15} /></button>)}</div>}{!concepts && <div className="external-source-shelf"><div className="external-source-shelf-head"><div><span className="eyebrow-label">EXTERNAL SOURCE INDEX</span><p>These links point to original datasets, databases, and reports. Hyphosphere keeps the source description and inclusion logic here; the external source remains the authority.</p></div><span>{externalSources.length.toString().padStart(2, '0')} linked sources</span></div><div className="external-source-list">{externalSources.map((source) => <a key={source.id} href={source.url} target="_blank" rel="noreferrer" className="external-source-card"><div><span>{source.kind}</span><strong>{source.title}</strong><small>{source.provider}</small><p>{source.description}</p><em>Why included: {source.whyIncluded}</em><small>{source.access}</small></div><ExternalLink size={15} /></a>)}</div></div>}<div className="corpus-note"><Database size={15} /><span><strong>Working index</strong>{concepts ? ' These concepts explain what the investigation is looking for.' : ' These artifacts are the current deterministic demo material; external sources are curated link-outs, not live imports.'}</span></div></div>;
+  return (
+    <div className="corpus-view">
+      <div className="surface-header">
+        <div>
+          <span className="eyebrow-label">{concepts ? 'RESEARCH CONCEPTS' : 'RESEARCH ARTIFACTS'}</span>
+          <h2>{concepts ? 'The ideas that shape the investigation.' : 'The source objects you can inspect.'}</h2>
+          <p>{concepts ? 'Concepts are interpretive handles: they help a person recognise a pattern, but they are not evidence by themselves.' : 'Artifacts are the inspectable material behind a claim: cases, reports, datasets, platform captures, services, and infrastructure records.'}</p>
+        </div>
+        <div className="surface-header-meta"><strong>{concepts ? '04' : '07'}</strong><span>{concepts ? 'concept records' : 'artifact records'}</span></div>
+      </div>
+      {!concepts && <div className="corpus-method-note"><div className="corpus-method-icon"><Database size={15} /></div><div><span className="eyebrow-label">HOW TO READ THIS INDEX</span><p>Each artifact is a source record, not a conclusion. Select one to inspect what was reported or captured, where it came from, and why it has been included.</p></div></div>}
+      <div className="corpus-switch"><button className={concepts ? 'is-active' : ''} onClick={() => onChangeMode('concepts')}>Research concepts</button><button className={!concepts ? 'is-active' : ''} onClick={() => onChangeMode('artifacts')}>Research artifacts</button></div>
+      {concepts ? <div className="concept-grid">{conceptRecords.map((record, index) => <article className={`concept-card concept-${record.accent}`} key={record.label}><div className="concept-index">0{index + 1}</div><div><strong>{record.label}</strong><p>{record.detail}</p><small>{record.note}</small></div></article>)}</div> : <div className="artifact-list">{nodes.map((node) => <button key={node.id} className={`artifact-row ${selectedId === node.id ? 'is-selected' : ''}`} onClick={() => { onSelect(node.id); onOpenEvidence(node.id); }} aria-label={`Open source record for ${node.label}`}><span className={`artifact-icon artifact-${node.accent}`}><NodeIcon kind={node.kind} /></span><span className="artifact-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small><p>{node.preview}</p><em>Why included: {node.inclusionReason}</em></span><EvidencePill state={node.evidence} /><ChevronRight size={15} /></button>)}</div>}
+      {!concepts && <div className="external-source-shelf"><div className="external-source-shelf-head"><div><span className="eyebrow-label">EXTERNAL SOURCE INDEX</span><p>These links point to original datasets, databases, and reports. Choose an example for a quick orientation, or open the original source to inspect the material directly.</p></div><span>{externalSources.length.toString().padStart(2, '0')} linked sources</span></div><div className="external-source-list">{externalSources.map((source) => <article key={source.id} className="external-source-card"><div><span>{source.kind}</span><strong>{source.title}</strong><small>{source.provider}</small><p>{source.description}</p><em>Why included: {source.whyIncluded}</em><small>{source.access}</small><div className="external-source-actions"><button className="source-example-button" onClick={() => onOpenExample(source.id)}><Eye size={13} /> Show example</button><a className="source-original-link" href={source.url} target="_blank" rel="noreferrer">Open original <ExternalLink size={13} /></a></div></div></article>)}</div></div>}
+      <div className="corpus-note"><Database size={15} /><span><strong>Working index</strong>{concepts ? ' These concepts explain what the investigation is looking for.' : ' These artifacts are the current deterministic demo material; external sources are curated link-outs, not live imports.'}</span></div>
+    </div>
+  );
 }
 
 function TerrainView({ onFollow, onInspect, followed }: { onFollow: () => void; onInspect: (label: string) => void; followed: boolean }) {
