@@ -541,6 +541,17 @@ body { overflow-x: hidden; }
   .map-view .node-card strong { font-size: 9px !important; }
 }
 
+/* Prevent the main surface and investigation trail from creating a hidden horizontal layout. */
+.stage-content { grid-template-columns: minmax(0, 1fr) minmax(0, 255px); }
+.stage-content > * { min-width: 0; max-width: 100%; }
+.trail-panel { min-width: 0; max-width: 100%; overflow: hidden; }
+.trail-item strong, .trail-item small { min-width: 0; overflow-wrap: anywhere; }
+
+@media (max-width: 1120px) {
+  .stage-content { grid-template-columns: minmax(0, 1fr); }
+  .trail-panel { width: 100%; }
+}
+
 /* SVG labels use the map's 100-unit coordinate system; keep them readable after stretching. */
 .edge-group text { font-size: 1.35px; letter-spacing: .01em; }
 .map-view .node-card { font-size: 10px; }
