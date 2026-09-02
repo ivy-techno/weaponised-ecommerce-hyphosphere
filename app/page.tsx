@@ -12,6 +12,7 @@ import {
   Database,
   Download,
   Eye,
+  ExternalLink,
   FileText,
   Filter,
   GitBranch,
@@ -46,6 +47,18 @@ type ResearchNode = {
   inclusionReason: string;
   subtext: string;
   accent: string;
+};
+
+type ResearchSource = {
+  id: string;
+  title: string;
+  provider: string;
+  kind: string;
+  description: string;
+  whyIncluded: string;
+  access: string;
+  url: string;
+  tags: string[];
 };
 
 type ResearchEdge = {
@@ -155,6 +168,86 @@ const nodes: ResearchNode[] = [
     inclusionReason: 'Included as infrastructure: it tests whether the visible pattern reaches a deeper technical layer, while keeping the match disputed.',
     subtext: 'Infrastructure record / disputed',
     accent: 'slate',
+  },
+];
+
+const externalSources: ResearchSource[] = [
+  {
+    id: 'ira-troll-archive',
+    title: 'Russian Troll Tweets archive',
+    provider: 'FiveThirtyEight / Clemson University',
+    kind: 'PUBLIC DATASET',
+    description: 'Nearly three million tweets from accounts connected to the Internet Research Agency, covering 2012–2018.',
+    whyIncluded: 'A public-facing influence-operation layer: it makes visible the scale and persistence of coordinated online activity.',
+    access: 'Open repository',
+    url: 'https://github.com/fivethirtyeight/russian-troll-tweets',
+    tags: ['political trolls', 'influence operations', 'twitter', 'ira', 'social media'],
+  },
+  {
+    id: 'occrp-aleph',
+    title: 'OCCRP Aleph',
+    provider: 'Organized Crime and Corruption Reporting Project',
+    kind: 'INVESTIGATIVE DATABASE',
+    description: 'A platform for searching public records, documents, leaks, and entity data, with relationship and timeline views.',
+    whyIncluded: 'A model for the future observatory backend: it can connect companies, people, documents, and investigations across heterogeneous sources.',
+    access: 'Public interface; some material requires access',
+    url: 'https://aleph.occrp.org/',
+    tags: ['occrp', 'aleph', 'companies', 'leaks', 'public records', 'investigative reporting'],
+  },
+  {
+    id: 'ocp-data-registry',
+    title: 'OCP Data Registry / OCDS',
+    provider: 'Open Contracting Partnership',
+    kind: 'DATA REGISTRY',
+    description: 'Public procurement datasets made available in the Open Contracting Data Standard format.',
+    whyIncluded: 'A route into the commercial and infrastructure layer: vendors, contracts, projects, and organisations can become mappable research objects.',
+    access: 'Open downloads',
+    url: 'https://ocp-data-registry.readthedocs.io/en/latest/',
+    tags: ['ocp', 'open contracting', 'procurement', 'vendors', 'contracts', 'infrastructure'],
+  },
+  {
+    id: 'meta-cib-pakistan',
+    title: 'Pakistan-based CIB network indicators',
+    provider: 'Meta Threat Research',
+    kind: 'PLATFORM INDICATORS',
+    description: 'Public indicators for a coordinated inauthentic behaviour network involving accounts, Pages, Instagram assets, and paid ads.',
+    whyIncluded: 'Connects campaign reporting to concrete platform artefacts and commercial distribution signals such as advertising spend.',
+    access: 'Open indicators',
+    url: 'https://github.com/facebook/threat-research/blob/main/indicators/meta-h1-2026-pakistan-based-cib-network.md',
+    tags: ['meta', 'cib', 'influence operations', 'facebook', 'instagram', 'advertising'],
+  },
+  {
+    id: 'graphika-cheap-tricks',
+    title: 'Cheap Tricks',
+    provider: 'Graphika Research',
+    kind: 'RESEARCH REPORT',
+    description: 'A report on AI-enabled influence operations, including cross-platform cases, attribution indicators, and network analysis.',
+    whyIncluded: 'Adds the reporting and analytical layer needed to interpret platform traces without treating a visual match as proof.',
+    access: 'Public summary; full material may be gated',
+    url: 'https://www.graphika.com/reports/cheap-tricks',
+    tags: ['graphika', 'reporting', 'ai', 'influence operations', 'network analysis', 'attribution'],
+  },
+  {
+    id: 'amazon-copurchase-network',
+    title: 'Amazon co-purchasing network',
+    provider: 'Stanford SNAP',
+    kind: 'COMMERCE NETWORK DATASET',
+    description: 'A product network built from Amazon’s “customers who bought this item also bought” relationships.',
+    whyIncluded: 'A commerce-stack baseline: it helps distinguish ordinary commercial network structure from a claim about information operations.',
+    access: 'Open dataset',
+    url: 'https://newsnap.stanford.edu/data/com-Amazon.html',
+    tags: ['amazon', 'ecommerce', 'commerce stack', 'product network', 'stanford'],
+  },
+  {
+    id: 'ecommerce-dark-patterns',
+    title: 'Dark patterns in e-commerce',
+    provider: 'Yuki Yada and collaborators',
+    kind: 'RELATED DATASET',
+    description: 'A text-based dataset for identifying interface patterns that steer people toward actions they did not intend.',
+    whyIncluded: 'A useful adjacent layer for examining how commercial interfaces shape attention, choice, and behaviour.',
+    access: 'Open repository',
+    url: 'https://github.com/yamanalab/ec-darkpattern',
+    tags: ['ecommerce', 'dark patterns', 'interfaces', 'persuasion', 'user behaviour'],
   },
 ];
 
@@ -310,12 +403,21 @@ export default function Home() {
   const filteredNodes = useMemo(
     () =>
       nodes.filter((node) => {
-        const matchesSearch = `${node.label} ${node.kind} ${node.source}`.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = `${node.label} ${node.kind} ${node.source} ${node.preview} ${node.inclusionReason}`.toLowerCase().includes(search.toLowerCase());
         const matchesEvidence = !evidenceOnly || node.evidence === 'verified';
         return matchesSearch && matchesEvidence;
       }),
     [evidenceOnly, search],
   );
+
+  const searchResults = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return { nodes: [], sources: [] };
+    return {
+      nodes: nodes.filter((node) => `${node.label} ${node.kind} ${node.source} ${node.preview} ${node.inclusionReason}`.toLowerCase().includes(query)).slice(0, 4),
+      sources: externalSources.filter((source) => `${source.title} ${source.provider} ${source.kind} ${source.description} ${source.whyIncluded} ${source.tags.join(' ')}`.toLowerCase().includes(query)).slice(0, 5),
+    };
+  }, [search]);
 
   const filteredEdges = useMemo(() => edges.filter((edge) => !evidenceOnly || edge.evidence === 'verified'), [evidenceOnly]);
 
@@ -398,6 +500,14 @@ export default function Home() {
       setAgentMessage('Terrain view opened: source ecology is now in focus.');
       return { ok: true, action, view: 'terrain' };
     }
+    if (action === 'search_research') {
+      const query = typeof input.query === 'string' ? input.query.trim() : '';
+      const normalizedQuery = query.toLowerCase();
+      const matchingNodes = nodes.filter((node) => `${node.label} ${node.kind} ${node.source} ${node.preview} ${node.inclusionReason}`.toLowerCase().includes(normalizedQuery));
+      const matchingSources = externalSources.filter((source) => `${source.title} ${source.provider} ${source.kind} ${source.description} ${source.whyIncluded} ${source.tags.join(' ')}`.toLowerCase().includes(normalizedQuery));
+      setSearch(query);
+      return { ok: true, action, query, objects: matchingNodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind, source: node.source })), externalSources: matchingSources.map((source) => ({ id: source.id, title: source.title, provider: source.provider, url: source.url })) };
+    }
     return { ok: false, error: 'Unknown action' };
   }, [followNode, openEvidence, saveDiscovery, toggleVerified]);
 
@@ -418,6 +528,7 @@ export default function Home() {
     modelContext.registerTool({ name: 'set_evidence_threshold', description: 'Change the evidence threshold for the shared investigation state.', inputSchema: { type: 'object', properties: { verifiedOnly: { type: 'boolean', description: 'Only show verified relationships.' } } } }, (input) => runAgentAction('set_evidence_threshold', input));
     modelContext.registerTool({ name: 'show_terrain', description: 'Switch the shared investigation to the source Terrain view.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('show_terrain'));
     modelContext.registerTool({ name: 'save_discovery', description: 'Save the active finding with its trail and evidence distinctions.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('save_discovery'));
+    modelContext.registerTool({ name: 'search_research', description: 'Search local research objects and the curated external source index, returning original links for external datasets and reports.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A research term, dataset name, provider, or source type.' } }, required: ['query'] } }, (input) => runAgentAction('search_research', input));
   }, [runAgentAction]);
 
   const changeView = (nextView: View) => {
@@ -430,7 +541,7 @@ export default function Home() {
     <main className="app-shell">
       <header className="topbar">
         <div className="brand-lockup"><AppMark /><div><div className="brand-name">hyphosphere</div></div></div>
-        <div className="topbar-center"><div className="command-search"><Search size={16} /><input ref={searchInputRef} value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search the terrain" aria-label="Search the terrain" /><span className="keycap">⌘ K</span></div></div>
+        <div className="topbar-center"><div className="command-search-wrap"><div className="command-search"><Search size={16} /><input ref={searchInputRef} value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search objects and sources" aria-label="Search research objects and external sources" /><span className="keycap">⌘ K</span></div>{search.trim() && <div className="search-results" aria-label="Research search results"><div className="search-results-heading">RESEARCH INDEX · LOCAL + EXTERNAL</div>{searchResults.nodes.map((node) => <button key={node.id} className="search-result-row" onClick={() => { setSelectedId(node.id); setView('map'); setSearch(''); announce(`${node.label} selected in the relationship map.`); }}><span className="search-result-kind">OBJECT</span><span className="search-result-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small></span><ChevronRight size={14} /></button>)}{searchResults.sources.map((source) => <a key={source.id} className="search-result-row" href={source.url} target="_blank" rel="noreferrer"><span className="search-result-kind search-result-kind-source">SOURCE</span><span className="search-result-copy"><strong>{source.title}</strong><small>{source.provider} · {source.kind}</small></span><ExternalLink size={14} /></a>)}{!searchResults.nodes.length && !searchResults.sources.length && <div className="search-empty">No matching objects or sources. Try “troll,” “procurement,” “OCCRP,” or “ecommerce.”</div>}</div>}</div></div>
         <div className="topbar-actions"><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} title={webmcpReady ? 'WebMCP ready' : 'WebMCP awaiting compatible browser'} /><span className="topbar-status">{webmcpReady ? 'agent link ready' : 'local corpus'}</span><div className="controls-wrap"><button className="avatar-button" onClick={() => setControlsOpen((open) => !open)} aria-expanded={controlsOpen} aria-label="Open Hyphosphere controls"><Compass size={15} /></button>{controlsOpen && <div className="controls-popover" aria-live="polite"><span>HYPHOSPHERE CONTROLS</span><strong>{webmcpReady ? 'WebMCP connection ready' : 'Deterministic corpus active'}</strong><button onClick={() => { setControlsOpen(false); announce('Controls closed. Your investigation remains in focus.'); }}>Close</button></div>}</div></div>
         <button className="mobile-menu" onClick={() => setMobileNavOpen((open) => !open)} aria-label="Toggle navigation"><PanelRight size={18} /></button>
       </header>
@@ -496,7 +607,7 @@ function MapView(props: { nodes: ResearchNode[]; edges: ResearchEdge[]; selected
 
 function CorpusView({ mode, selectedId, onSelect, onOpenEvidence, onChangeMode }: { mode: 'concepts' | 'artifacts'; selectedId: string; onSelect: (id: string) => void; onOpenEvidence: (id: string) => void; onChangeMode: (mode: 'concepts' | 'artifacts') => void }) {
   const concepts = mode === 'concepts';
-  return <div className="corpus-view"><div className="surface-header"><div><span className="eyebrow-label">{concepts ? 'RESEARCH CONCEPTS' : 'RESEARCH ARTIFACTS'}</span><h2>{concepts ? 'The ideas that shape the investigation.' : 'The source objects you can inspect.'}</h2><p>{concepts ? 'Concepts are interpretive handles: they help a person recognise a pattern, but they are not evidence by themselves.' : 'Artifacts are the inspectable material behind a claim: cases, reports, datasets, platform captures, services, and infrastructure records.'}</p></div><div className="surface-header-meta"><strong>{concepts ? '04' : '07'}</strong><span>{concepts ? 'concept records' : 'artifact records'}</span></div></div>{!concepts && <div className="corpus-method-note"><div className="corpus-method-icon"><Database size={15} /></div><div><span className="eyebrow-label">HOW TO READ THIS INDEX</span><p>Each artifact is a source record, not a conclusion. Select one to inspect what was reported or captured, where it came from, and why it has been included.</p></div></div>}<div className="corpus-switch"><button className={concepts ? 'is-active' : ''} onClick={() => onChangeMode('concepts')}>Research concepts</button><button className={!concepts ? 'is-active' : ''} onClick={() => onChangeMode('artifacts')}>Research artifacts</button></div>{concepts ? <div className="concept-grid">{conceptRecords.map((record, index) => <article className={`concept-card concept-${record.accent}`} key={record.label}><div className="concept-index">0{index + 1}</div><div><strong>{record.label}</strong><p>{record.detail}</p><small>{record.note}</small></div></article>)}</div> : <div className="artifact-list">{nodes.map((node) => <button key={node.id} className={`artifact-row ${selectedId === node.id ? 'is-selected' : ''}`} onClick={() => { onSelect(node.id); onOpenEvidence(node.id); }} aria-label={`Open source record for ${node.label}`}><span className={`artifact-icon artifact-${node.accent}`}><NodeIcon kind={node.kind} /></span><span className="artifact-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small><p>{node.preview}</p><em>Why included: {node.inclusionReason}</em></span><EvidencePill state={node.evidence} /><ChevronRight size={15} /></button>)}</div>}<div className="corpus-note"><Database size={15} /><span><strong>Working index</strong>{concepts ? ' These concepts explain what the investigation is looking for.' : ' These artifacts are the current deterministic demo material; a comprehensive research repository is the next ingestion layer.'}</span></div></div>;
+  return <div className="corpus-view"><div className="surface-header"><div><span className="eyebrow-label">{concepts ? 'RESEARCH CONCEPTS' : 'RESEARCH ARTIFACTS'}</span><h2>{concepts ? 'The ideas that shape the investigation.' : 'The source objects you can inspect.'}</h2><p>{concepts ? 'Concepts are interpretive handles: they help a person recognise a pattern, but they are not evidence by themselves.' : 'Artifacts are the inspectable material behind a claim: cases, reports, datasets, platform captures, services, and infrastructure records.'}</p></div><div className="surface-header-meta"><strong>{concepts ? '04' : '07'}</strong><span>{concepts ? 'concept records' : 'artifact records'}</span></div></div>{!concepts && <div className="corpus-method-note"><div className="corpus-method-icon"><Database size={15} /></div><div><span className="eyebrow-label">HOW TO READ THIS INDEX</span><p>Each artifact is a source record, not a conclusion. Select one to inspect what was reported or captured, where it came from, and why it has been included.</p></div></div>}<div className="corpus-switch"><button className={concepts ? 'is-active' : ''} onClick={() => onChangeMode('concepts')}>Research concepts</button><button className={!concepts ? 'is-active' : ''} onClick={() => onChangeMode('artifacts')}>Research artifacts</button></div>{concepts ? <div className="concept-grid">{conceptRecords.map((record, index) => <article className={`concept-card concept-${record.accent}`} key={record.label}><div className="concept-index">0{index + 1}</div><div><strong>{record.label}</strong><p>{record.detail}</p><small>{record.note}</small></div></article>)}</div> : <div className="artifact-list">{nodes.map((node) => <button key={node.id} className={`artifact-row ${selectedId === node.id ? 'is-selected' : ''}`} onClick={() => { onSelect(node.id); onOpenEvidence(node.id); }} aria-label={`Open source record for ${node.label}`}><span className={`artifact-icon artifact-${node.accent}`}><NodeIcon kind={node.kind} /></span><span className="artifact-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small><p>{node.preview}</p><em>Why included: {node.inclusionReason}</em></span><EvidencePill state={node.evidence} /><ChevronRight size={15} /></button>)}</div>}{!concepts && <div className="external-source-shelf"><div className="external-source-shelf-head"><div><span className="eyebrow-label">EXTERNAL SOURCE INDEX</span><p>These links point to original datasets, databases, and reports. Hyphosphere keeps the source description and inclusion logic here; the external source remains the authority.</p></div><span>{externalSources.length.toString().padStart(2, '0')} linked sources</span></div><div className="external-source-list">{externalSources.map((source) => <a key={source.id} href={source.url} target="_blank" rel="noreferrer" className="external-source-card"><div><span>{source.kind}</span><strong>{source.title}</strong><small>{source.provider}</small><p>{source.description}</p><em>Why included: {source.whyIncluded}</em><small>{source.access}</small></div><ExternalLink size={15} /></a>)}</div></div>}<div className="corpus-note"><Database size={15} /><span><strong>Working index</strong>{concepts ? ' These concepts explain what the investigation is looking for.' : ' These artifacts are the current deterministic demo material; external sources are curated link-outs, not live imports.'}</span></div></div>;
 }
 
 function TerrainView({ onFollow, onInspect, followed }: { onFollow: () => void; onInspect: (label: string) => void; followed: boolean }) {

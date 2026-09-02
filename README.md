@@ -20,8 +20,9 @@ The app registers these tools through `document.modelContext.registerTool(...)` 
 - `set_evidence_threshold` — switch between the full terrain and verified-only evidence.
 - `show_terrain` — open the source ecology view.
 - `save_discovery` — save the active finding with its trail and evidence states.
+- `search_research` — search local research objects and the curated external source index.
 
-The human controls and WebMCP handlers use the same deterministic domain actions. The demo corpus is intentionally local and reproducible; no live search, authentication, or unstable API is required.
+The human controls and WebMCP handlers use the same deterministic domain actions. The demo corpus and external source index are intentionally curated and reproducible; the source cards link to original datasets, databases, and reports without making the judging demo depend on live search, authentication, or an unstable API.
 
 ## Implemented in this prototype
 
@@ -31,12 +32,13 @@ The human controls and WebMCP handlers use the same deterministic domain actions
 - Verified, supported, inferred, and disputed evidence states.
 - Evidence inspection drawer with basis and provenance notes.
 - Deterministic demo corpus with reporting, archived webpages, datasets, platform artefacts, commercial services, and infrastructure records.
+- Curated external source index with original links, source descriptions, and inclusion rationales.
 - Saved Discovery state and Markdown export.
 - Responsive layout and reduced-motion support.
 
 ## Planned for the larger Hyphosphere Observatory
 
-Live corpus ingestion, authenticated private research materials, richer source previews, collaborative notebooks, production persistence, external archive integrations, and the wider Observatory research roadmap are future work. They are not represented as implemented in this prototype.
+Live corpus ingestion, authenticated private research materials, richer source previews, collaborative notebooks, production persistence, automatic external archive imports, and the wider Observatory research roadmap are future work. They are not represented as implemented in this prototype.
 
 ## Release checklist
 

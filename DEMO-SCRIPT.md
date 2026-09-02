@@ -26,11 +26,11 @@ Target length: 1 minute 55 seconds. Record at 100% zoom using the deployed Hypho
 
 **Say:** “The Relationship map shows the possible structure at once, with detail kept inside the frame. Evidence makes the next actions explicit: follow a relationship or inspect its sources. Verified, supported, inferred, and disputed remain distinct.”
 
-## 1:30–1:45 — WE concepts and WE artifacts
+## 1:30–1:45 — Research concepts and Research artifacts
 
 **Show:** Open the sidebar repository entries in turn.
 
-**Say:** “WE concepts are the ideas and patterns being tested. WE artifacts are the inspectable source objects behind them. Keeping those categories separate makes the system legible to a first-time user.”
+**Say:** “Research concepts are the ideas and patterns being tested. Research artifacts are the inspectable source objects behind them. In the artifact index, the external source shelf links outward to real datasets, databases, and reports while explaining why each source is included.”
 
 ## 1:45–1:55 — Save the finding
 
