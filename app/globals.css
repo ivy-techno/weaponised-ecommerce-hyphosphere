@@ -705,3 +705,23 @@ body { overflow-x: hidden; }
   .terrain-object-row { grid-template-columns: auto minmax(0, 1fr); }
   .terrain-object-action { grid-column: 2; justify-self: start; }
 }
+
+/* First-arrival framing makes the problem and the guided example explicit. */
+.problem-framing { min-width: 0; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr); gap: 18px; align-items: stretch; margin: 0 auto 22px; padding: 15px 17px; background: #e8f1ed; border: 1px solid #c9ddd5; border-radius: 11px; }
+.problem-framing-copy, .problem-framing-example { min-width: 0; }
+.problem-framing-copy { display: grid; align-content: center; }
+.problem-framing-copy .eyebrow-label { color: var(--teal-deep); }
+.problem-framing-copy > strong { display: block; margin-top: 6px; color: var(--ink); font-family: var(--display); font-size: 20px; line-height: 1.05; letter-spacing: -.05em; }
+.problem-framing-copy > p { max-width: 620px; margin: 7px 0 0; color: var(--ink-soft); font-size: 10px; line-height: 1.5; }
+.problem-framing-example { padding: 11px 12px; background: #f7fbf7; border: 1px solid #d4e4dd; border-radius: 8px; }
+.problem-framing-example > span { color: var(--amber); font-size: 8px; font-weight: 800; letter-spacing: .12em; }
+.problem-chain { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin: 9px 0 8px; }
+.problem-chain span { padding: 5px 6px; color: var(--teal-deep); background: #e2f0ea; border: 1px solid #cfe3da; border-radius: 5px; font-size: 8px; font-weight: 700; }
+.problem-chain i { color: var(--ink-faint); font-size: 10px; font-style: normal; }
+.problem-framing-example > p { margin: 0; color: var(--ink-soft); font-size: 9px; line-height: 1.4; }
+.problem-framing-example > button { display: inline-flex; align-items: center; gap: 4px; margin-top: 9px; padding: 0; color: var(--teal-deep); background: transparent; border: 0; font-size: 9px; font-weight: 800; cursor: pointer; }
+.problem-framing-example > button:hover, .problem-framing-example > button:focus-visible { text-decoration: underline; outline: none; }
+
+@media (max-width: 900px) {
+  .problem-framing { grid-template-columns: 1fr; gap: 12px; }
+}
