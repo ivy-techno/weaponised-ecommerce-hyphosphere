@@ -1,56 +1,43 @@
-# Hyphosphere — three-minute demo script
+# Hyphosphere — two-minute demo script
 
-Target length: 2 minutes 35 seconds. Use the deployed Hyphosphere URL for recording. Keep the browser at 100% zoom and start with the default Thread view.
+Target length: 1 minute 55 seconds. Record at 100% zoom using the deployed Hyphosphere URL. Start in the default **Followed path** view. The story strip is the opening line; do not skip it.
 
-## 0:00–0:15 — The hook
+## 0:00–0:20 — The challenge
 
-**Show:** The opening terrain with the Northline cohort selected.
+**Show:** The story strip and the “Find what is shared” opening.
 
-**Say:** “Hyphosphere is a research terrain for following relationships across different kinds of evidence. It keeps the path visible while leaving the judgement with the researcher.”
+**Say:** “A student researcher has a challenge: find and map the digital infrastructure enabling online information operations. Hyphosphere helps gather different kinds of traces and test the links between them. The visitor’s job is simple: choose a clue, follow the relationship, and check the evidence.”
 
-## 0:15–0:40 — Start with the ordinary
+## 0:20–0:45 — Start with Atlas Relay
 
-**Show:** Select **Northline cohort**, then point to the evidence legend and the Investigation Trail.
+**Show:** Click **Start with Atlas Relay**. Let the followed path appear.
 
-**Say:** “The starting object is ordinary: a cohort record. The surrounding terrain makes source classes and evidence states visible at the same time—verified, supported, inferred, and disputed.”
+**Say:** “Northline cohort and Lantern House tell different stories. Atlas Relay is the ordinary service layer worth testing between them. The Followed path view shows the sequence clearly: case, service, and supporting material.”
 
-## 0:40–1:05 — Follow the relationship
+## 0:45–1:10 — Inspect and follow
 
-**Show:** Click **Follow this**. Let Atlas Relay and Greybox traces appear, then show the trail update.
+**Show:** Click **Inspect evidence**, then use **Follow this** in the drawer or return to the path.
 
-**Say:** “Following a relationship changes the shared investigation state. Two objects are revealed because Atlas Relay recurs across source classes; the trail records how we got there.”
+**Say:** “Every object carries its source and evidence state. I can inspect why it is connected, then follow the relationship. Following does not turn an inference into a fact; it only extends the investigation trail.”
 
-## 1:05–1:30 — Inspect the basis
+## 1:10–1:30 — Map and Evidence
 
-**Show:** Open the evidence drawer with the question **WHY IS THIS CONNECTED?** Then switch to **Evidence**.
+**Show:** Open **Relationship map**, select a node, use the contained inspector, then open **Evidence**.
 
-**Say:** “Every connection has a basis and a place to inspect it. The drawer keeps provenance close to the object, and the Evidence view makes uncertainty explicit instead of flattening it.”
+**Say:** “The Relationship map shows the possible structure at once, with detail kept inside the frame. Evidence makes the next actions explicit: follow a relationship or inspect its sources. Verified, supported, inferred, and disputed remain distinct.”
 
-## 1:30–1:55 — Let weak evidence disappear
+## 1:30–1:45 — WE concepts and WE artifacts
 
-**Show:** Turn on the verified-only layer. Point out the disputed or inferred relationships that disappear.
+**Show:** Open the sidebar repository entries in turn.
 
-**Say:** “Verified-only is a threshold, not a conclusion. Attractive-looking connections can disappear, and that disappearance is itself a discovery.”
+**Say:** “WE concepts are the ideas and patterns being tested. WE artifacts are the inspectable source objects behind them. Keeping those categories separate makes the system legible to a first-time user.”
 
-## 1:55–2:15 — Compare cases
+## 1:45–1:55 — Save the finding
 
-**Show:** Open **Compare** and click **Follow shared layer**.
+**Show:** Return to the path, click **Save discovery**, then **Export Markdown**.
 
-**Say:** “Comparison keeps similarity from becoming certainty. The shared service is supported across cases, while the underlying relationship remains an investigative proposition.”
+**Say:** “The researcher can save the finding with its trail and evidence distinctions, then export a durable record.”
 
-## 2:15–2:30 — Change the terrain
+## WebMCP proof cutaway
 
-**Show:** Open **Terrain**, then return to Thread if needed.
-
-**Say:** “Terrain changes the question from ‘what connects?’ to ‘what kind of source ecology am I looking at?’ The investigation stays shared across views.”
-
-## 2:30–2:35 — Save the finding
-
-**Show:** Click **Save discovery**, then **Export Markdown**.
-
-**Say:** “The researcher can save the finding with its trail and evidence distinctions, then export a durable Markdown record.”
-
-## Optional WebMCP proof cutaway
-
-If recording in a WebMCP-compatible environment, show the agent invoking `follow_relationship` or `get_evidence`, then show the same human-facing state change. The important point is that the agent and the human controls use the same domain actions. If the recording environment cannot expose WebMCP calls, show the tool list in the public README and keep the product walkthrough as the primary demo.
-
+If recording in a WebMCP-compatible environment, show the agent invoking `follow_relationship` or `get_evidence`, then show the same visible state change. The key point is shared state: the agent extends the path, while the human decides what the evidence means.
