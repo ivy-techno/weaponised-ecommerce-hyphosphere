@@ -211,11 +211,16 @@ button { cursor: pointer; }
 .agent-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--violet); box-shadow: 0 0 0 4px #e5e0f1; }
 .connection-status-panel { margin-top: 9px; padding: 13px; background: #f8fbf7; border: 1px solid #c9dad4; border-radius: 8px; box-shadow: 0 8px 18px rgb(31 62 58 / 8%); animation: toast-in 180ms ease both; }
 .connection-status-panel.is-ready { background: #e8f5ef; border-color: #afd4c4; }
+.connection-status-popover { width: min(340px, calc(100vw - 32px)); position: absolute; top: calc(100% + 10px); right: 32px; z-index: 55; margin-top: 0; box-shadow: 0 16px 30px rgb(31 62 58 / 17%); }
 .connection-status-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .connection-status-head strong { color: var(--teal-deep); font-size: 9px; letter-spacing: .1em; }
 .connection-status-panel h3 { margin: 10px 0 5px; color: var(--ink); font-family: var(--display); font-size: 14px; letter-spacing: -.04em; }
 .connection-status-panel p { margin: 0; color: var(--ink-soft); font-size: 10px; line-height: 1.45; }
 .connection-status-close { margin-top: 11px; padding: 0; color: var(--teal-deep); background: transparent; border: 0; font-size: 9px; font-weight: 700; }
+
+@media (max-width: 640px) {
+  .connection-status-popover { right: 15px; }
+}
 
 .terrain-view, .evidence-view, .compare-view { min-width: 0; min-height: 680px; padding: 29px 29px 25px; background: rgb(251 253 249 / 75%); border: 1px solid #cbdad5; border-radius: 14px; box-shadow: var(--shadow); }
 .terrain-view-intro, .evidence-view-head, .compare-head { display: flex; justify-content: space-between; gap: 25px; }.eyebrow-label { color: var(--teal); }.terrain-view h2, .evidence-view h2, .compare-view h2 { max-width: 520px; margin: 10px 0 7px; font-family: var(--display); font-size: 28px; line-height: 1; letter-spacing: -.06em; }.terrain-view p, .evidence-view p, .compare-view p { max-width: 500px; margin: 0; color: var(--ink-soft); font-size: 12px; line-height: 1.5; }.terrain-total { display: grid; align-content: start; justify-items: end; }.terrain-total strong { color: var(--teal-deep); font-family: var(--display); font-size: 45px; line-height: .8; letter-spacing: -.09em; }.terrain-total span { margin-top: 8px; color: var(--ink-faint); font-size: 10px; }
