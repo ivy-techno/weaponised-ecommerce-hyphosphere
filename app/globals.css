@@ -91,6 +91,7 @@ button { cursor: pointer; }
 .search-empty { padding: 12px 9px; color: var(--ink-faint); font-size: 10px; line-height: 1.4; }
 .command-search { width: min(100%, 450px); height: 39px; gap: 10px; padding: 0 12px; background: #edf3ef; color: var(--ink-faint); border: 1px solid transparent; border-radius: 11px; transition: 180ms ease; }
 .command-search:focus-within { border-color: #b3cbc6; background: var(--white); box-shadow: 0 0 0 3px rgb(34 123 119 / 9%); }
+.command-search-mode { flex: 0 0 auto; padding: 4px 6px; color: var(--teal-deep); background: #dcebe6; border: 1px solid #c4ddd4; border-radius: 5px; font-size: 7px; font-weight: 800; letter-spacing: .1em; }
 .command-search input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 12px; }
 .command-search input::placeholder { color: #819698; }
 .keycap { padding: 3px 6px; border: 1px solid #d2dfdb; border-radius: 5px; font-size: 10px; color: var(--ink-faint); white-space: nowrap; }
@@ -1379,6 +1380,8 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .agent-brief-field { display: flex; align-items: baseline; gap: 8px; color: var(--teal-deep); }
 .agent-brief-field > span { font-size: 9px; font-weight: 800; letter-spacing: .13em; }
 .agent-brief-field > small { color: var(--ink-faint); font-size: 8px; }
+.agent-brief-distinction { margin: 6px 0 0; color: var(--ink-faint); font-size: 8px; line-height: 1.4; }
+.agent-brief-distinction strong { color: var(--teal-deep); font-weight: 800; }
 .agent-brief-scope { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
 .agent-brief-scope > span { color: var(--ink-faint); font-size: 8px; font-weight: 800; letter-spacing: .1em; }
 .agent-brief-scope > div { display: flex; flex-wrap: wrap; gap: 4px; }
