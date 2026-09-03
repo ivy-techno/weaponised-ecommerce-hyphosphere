@@ -1204,7 +1204,7 @@ export default function Home() {
   const [connectionStatusOpen, setConnectionStatusOpen] = useState(false);
   const [connectionStatusOrigin] = useState<'top'>('top');
   const soundContextRef = useRef<AudioContext | null>(null);
-  const webmcpReady = typeof document !== 'undefined' && Boolean((document as Document & { modelContext?: unknown }).modelContext);
+  const [webmcpReady, setWebmcpReady] = useState(false);
   useEffect(() => {
     try {
       if (window.localStorage.getItem('hyphosphere-sound-enabled') === 'false') setSoundEnabled(false);
@@ -1608,31 +1608,57 @@ export default function Home() {
     return { ok: false, error: 'Unknown action' };
   }, [agentBriefSnapshot, followNode, openEvidence, saveAgentBrief, saveDiscovery, saveSignal, signalFeedEntries, toggleVerified]);
 
+  const runAgentActionRef = useRef(runAgentAction);
   useEffect(() => {
+    runAgentActionRef.current = runAgentAction;
+  }, [runAgentAction]);
+  const webmcpRegistrationStartedRef = useRef(false);
+
+  useEffect(() => {
+    type WebMcpToolDefinition = {
+      name: string;
+      description: string;
+      inputSchema: Record<string, unknown>;
+      execute: (input?: Record<string, unknown>) => unknown;
+    };
     const documentWithModelContext = document as Document & {
       modelContext?: {
-        registerTool: (
-          definition: { name: string; description: string; inputSchema: Record<string, unknown> },
-          handler: (input: Record<string, unknown>) => unknown,
-        ) => void;
+        registerTool: (definition: WebMcpToolDefinition) => void | Promise<void>;
       };
     };
     const modelContext = documentWithModelContext.modelContext;
-    if (!modelContext?.registerTool) return;
+    if (!modelContext?.registerTool || webmcpRegistrationStartedRef.current) return;
 
-    modelContext.registerTool({ name: 'follow_relationship', description: 'Follow a relationship in the active Hyphosphere investigation and reveal the next research objects.', inputSchema: { type: 'object', properties: { nodeId: { type: 'string', description: 'The node to follow.' } } } }, (input) => runAgentAction('follow_relationship', input));
-    modelContext.registerTool({ name: 'get_evidence', description: 'Open the evidence drawer for a research object or relationship.', inputSchema: { type: 'object', properties: { nodeId: { type: 'string', description: 'The node to inspect.' } } } }, (input) => runAgentAction('get_evidence', input));
-    modelContext.registerTool({ name: 'set_evidence_threshold', description: 'Change the evidence threshold for the shared investigation state.', inputSchema: { type: 'object', properties: { verifiedOnly: { type: 'boolean', description: 'Only show verified relationships.' } } } }, (input) => runAgentAction('set_evidence_threshold', input));
-    modelContext.registerTool({ name: 'show_terrain', description: 'Switch the shared investigation to the source Terrain view.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('show_terrain'));
-    modelContext.registerTool({ name: 'save_discovery', description: 'Save the active finding with its trail and evidence distinctions.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('save_discovery'));
-    modelContext.registerTool({ name: 'draft_possible_output', description: 'Draft a cautious possible output from the active cluster: a suggestive cluster summary and a micro case study with related reporting links. This does not convert a hypothesis into a verified finding.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('draft_possible_output'));
-    modelContext.registerTool({ name: 'list_source_collections', description: 'List every linked database, dataset, report, and repository available in the Hyphosphere research index, optionally filtered to one ecommerce stack level. Returns original resource URLs and access notes; these are linked sources, not downloaded or imported records.', inputSchema: { type: 'object', properties: { stackLayer: { type: 'string', enum: stackLayerDetails.map((item) => item.layer), description: 'Optional ecommerce stack level to filter by.' } } } }, (input) => runAgentAction('list_source_collections', input));
-    modelContext.registerTool({ name: 'search_research', description: 'Search the selected Hyphosphere research scope and optional ecommerce stack level. Choose web for the link-ready web-source index, curated for local demonstration records, or both to cross-check them. Live web/database import is not connected in this proof of concept.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A research term, dataset name, provider, or source type.' }, scope: { type: 'string', enum: ['web', 'curated', 'both'], description: 'Search web, curated records, or both. Defaults to both.' }, stackLayer: { type: 'string', enum: stackLayerDetails.map((item) => item.layer), description: 'Optional stack level filter. Omit to search all six levels.' } }, required: ['query'] } }, (input) => runAgentAction('search_research', input));
-    modelContext.registerTool({ name: 'run_research_brief', description: 'Run the visible agent-assisted research brief, placing a small candidate set on screen for the researcher to inspect and retain. Use the source scope and ecommerce stack filter when useful; live import is not connected in this proof of concept.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A focused research question.' }, scope: { type: 'string', enum: ['web', 'curated', 'both'], description: 'Search web, curated records, or both. Defaults to both.' }, stackLayer: { type: 'string', enum: stackLayerDetails.map((item) => item.layer), description: 'Optional stack level filter.' } }, required: ['query'] } }, (input) => runAgentAction('search_research', input));
-    modelContext.registerTool({ name: 'save_agent_brief', description: 'Save the retained visible agent research brief to the device-local Hyphosphere notebook so it can be compared with existing demo assets.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('save_agent_brief'));
-    modelContext.registerTool({ name: 'publish_signal_feed', description: 'Publish current, link-backed headlines into the visible agent-mediated signal feed. Supply HTTPS source links, information-warfare labels, ecommerce stack positions, and a brief relevance note; the researcher can pause, inspect, and decide what to save.', inputSchema: { type: 'object', properties: { items: { type: 'array', items: { type: 'object', properties: { headline: { type: 'string' }, sourceTitle: { type: 'string' }, sourceKind: { type: 'string' }, sourceUrl: { type: 'string' }, freshness: { type: 'string' }, infowarLabel: { type: 'string' }, stackLayers: { type: 'array', items: { type: 'string', enum: stackLayerDetails.map((item) => item.layer) } }, relevance: { type: 'string' } }, required: ['headline', 'sourceTitle', 'sourceUrl'] } } }, required: ['items'] } }, (input) => runAgentAction('publish_signal_feed', input));
-    modelContext.registerTool({ name: 'save_signal_feed_item', description: 'Save one item from the active agent signal feed to the device-local notebook for later comparison.', inputSchema: { type: 'object', properties: { itemId: { type: 'string', description: 'The id of the signal item to retain.' } }, required: ['itemId'] } }, (input) => runAgentAction('save_signal_feed_item', input));
-  }, [runAgentAction]);
+    webmcpRegistrationStartedRef.current = true;
+    let cancelled = false;
+    const register = (definition: WebMcpToolDefinition) => Promise.resolve().then(() => modelContext.registerTool(definition));
+    const execute = (action: string) => async (input: Record<string, unknown> = {}) => runAgentActionRef.current(action, input);
+
+    void Promise.all([
+      register({ name: 'follow_relationship', description: 'Follow a relationship in the active Hyphosphere investigation and reveal the next research objects.', inputSchema: { type: 'object', properties: { nodeId: { type: 'string', description: 'The node to follow.' } }, additionalProperties: false }, execute: execute('follow_relationship') }),
+      register({ name: 'get_evidence', description: 'Open the evidence drawer for a research object or relationship.', inputSchema: { type: 'object', properties: { nodeId: { type: 'string', description: 'The node to inspect.' } }, additionalProperties: false }, execute: execute('get_evidence') }),
+      register({ name: 'set_evidence_threshold', description: 'Change the evidence threshold for the shared investigation state.', inputSchema: { type: 'object', properties: { verifiedOnly: { type: 'boolean', description: 'Only show verified relationships.' } }, additionalProperties: false }, execute: execute('set_evidence_threshold') }),
+      register({ name: 'show_terrain', description: 'Switch the shared investigation to the source Terrain view.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, execute: execute('show_terrain') }),
+      register({ name: 'save_discovery', description: 'Save the active finding with its trail and evidence distinctions.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, execute: execute('save_discovery') }),
+      register({ name: 'draft_possible_output', description: 'Draft a cautious possible output from the active cluster: a suggestive cluster summary and a micro case study with related reporting links. This does not convert a hypothesis into a verified finding.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, execute: execute('draft_possible_output') }),
+      register({ name: 'list_source_collections', description: 'List every linked database, dataset, report, and repository available in the Hyphosphere research index, optionally filtered to one ecommerce stack level. Returns original resource URLs and access notes; these are linked sources, not downloaded or imported records.', inputSchema: { type: 'object', properties: { stackLayer: { type: 'string', enum: stackLayerDetails.map((item) => item.layer), description: 'Optional ecommerce stack level to filter by.' } }, additionalProperties: false }, execute: execute('list_source_collections') }),
+      register({ name: 'search_research', description: 'Search the selected Hyphosphere research scope and optional ecommerce stack level. Choose web for the link-ready web-source index, curated for local demonstration records, or both to cross-check them. Live web/database import is not connected in this proof of concept.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A research term, dataset name, provider, or source type.' }, scope: { type: 'string', enum: ['web', 'curated', 'both'], description: 'Search web, curated records, or both. Defaults to both.' }, stackLayer: { type: 'string', enum: stackLayerDetails.map((item) => item.layer), description: 'Optional stack level filter. Omit to search all six levels.' } }, required: ['query'], additionalProperties: false }, execute: execute('search_research') }),
+      register({ name: 'run_research_brief', description: 'Run the visible agent-assisted research brief, placing a small candidate set on screen for the researcher to inspect and retain. Use the source scope and ecommerce stack filter when useful; live import is not connected in this proof of concept.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A focused research question.' }, scope: { type: 'string', enum: ['web', 'curated', 'both'], description: 'Search web, curated records, or both. Defaults to both.' }, stackLayer: { type: 'string', enum: stackLayerDetails.map((item) => item.layer), description: 'Optional stack level filter.' } }, required: ['query'], additionalProperties: false }, execute: execute('search_research') }),
+      register({ name: 'save_agent_brief', description: 'Save the retained visible agent research brief to the device-local Hyphosphere notebook so it can be compared with existing demo assets.', inputSchema: { type: 'object', properties: {}, additionalProperties: false }, execute: execute('save_agent_brief') }),
+      register({ name: 'publish_signal_feed', description: 'Publish current, link-backed headlines into the visible agent-mediated signal feed. Supply HTTPS source links, information-warfare labels, ecommerce stack positions, and a brief relevance note; the researcher can pause, inspect, and decide what to save.', inputSchema: { type: 'object', properties: { items: { type: 'array', items: { type: 'object', properties: { headline: { type: 'string' }, sourceTitle: { type: 'string' }, sourceKind: { type: 'string' }, sourceUrl: { type: 'string' }, freshness: { type: 'string' }, infowarLabel: { type: 'string' }, stackLayers: { type: 'array', items: { type: 'string', enum: stackLayerDetails.map((item) => item.layer) } }, relevance: { type: 'string' } }, required: ['headline', 'sourceTitle', 'sourceUrl'], additionalProperties: false } } }, required: ['items'], additionalProperties: false }, execute: execute('publish_signal_feed') }),
+      register({ name: 'save_signal_feed_item', description: 'Save one item from the active agent signal feed to the device-local notebook for later comparison.', inputSchema: { type: 'object', properties: { itemId: { type: 'string', description: 'The id of the signal item to retain.' } }, required: ['itemId'], additionalProperties: false }, execute: execute('save_signal_feed_item') }),
+    ]).then(() => {
+      if (!cancelled) setWebmcpReady(true);
+    }).catch((error: unknown) => {
+      webmcpRegistrationStartedRef.current = false;
+      if (!cancelled) setWebmcpReady(false);
+      console.error('WebMCP tool registration failed.', error);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const changeView = (nextView: View) => {
     if (typeof window !== 'undefined') {
