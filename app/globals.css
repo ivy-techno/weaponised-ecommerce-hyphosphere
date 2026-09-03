@@ -105,8 +105,10 @@ button { cursor: pointer; }
 .connection-dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; background: #b7c4c1; box-shadow: 0 0 0 4px #e9efec; }
 .connection-dot.is-ready { background: var(--teal); box-shadow: 0 0 0 4px #d8eee7; }
 .topbar-status { color: var(--ink-soft); font-size: 10px; letter-spacing: 0.04em; }
-.agent-status-link { padding: 0; color: var(--ink-soft); background: transparent; border: 0; text-align: left; }
+.agent-status-link { display: inline-flex; align-items: center; gap: 7px; padding: 5px 7px; color: var(--ink-soft); background: transparent; border: 1px solid transparent; border-radius: 999px; text-align: left; }
+.agent-status-link .connection-dot { flex: 0 0 auto; }
 .agent-status-link:hover, .agent-status-link:focus-visible, .agent-status-link.is-ready { color: var(--teal-deep); outline: none; }
+.agent-status-link:hover, .agent-status-link:focus-visible { background: #e8f2ed; border-color: #c9ded5; }
 .avatar-button { width: 31px; height: 31px; margin-left: 9px; color: var(--white); background: var(--teal-deep); border: 0; border-radius: 50%; font-size: 10px; font-weight: 700; }
 .mobile-menu { display: none; border: 0; background: transparent; color: var(--ink); }
 
