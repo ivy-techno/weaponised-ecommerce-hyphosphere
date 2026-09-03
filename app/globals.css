@@ -1306,6 +1306,12 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .agent-brief-scope-option { padding: 6px 8px; color: var(--ink-soft); background: rgb(255 255 255 / 58%); border: 1px solid #c9ddd5; border-radius: 6px; font-size: 8px; font-weight: 800; cursor: pointer; }
 .agent-brief-scope-option:hover, .agent-brief-scope-option:focus-visible, .agent-brief-scope-option.is-selected { color: #fff; background: var(--teal); border-color: var(--teal); outline: none; }
 .agent-brief-scope > small { color: var(--ink-faint); font-size: 8px; }
+.agent-brief-stack-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 7px; }
+.agent-brief-stack-filter > span { color: var(--ink-faint); font-size: 8px; font-weight: 800; letter-spacing: .1em; }
+.agent-brief-stack-filter > div { display: flex; flex-wrap: wrap; gap: 4px; }
+.agent-brief-stack-option { padding: 5px 7px; color: var(--ink-soft); background: rgb(255 255 255 / 42%); border: 1px solid #d2ddd5; border-radius: 5px; font-size: 7px; font-weight: 800; cursor: pointer; }
+.agent-brief-stack-option:hover, .agent-brief-stack-option:focus-visible, .agent-brief-stack-option.is-selected { color: var(--teal-deep); background: #f7efe0; border-color: #d0a860; outline: none; }
+.agent-brief-stack-filter > small { color: var(--ink-faint); font-size: 8px; }
 .agent-brief-controls { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; margin-top: 7px; }
 .agent-brief-controls input { min-width: 0; height: 36px; padding: 0 11px; color: var(--ink); background: #fbfdf9; border: 1px solid #c7dcd3; border-radius: 7px; font: inherit; font-size: 10px; outline: none; }
 .agent-brief-controls input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgb(44 143 135 / 13%); }
