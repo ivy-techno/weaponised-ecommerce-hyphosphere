@@ -1654,3 +1654,24 @@ button.stack-layer-evidence-row { cursor: pointer; }
   .agent-presentation-montage, .agent-presentation-stack-board, .agent-presentation-output-grid, .agent-presentation-sources { grid-template-columns: 1fr; }
   .agent-presentation-controls > * { flex: 1; justify-content: center; }
 }
+
+/* The branching mark carries the Hyphosphere identity into every research surface. */
+.main-stage { position: relative; isolation: isolate; }
+.main-stage > :not(.main-stage-identity) { position: relative; z-index: 1; }
+.main-stage-identity { position: absolute; top: 4px; right: 2%; z-index: 0; width: min(320px, 32vw); height: 150px; color: var(--teal); opacity: .2; pointer-events: none; }
+.main-stage-identity::after { content: ''; position: absolute; inset: 24% 8% 16% 20%; background: radial-gradient(circle, rgb(131 209 176 / 20%), transparent 68%); filter: blur(7px); }
+.branch-field { display: block; width: 100%; height: 100%; overflow: visible; }
+.branch-field-line { fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.1; stroke-dasharray: 180 180; stroke-dashoffset: 180; opacity: 0; animation: branch-field-line 12s ease-in-out infinite; }
+.branch-field-line-2 { animation-delay: .18s; }.branch-field-line-3 { animation-delay: .36s; }.branch-field-line-4 { animation-delay: .54s; }
+.branch-field-node { fill: #f0c97f; stroke: #fff9ef; stroke-width: 1; opacity: 0; transform-box: fill-box; transform-origin: center; animation: branch-field-node 12s ease-in-out infinite; }
+.branch-field-node-core { fill: currentColor; animation-delay: .58s; }
+.branch-field-node-1 { animation-delay: .86s; }.branch-field-node-2 { animation-delay: 1.04s; }.branch-field-node-3 { animation-delay: 1.22s; }.branch-field-node-4 { animation-delay: 1.4s; }.branch-field-node-5 { animation-delay: 1.58s; }
+.identity-view-map, .identity-view-terrain { color: var(--violet); }.identity-view-evidence, .identity-view-compare { color: var(--coral); }.identity-view-concepts, .identity-view-artifacts { color: var(--amber); }
+@keyframes branch-field-line { 0%, 5% { stroke-dashoffset: 180; opacity: 0; } 14%, 66% { stroke-dashoffset: 0; opacity: .82; } 78%, 89% { stroke-dashoffset: 180; opacity: 0; } 100% { stroke-dashoffset: 180; opacity: 0; } }
+@keyframes branch-field-node { 0%, 11% { opacity: 0; transform: scale(.25); } 18%, 66% { opacity: .9; transform: scale(1); } 78%, 89% { opacity: 0; transform: scale(.25); } 100% { opacity: 0; transform: scale(.25); } }
+@media (prefers-reduced-motion: reduce) {
+  .branch-field-line, .branch-field-node { animation: none; stroke-dashoffset: 0; opacity: .55; }
+}
+@media (max-width: 640px) {
+  .main-stage-identity { top: 0; right: -7%; width: 230px; height: 116px; opacity: .13; }
+}
