@@ -317,6 +317,10 @@ button { cursor: pointer; }
 /* Distinct reading surfaces: Thread is sequential; Map is spatial. */
 .thread-view, .map-view { min-width: 0; min-height: 680px; }
 .thread-view { padding: 27px 28px 24px; background: rgb(251 253 249 / 75%); border: 1px solid #cbdad5; border-radius: 14px; box-shadow: var(--shadow); }
+.thread-followed-note { display: flex; align-items: flex-start; gap: 9px; margin-top: 18px; padding: 11px 13px; color: var(--teal-deep); background: #e4f1eb; border: 1px solid #c8dfd5; border-radius: 8px; }
+.thread-followed-note > svg { flex: 0 0 auto; margin-top: 1px; }
+.thread-followed-note strong { display: block; font-size: 10px; }
+.thread-followed-note p { margin: 4px 0 0; color: var(--ink-soft); font-size: 10px; line-height: 1.4; }
 .surface-header { display: flex; justify-content: space-between; align-items: start; gap: 24px; }
 .surface-header h2 { max-width: 540px; margin: 10px 0 7px; font-family: var(--display); font-size: 28px; line-height: 1; letter-spacing: -.06em; }
 .surface-header p { max-width: 610px; margin: 0; color: var(--ink-soft); font-size: 12px; line-height: 1.5; }
