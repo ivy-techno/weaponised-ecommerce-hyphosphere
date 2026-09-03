@@ -1791,8 +1791,10 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .patchwork-area-panel { text-decoration: none; }
 
 /* Agent-mediated signal feed: a calm control column beside a pausable stream of link-backed leads. */
-.signal-feed { min-width: 0; display: grid; grid-template-columns: minmax(190px, .72fr) minmax(0, 2.1fr); gap: 12px; margin: 0 auto 18px; padding: 12px; background: linear-gradient(120deg, #eef7f1, #f4eef8 58%, #fff6df); border: 1px solid #c7ddd4; border-radius: 11px; box-shadow: 0 9px 22px rgb(47 81 75 / 7%); }
-.signal-feed-control { min-width: 0; display: grid; align-content: start; gap: 7px; padding: 10px 10px 9px; background: rgb(255 255 255 / 44%); border: 1px solid #d8e5de; border-radius: 8px; }
+.signal-feed { position: relative; min-width: 0; display: grid; grid-template-columns: minmax(210px, .72fr) minmax(0, 2.1fr); gap: 12px; margin: 12px auto 18px; padding: 12px; overflow: hidden; background: linear-gradient(120deg, #e7f5ed, #f1eaf7 58%, #fff0ce); border: 1px solid #b9d8ca; border-radius: 11px; box-shadow: 0 12px 28px rgb(47 81 75 / 10%); }
+.signal-feed::before { position: absolute; inset: 0 auto 0 0; width: 4px; content: ''; background: linear-gradient(#16827c, #eb9f3d, #8e73b7); }
+.signal-feed.is-agent-supplied { border-color: #5db9aa; box-shadow: 0 0 0 2px rgb(93 185 170 / 14%), 0 14px 30px rgb(47 81 75 / 12%); }
+.signal-feed-control { min-width: 0; display: grid; align-content: start; gap: 7px; padding: 12px 11px 10px; background: rgb(255 255 255 / 58%); border: 1px solid #c9dfd5; border-radius: 8px; }
 .signal-feed-control .eyebrow-label { color: var(--teal-deep); font-size: 8px; }
 .signal-feed-control h2 { margin: 0; color: var(--ink); font-family: var(--display); font-size: 18px; line-height: 1; letter-spacing: -.05em; }
 .signal-feed-control p { margin: 0; color: var(--ink-soft); font-size: 9px; line-height: 1.45; }
@@ -1802,8 +1804,11 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .signal-feed-control-status small { color: var(--ink-faint); font-size: 7px; line-height: 1.25; }
 .signal-feed-toggle { width: max-content; display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; color: var(--white); background: var(--teal-deep); border: 0; border-radius: 6px; font-size: 9px; font-weight: 800; }
 .signal-feed-toggle:hover, .signal-feed-toggle:focus-visible { background: #0d504d; outline: none; transform: translateY(-1px); }
+.signal-feed-agent-help { min-width: 0; padding-top: 6px; border-top: 1px solid #d8e5de; }
+.signal-feed-agent-help summary { color: var(--teal-deep); cursor: pointer; font-size: 8px; font-weight: 800; line-height: 1.3; }
+.signal-feed-agent-help p { margin-top: 6px; padding: 7px; color: #624e30; background: #fff3d8; border: 1px solid #ead8ad; border-radius: 5px; font-size: 8px; }
 .signal-feed-control-note { color: var(--ink-faint); font-size: 8px; line-height: 1.35; }
-.signal-feed-viewport { min-width: 0; height: 230px; overflow: hidden; padding: 8px; background: rgb(251 253 249 / 56%); border: 1px solid #cbded6; border-radius: 8px; }
+.signal-feed-viewport { min-width: 0; height: 250px; overflow: hidden; padding: 8px; background: rgb(251 253 249 / 70%); border: 1px solid #bdd8cc; border-radius: 8px; }
 .signal-feed-track { min-width: 0; display: grid; gap: 8px; }
 .signal-feed.is-active:not(.is-paused) .signal-feed-track { animation: signal-feed-scroll 34s linear infinite; }
 .signal-feed.is-paused .signal-feed-track { animation-play-state: paused; }
@@ -1846,10 +1851,12 @@ button.stack-layer-evidence-row { cursor: pointer; }
   .signal-feed-viewport { height: 215px; }
 }
 @media (max-width: 640px) {
-  .signal-feed { padding: 9px; }
+  .signal-feed { margin-top: 8px; padding: 9px; }
   .signal-feed-control { display: grid; grid-template-columns: 1fr; }
+  .signal-feed-control h2 { font-size: 16px; }
+  .signal-feed-control > p { font-size: 8px; }
   .signal-feed-toggle { grid-column: auto; grid-row: auto; }
-  .signal-feed-viewport { height: 260px; }
+  .signal-feed-viewport { height: 240px; }
   .signal-feed-item { grid-template-columns: 1fr; }
   .signal-feed-item-actions { flex-direction: row; align-items: center; }
   .signal-feed-headline { font-size: 12px; }

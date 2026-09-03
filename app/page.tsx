@@ -1130,15 +1130,17 @@ function AgentBriefSurface({ onOpenExample, onOpenCollection, onOpenEvidence, on
 
 function SignalFeed({ items, savedIds, active, paused, status, onToggleActive, onSave, onOpenExample }: { items: SignalFeedItem[]; savedIds: string[]; active: boolean; paused: boolean; status: string; onToggleActive: () => void; onSave: (item: SignalFeedItem) => void; onOpenExample: (sourceId: string) => void }) {
   const renderedItems = items.length ? [...items, ...items] : [];
-  const toggleLabel = !active ? 'Activate feed' : paused ? 'Resume feed' : 'Pause feed';
-  return <section className={`signal-feed ${active ? 'is-active' : ''} ${paused ? 'is-paused' : ''}`} aria-label="Agent mediated signal feed">
+  const agentSupplied = status.startsWith('AGENT SUPPLIED');
+  const toggleLabel = !active ? agentSupplied ? 'Start agent feed' : 'Start curated preview' : paused ? 'Resume feed' : 'Pause feed';
+  return <section id="live-agent-feed" className={`signal-feed ${active ? 'is-active' : ''} ${paused ? 'is-paused' : ''} ${agentSupplied ? 'is-agent-supplied' : 'is-curated'}`} aria-label="Live agent signal desk">
     <div className="signal-feed-control">
-      <span className="eyebrow-label">AGENT-MEDIATED FETCH</span>
-      <h2>Relevant headlines, one lead at a time.</h2>
-      <p>A connected agent can place current, link-backed reporting here, then classify each lead by information-warfare relevance and ecommerce stack position.</p>
-      <div className="signal-feed-control-status"><span className="live-dot" /><strong>{status}</strong><small>{items.length} link-ready leads · live fetch requires an agent</small></div>
+      <span className="eyebrow-label">LIVE AGENT SIGNAL DESK</span>
+      <h2>Watch the wider field arrive.</h2>
+      <p>A connected agent can publish current, directly linked reporting here and label each lead by information-warfare relevance and ecommerce-stack position.</p>
+      <div className="signal-feed-control-status" aria-live="polite"><span className="live-dot" /><strong>{status}</strong><small>{items.length} {agentSupplied ? 'current agent leads ready for review' : 'curated examples showing the live-feed format'}</small></div>
       <button type="button" className="signal-feed-toggle" onClick={onToggleActive} aria-pressed={active && !paused}>{active && !paused ? <Pause size={14} /> : <Play size={14} />}{toggleLabel}</button>
-      <small className="signal-feed-control-note">Hover or focus the headline field to pause motion while reading. Save a lead to the notebook for later comparison.</small>
+      <details className="signal-feed-agent-help"><summary>Ask the agent to refresh this feed</summary><p>“Find current, directly cited reporting relevant to information warfare and its enabling ecommerce stack, then publish the strongest leads to this page.”</p></details>
+      <small className="signal-feed-control-note">Pause—or hover over the newswire—to inspect a citation. Save only the leads you want to carry into the notebook.</small>
     </div>
     <div className="signal-feed-viewport">
       {renderedItems.length ? <div className="signal-feed-track">{renderedItems.map((item, index) => { const duplicate = index >= items.length; const saved = savedIds.includes(item.id); return <article className="signal-feed-item" key={`${item.id}-${index}`} aria-hidden={duplicate || undefined}><div className="signal-feed-item-copy"><div className="signal-feed-item-meta"><span>{item.freshness}</span><span>{item.sourceKind}</span></div><a className="signal-feed-headline" href={item.sourceUrl} target="_blank" rel="noreferrer" tabIndex={duplicate ? -1 : undefined}>{item.headline} <ExternalLink size={12} /></a><div className="signal-feed-tags"><span className="signal-feed-tag signal-feed-tag-infowar">{item.infowarLabel}</span>{item.stackLayers.slice(0, 3).map((layer) => <span className="signal-feed-tag signal-feed-tag-stack" key={layer}>{(stackLayerDetails.findIndex((record) => record.layer === layer) + 1).toString().padStart(2, '0')} / 06 · {layer}</span>)}</div><small className="signal-feed-relevance">{item.relevance}</small></div><div className="signal-feed-item-actions">{item.sourceId && <button type="button" onClick={() => onOpenExample(item.sourceId!)} tabIndex={duplicate ? -1 : undefined}>Citation</button>}<button type="button" onClick={() => onSave(item)} aria-pressed={saved} tabIndex={duplicate ? -1 : undefined}>{saved ? 'Saved' : 'Save lead'} <Bookmark size={12} /></button></div></article>; })}</div> : <div className="signal-feed-empty"><Globe2 size={18} /><strong>No agent leads yet.</strong><span>Activate the feed or ask the connected agent to publish link-backed headlines here.</span></div>}
@@ -1187,7 +1189,7 @@ export default function Home() {
   const [signalFeedEntries, setSignalFeedEntries] = useState<SignalFeedItem[]>(signalFeedItems);
   const [signalFeedActive, setSignalFeedActive] = useState(false);
   const [signalFeedPaused, setSignalFeedPaused] = useState(false);
-  const [signalFeedStatus, setSignalFeedStatus] = useState('CURATED LINK-READY LEADS');
+  const [signalFeedStatus, setSignalFeedStatus] = useState('CURATED STARTERS · ASK AGENT TO REFRESH');
   const [compareBriefId, setCompareBriefId] = useState<string | null>(null);
   const [presentationSnapshot, setPresentationSnapshot] = useState<AgentBriefSnapshot | null>(null);
   const [conceptDetailLabel, setConceptDetailLabel] = useState<string | null>(null);
@@ -1722,8 +1724,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <AgentBriefSurface onOpenExample={openExample} onOpenCollection={openCollection} onOpenEvidence={openEvidence} onOpenOutputs={() => changeView('outputs')} onSaveBrief={saveAgentBrief} onOpenPresentation={setPresentationSnapshot} agentRequest={agentBriefRequest} onBriefStateChange={handleBriefStateChange} />
           <SignalFeed items={signalFeedEntries} savedIds={savedSignalItems.map((item) => item.id)} active={signalFeedActive} paused={signalFeedPaused} status={signalFeedStatus} onToggleActive={toggleSignalFeed} onSave={saveSignal} onOpenExample={openExample} />
+          <AgentBriefSurface onOpenExample={openExample} onOpenCollection={openCollection} onOpenEvidence={openEvidence} onOpenOutputs={() => changeView('outputs')} onSaveBrief={saveAgentBrief} onOpenPresentation={setPresentationSnapshot} agentRequest={agentBriefRequest} onBriefStateChange={handleBriefStateChange} />
           <EvidenceRibbon onOpenExample={openExample} onOpenDatasets={() => changeView('artifacts')} />
           </> : <>
            {isActiveInvestigationView && <>
