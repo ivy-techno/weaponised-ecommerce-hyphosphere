@@ -353,6 +353,25 @@ const externalSources: ResearchSource[] = [
     },
   },
   {
+    id: 'social-links-crimewall',
+    title: 'SL Crimewall',
+    provider: 'Social Links',
+    kind: 'COMMERCIAL OSINT PLATFORM',
+    description: 'A commercial OSINT workspace combining structured source access, link analysis, graph/table/map views, automation, monitoring, and reporting.',
+    whyIncluded: 'Makes the commercial investigation-tool layer visible: a useful model of how data access, entity resolution, visualisation, workflow, and reporting can be packaged into one service.',
+    access: 'Public product overview; commercial platform',
+    url: 'https://sociallinks.io/products/sl-crimewall',
+    tags: ['social links', 'crimewall', 'osint', 'link analysis', 'graph analysis', 'data access', 'automation', 'monitoring', 'reporting', 'commercial tooling'],
+    example: {
+      label: 'ILLUSTRATIVE TOOL VIEW',
+      title: 'The investigator’s interface is part of the stack',
+      text: 'A platform can collect, connect, visualise, monitor, and report on open-source traces in one workspace. That capability is relevant here as a model of the commercial tooling layer—not as evidence that a particular operation used it.',
+      fields: [{ label: 'source access', value: 'open data + entities' }, { label: 'workbench', value: 'graph · table · map' }, { label: 'question', value: 'what does the tool make legible?' }],
+      note: 'This preview summarises the product’s public description; it is not a screenshot and does not imply the platform was used in any case.',
+      accent: 'teal',
+    },
+  },
+  {
     id: 'meta-cib-pakistan',
     title: 'Pakistan-based CIB network indicators',
     provider: 'Meta Threat Research',
@@ -491,6 +510,7 @@ const sourceStackLayers = (source: ResearchSource): StackLayer[] => {
   if (source.id === 'ira-troll-archive') return ['Visible story / reporting', 'Platforms & distribution', 'Data & brokerage'];
   if (source.id === 'occrp-aleph') return ['Data & brokerage', 'Interfaces & operations'];
   if (source.id === 'ocp-data-registry') return ['Commercial services', 'Data & brokerage'];
+  if (source.id === 'social-links-crimewall') return ['Commercial services', 'Data & brokerage', 'Interfaces & operations'];
   if (source.id === 'meta-cib-pakistan') return ['Platforms & distribution', 'Interfaces & operations'];
   if (source.id === 'graphika-cheap-tricks') return ['Visible story / reporting'];
   if (source.id === 'amazon-copurchase-network') return ['Platforms & distribution', 'Data & brokerage'];
@@ -505,7 +525,7 @@ type SourceVisualKind = 'social' | 'network' | 'record' | 'interface' | 'alert';
 const sourceVisualKind = (source: ResearchSource): SourceVisualKind => {
   if (source.id === 'ira-troll-archive' || source.id === 'meta-cib-pakistan') return 'social';
   if (source.id === 'amazon-copurchase-network' || source.id === 'graphika-cheap-tricks' || source.id === 'tactical-tech-influence-industry') return 'network';
-  if (source.id === 'ecommerce-dark-patterns') return 'interface';
+  if (source.id === 'ecommerce-dark-patterns' || source.id === 'social-links-crimewall') return 'interface';
   if (source.id === 'fbi-labor-trafficking-scam-alert') return 'alert';
   return 'record';
 };
@@ -546,6 +566,13 @@ const collectionProfiles: Record<string, CollectionProfile> = {
     recordShape: 'Buyers, vendors, awards, contracts, projects, values, and dates.',
     limitations: 'Fields and completeness depend on the publishing authority; procurement presence alone does not indicate misuse.',
     researchQuestion: 'What ordinary vendors, contracts, or infrastructure layers become visible when records are linked?',
+  },
+  'social-links-crimewall': {
+    scope: 'A commercial OSINT investigation workspace combining structured source access, link analysis, visualisation, automation, monitoring, and report export.',
+    dateRange: 'Current product overview; features may change',
+    recordShape: 'Search results, entity links, graph/table/map views, monitoring outputs, and exports.',
+    limitations: 'Vendor-described capabilities; access, coverage, pricing, and reproducibility require independent checking. Product marketing is not evidence of a particular operation.',
+    researchQuestion: 'What does a commercial investigation platform make visible, and what does its interface or data access leave opaque?',
   },
   'meta-cib-pakistan': {
     scope: 'Platform indicators describing accounts, Pages, Instagram assets, and paid-ad signals in a disclosed network.',
@@ -725,7 +752,7 @@ const terrainItems: TerrainLayer[] = [
   { label: 'Archived webpages', count: 2, detail: 'capture dates + origin', color: 'amber', icon: Archive, description: 'Captured pages preserve what a source or interface looked like at a particular moment.', role: 'Archives let a researcher inspect origin, timing, and disappearance rather than relying on memory.', objectIds: ['longarc'], sourceIds: ['disinfodex'] },
   { label: 'Datasets', count: 1, detail: '38 rows · 6 fields', color: 'violet', icon: Database, description: 'Structured rows let recurring entities, dates, and relationships be compared across cases.', role: 'A dataset can surface recurrence that is hard to see in one public story.', objectIds: ['greybox'], sourceIds: ['ira-troll-archive', 'ocp-data-registry', 'amazon-copurchase-network', 'ecommerce-dark-patterns'] },
   { label: 'Platform artefacts', count: 4, detail: 'screenshots + fragments', color: 'pink', icon: Layers2, description: 'Screenshots, fragments, ads, and platform disclosures show what users actually encountered.', role: 'These are the visible traces an operation leaves on a platform, not an explanation of the whole system.', objectIds: ['invite'], sourceIds: ['meta-cib-pakistan', 'disinfodex'] },
-  { label: 'Commercial services', count: 2, detail: 'service records', color: 'teal', icon: Globe2, description: 'Service records point to ordinary commercial layers that can recur beneath very different public stories.', role: 'The shared service is the small connective layer being tested in this proof of concept.', objectIds: ['service'], sourceIds: ['tactical-tech-influence-industry', 'amazon-copurchase-network'] },
+  { label: 'Commercial services', count: 3, detail: 'service records + tooling', color: 'teal', icon: Globe2, description: 'Service records point to ordinary commercial layers that can recur beneath very different public stories.', role: 'The shared service is the small connective layer being tested in this proof of concept.', objectIds: ['service'], sourceIds: ['tactical-tech-influence-industry', 'amazon-copurchase-network', 'social-links-crimewall'] },
   { label: 'Infrastructure', count: 1, detail: 'DNS observation', color: 'slate', icon: Network, description: 'DNS and hosting observations reach underneath a visible platform or message.', role: 'Infrastructure is where the investigation can test the deeper ecommerce stack without treating a match as proof.', objectIds: ['harbor'], sourceIds: [] },
 ];
 
