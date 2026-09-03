@@ -931,3 +931,15 @@ body { overflow-x: hidden; }
   .concept-dialog-actions > *, .stack-layer-dialog-actions > * { flex: 1; }
   .stack-learning-layer { grid-template-columns: 21px minmax(0, 1fr) auto; }
 }
+
+/* A quiet orientation cue appears only while the page has meaningful content below the fold. */
+.scroll-prompt { position: fixed; left: 50%; bottom: 15px; z-index: 34; display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; color: var(--ink-soft); background: rgb(248 251 247 / 94%); border: 1px solid #c9dad4; border-radius: 999px; box-shadow: 0 8px 20px rgb(24 49 52 / 12%); font-size: 9px; font-weight: 700; cursor: pointer; transform: translateX(-50%); animation: scroll-prompt-in 180ms ease both; }
+.scroll-prompt:hover, .scroll-prompt:focus-visible { color: var(--teal-deep); background: #fff; outline: 2px solid rgb(34 123 119 / 18%); outline-offset: 2px; }
+.scroll-prompt svg { color: var(--teal); animation: scroll-prompt-nudge 1.6s ease-in-out infinite; }
+@keyframes scroll-prompt-in { from { opacity: 0; transform: translate(-50%, 6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes scroll-prompt-nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+
+@media (max-width: 640px) {
+  .scroll-prompt { right: 12px; bottom: 10px; left: auto; transform: none; }
+  @keyframes scroll-prompt-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+}

@@ -2,6 +2,7 @@
 
 import {
   Archive,
+  ArrowDown,
   ArrowUpRight,
   Bookmark,
   Check,
@@ -606,6 +607,7 @@ export default function Home() {
   const [search, setSearch] = useState('');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(false);
+  const [scrollPromptVisible, setScrollPromptVisible] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const stageContentRef = useRef<HTMLDivElement>(null);
   const previousViewRef = useRef(view);
@@ -647,6 +649,30 @@ export default function Home() {
       previousViewRef.current = view;
     }
   }, [view]);
+
+  useEffect(() => {
+    const refreshScrollPrompt = () => {
+      const documentHeight = document.documentElement.scrollHeight;
+      const hasMoreBelow = documentHeight - window.innerHeight > 140;
+      const nearTop = window.scrollY < 110;
+      const nearBottom = window.scrollY + window.innerHeight >= documentHeight - 70;
+      const modalOpen = evidenceOpen || stackOpen || Boolean(collectionSourceId) || Boolean(exampleSourceId) || notebookOpen || Boolean(conceptDetailLabel) || Boolean(stackLayerDetailLabel);
+      setScrollPromptVisible(hasMoreBelow && nearTop && !nearBottom && !modalOpen && !mobileNavOpen);
+    };
+
+    refreshScrollPrompt();
+    const resizeObserver = new ResizeObserver(refreshScrollPrompt);
+    resizeObserver.observe(document.body);
+    window.addEventListener('scroll', refreshScrollPrompt, { passive: true });
+    window.addEventListener('resize', refreshScrollPrompt);
+    const frame = window.requestAnimationFrame(refreshScrollPrompt);
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('scroll', refreshScrollPrompt);
+      window.removeEventListener('resize', refreshScrollPrompt);
+      window.cancelAnimationFrame(frame);
+    };
+  }, [collectionSourceId, conceptDetailLabel, evidenceOpen, exampleSourceId, mobileNavOpen, notebookOpen, stackLayerDetailLabel, stackOpen, view]);
 
   const selected = nodeById(selectedId);
   const exampleSource = externalSources.find((source) => source.id === exampleSourceId);
@@ -887,6 +913,7 @@ export default function Home() {
 
       {evidenceOpen && <dialog open className="evidence-drawer" aria-label="Evidence inspection"><div className="drawer-head"><div><span className="eyebrow-label">WHY IS THIS CONNECTED?</span><h2>{selected.label}</h2></div><button className="icon-button" onClick={() => setEvidenceOpen(false)} aria-label="Close evidence drawer"><X size={17} /></button></div><div className="drawer-object"><div className={`object-icon object-${selected.accent}`}><NodeIcon kind={selected.kind} /></div><div><span>{selected.kind}</span><strong>{selected.source}</strong></div><EvidencePill state={selected.evidence} /></div><div className="drawer-stack-position"><span className="drawer-label">STACK POSITION</span><StackLayerPills layers={selected.stackLayers} /><p>The same actor or artefact can sit across more than one layer. This label describes where it appears in the teaching model; it is not a claim that the layer caused the operation.</p></div><div className="drawer-section"><span className="drawer-label">BASIS</span><p>{selected.preview} {selected.evidence === 'disputed' ? 'This connection needs inspection before it can carry the investigation forward.' : 'The trail keeps this distinction visible as it expands.'}</p></div><div className="drawer-section"><span className="drawer-label">WHY THIS IS INCLUDED</span><p>{selected.inclusionReason}</p></div><div className="drawer-section"><span className="drawer-label">SUPPORTING MATERIAL</span><div className="source-stack"><div><FileText size={15} /><span>Research object preview<strong>{selected.source}</strong></span><span className="source-state">local corpus</span></div><div><Clock3 size={15} /><span>Capture context<strong>{selected.subtext}</strong></span><span className="source-state">retained</span></div></div></div><div className="drawer-section"><span className="drawer-label">PROVENANCE NOTE</span><div className="provenance-note"><CircleHelp size={15} /><p>Evidence class is preserved from the demo corpus. Inference is not promoted to verification by following the path.</p></div></div><div className="drawer-footer"><button className="quiet-button" onClick={() => { setEvidenceOpen(false); if (!followed) followNode(selected.id); changeView('thread'); }}><Link2 size={15} /> {followed ? 'Open followed path' : 'Follow this'}</button><button className="primary-button" onClick={saveDiscovery}><Bookmark size={15} /> Save discovery</button></div></dialog>}
       {toast && <output className="toast"><Check size={15} /> {toast}</output>}
+      {scrollPromptVisible && <button type="button" className="scroll-prompt" onClick={() => { setScrollPromptVisible(false); window.scrollBy({ top: Math.min(window.innerHeight * 0.72, 520), behavior: 'smooth' }); }} aria-label="Scroll for more content"><ArrowDown size={14} /><span>Scroll for more…</span></button>}
       {saved && <div className="saved-card"><div className="saved-card-top"><span><Bookmark size={14} /> SAVED DISCOVERY</span><button onClick={() => setSaved(false)} aria-label="Dismiss saved discovery"><X size={14} /></button></div><strong>The service beneath the surface</strong><p>7 objects · 4 evidence states · trail preserved</p><button onClick={exportDiscovery}><Download size={14} /> Export Markdown</button></div>}
       {exampleSource && <dialog open className="example-dialog" aria-label={`Example preview for ${exampleSource.title}`}><div className="example-dialog-card"><div className="example-dialog-head"><div><span className="eyebrow-label">EXAMPLE PREVIEW · {exampleSource.kind}</span><h2>{exampleSource.title}</h2></div><button className="icon-button" onClick={() => setExampleSourceId(null)} aria-label="Close example preview"><X size={17} /></button></div><p className="example-dialog-intro">{exampleSource.description}</p><div className={`example-artifact example-${exampleSource.example.accent}`}><div className="example-artifact-top"><span>{exampleSource.example.label}</span><span>EXPLANATORY MOCK-UP</span></div><strong>{exampleSource.example.title}</strong><p>{exampleSource.example.text}</p><div className="example-fields">{exampleSource.example.fields.map((field) => <div key={field.label}><span>{field.label}</span><strong>{field.value}</strong></div>)}</div></div><div className="example-dialog-note"><CircleHelp size={15} /><span>{exampleSource.example.note}</span></div><div className="example-dialog-actions"><button className="quiet-button" onClick={() => setExampleSourceId(null)}>Close preview</button><a className="primary-button" href={exampleSource.url} target="_blank" rel="noreferrer">Open original source <ExternalLink size={14} /></a></div></div></dialog>}
       {stackOpen && <dialog open className="stack-dialog" aria-label="Giant ecommerce stack explainer"><div className="stack-dialog-card"><div className="stack-dialog-head"><div><span className="eyebrow-label">A TEACHING MODEL</span><h2>What is the giant ecommerce stack?</h2></div><button className="icon-button" onClick={() => setStackOpen(false)} aria-label="Close ecommerce stack explainer"><X size={17} /></button></div><p className="stack-dialog-intro">The stack is an assemblage of ordinary layers, not a single hidden machine. Some are legitimate businesses or public platforms that can be bent to misuse; others may be deliberately opaque, opportunistic, or exploitative. This proof of concept marks possibilities to investigate, not guilt by association.</p><div className="stack-assembly" aria-label="Possible layers of the ecommerce stack"><div className="stack-layer-row"><b>01</b><div><strong>Visible story &amp; reporting</strong><p>Posts, adverts, headlines, takedowns, and public narratives — the small layer most people encounter first.</p></div><span>what becomes visible</span></div><div className="stack-layer-row"><b>02</b><div><strong>Platforms &amp; distribution</strong><p>Social networks, marketplaces, ad delivery, recommendation, and account systems that carry content to people.</p></div><span>ordinary platform, possible misuse</span></div><div className="stack-layer-row"><b>03</b><div><strong>Commercial services</strong><p>Hosting, SaaS, account services, targeting, payment, and other businesses that may support routine work or harmful activity.</p></div><span>legitimate / dual-use</span></div><div className="stack-layer-row"><b>04</b><div><strong>Data &amp; brokerage</strong><p>Datasets, audience segments, identity signals, procurement records, and other material used to find or classify targets.</p></div><span>valuable because it travels</span></div><div className="stack-layer-row"><b>05</b><div><strong>Interfaces &amp; operations</strong><p>Dashboards, templates, automation, invitations, campaign tooling, and workflows that turn access into action.</p></div><span>where coordination happens</span></div><div className="stack-layer-row"><b>06</b><div><strong>Infrastructure</strong><p>Domains, DNS, CDNs, cloud, and other technical rails that can make an operation persistent or harder to see.</p></div><span>deepest visible trace</span></div></div><div className="stack-threshold-note"><Network size={15} /><div><span>THRESHOLDS TO WATCH</span><p>Compromise can happen at the crossings: visibility → distribution, data → targeting, service → operation, and infrastructure → persistence. A source may appear in more than one layer.</p></div></div><div className="stack-dialog-actions"><button className="quiet-button" onClick={() => setStackOpen(false)}>Close explainer</button><button className="primary-button" onClick={() => { setStackOpen(false); changeView('terrain'); }}>Open source layers <ChevronRight size={14} /></button></div></div></dialog>}
