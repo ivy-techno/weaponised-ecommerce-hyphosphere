@@ -90,6 +90,10 @@ type ResearchEdge = {
   label: string;
   evidence: EvidenceState;
   rationale: string;
+  scale: 'local' | 'regional' | 'transnational' | 'not yet mapped';
+  scaleFrame: 'micro' | 'meso' | 'macro' | 'unresolved';
+  timeWindow: string;
+  temporalSignal: string;
 };
 
 const nodes: ResearchNode[] = [
@@ -641,6 +645,10 @@ const edges: ResearchEdge[] = [
     label: 'uses',
     evidence: 'supported',
     rationale: 'A service record and a field note share the same account identifier.',
+    scale: 'regional',
+    scaleFrame: 'meso',
+    timeWindow: '2024',
+    temporalSignal: 'recurs across two regional cases',
   },
   {
     id: 'lantern-service',
@@ -649,6 +657,10 @@ const edges: ResearchEdge[] = [
     label: 'resembles',
     evidence: 'inferred',
     rationale: 'The pattern is similar, but the direct service link is not verified.',
+    scale: 'regional',
+    scaleFrame: 'meso',
+    timeWindow: '2023–2024',
+    temporalSignal: 'reappears as a comparison echo',
   },
   {
     id: 'service-greybox',
@@ -657,6 +669,10 @@ const edges: ResearchEdge[] = [
     label: 'appears in',
     evidence: 'verified',
     rationale: 'Atlas Relay appears in 11 rows of the Greybox traces dataset.',
+    scale: 'not yet mapped',
+    scaleFrame: 'unresolved',
+    timeWindow: '2021–2024',
+    temporalSignal: 'recurs in dataset rows',
   },
   {
     id: 'greybox-longarc',
@@ -665,6 +681,10 @@ const edges: ResearchEdge[] = [
     label: 'corroborates',
     evidence: 'verified',
     rationale: 'The dataset timeframe overlaps the archived reporting sequence.',
+    scale: 'not yet mapped',
+    scaleFrame: 'unresolved',
+    timeWindow: '2022–2024',
+    temporalSignal: 'overlaps in time; no growth inferred',
   },
   {
     id: 'service-invite',
@@ -673,6 +693,10 @@ const edges: ResearchEdge[] = [
     label: 'appears in',
     evidence: 'inferred',
     rationale: 'The interface fragment has a visual signature consistent with the service.',
+    scale: 'local',
+    scaleFrame: 'micro',
+    timeWindow: '2023–2024',
+    temporalSignal: 'candidate extension of the trace',
   },
   {
     id: 'invite-lantern',
@@ -681,6 +705,10 @@ const edges: ResearchEdge[] = [
     label: 'precedes',
     evidence: 'supported',
     rationale: 'Capture date places the fragment before the Lantern House interview.',
+    scale: 'regional',
+    scaleFrame: 'meso',
+    timeWindow: '2023–2024',
+    temporalSignal: 'earlier occurrence extends the sequence',
   },
   {
     id: 'longarc-harbor',
@@ -689,6 +717,10 @@ const edges: ResearchEdge[] = [
     label: 'may share',
     evidence: 'disputed',
     rationale: 'A DNS observation suggests a match, while the archive metadata disagrees.',
+    scale: 'not yet mapped',
+    scaleFrame: 'unresolved',
+    timeWindow: '2022–2024',
+    temporalSignal: 'conflict persists across records',
   },
 ];
 
@@ -724,6 +756,7 @@ const conceptRecords = [
   { label: 'Shared layer', detail: 'An ordinary service or platform sits beneath different public stories.', note: 'The connective proposition in this demo.', accent: 'amber', question: 'What ordinary commercial layer connects stories that look separate at the surface?', example: 'A hosted workflow can be legitimate business infrastructure and still become an important threshold for investigation when it recurs.', next: 'Use the map and Source layers to locate the connective service in the wider stack.' },
   { label: 'Evidence state', detail: 'Verified, supported, inferred, and disputed remain visibly different.', note: 'Uncertainty travels with the relationship.', accent: 'violet', question: 'How strong is this connection, and what kind of material carries it?', example: 'A repeated dataset row may be verified while the leap from that recurrence to coordinated action remains inferred.', next: 'Inspect the evidence drawer and preserve the distinction when saving a finding.' },
   { label: 'Structural comparison', detail: 'Cases can resemble one another without being the same case.', note: 'Similarity is not proof of a shared cause.', accent: 'coral', question: 'What is genuinely shared, and what only looks similar because the public story is incomplete?', example: 'Northline and Lantern House share an apparent service layer, but they do not automatically share an operator, intent, or cause.', next: 'Open Compare to place shared, absent, and unresolved material side by side.' },
+  { label: 'Scale + change', detail: 'A relationship has reach and a history.', note: 'Micro/local · meso/regional · macro/transnational.', accent: 'pink', question: 'Is this link local, regional, or transnational—and does it recur, expand, or change form over time?', example: 'A trace may begin as a local interface event, recur across regional cases, and later become transnational as actors, services, or platforms connect. This demo marks unresolved geography rather than guessing.', next: 'Read the scale and temporal signal beside each evidence relationship.' },
 ];
 
 const stackLayerDetails: Array<{ layer: StackLayer; shortLabel: string; detail: string; significance: string; accent: string }> = [
@@ -768,6 +801,11 @@ const nodeById = (id: string) => nodes.find((node) => node.id === id) ?? nodes[0
 function EvidencePill({ state }: { state: EvidenceState }) {
   const copy = evidenceCopy[state];
   return <span className={`evidence-pill evidence-${copy.color}`}>{copy.label}</span>;
+}
+
+function RelationshipContext({ edge }: { edge: ResearchEdge }) {
+  const scaleLabel = edge.scale === 'not yet mapped' ? 'scale not yet mapped' : `${edge.scaleFrame} / ${edge.scale}`;
+  return <span className={`relationship-context relationship-context-${edge.scaleFrame}`}><b>{scaleLabel}</b><small>{edge.timeWindow} · {edge.temporalSignal}</small></span>;
 }
 
 function NodeIcon({ kind }: { kind: string }) {
@@ -1245,7 +1283,7 @@ function EvidenceView({ selected, edges: allEdges, onOpen, onFollow, onOpenThrea
     previousSelectedRef.current = selected.id;
   }, [selected.id]);
 
-  return <div className="evidence-view"><div className="evidence-view-head"><div><span className="eyebrow-label">EVIDENCE LAYER</span><h2>Keep the distinction visible.</h2><p>Every connection has a status, a basis, and two clear next actions: follow the relationship or inspect its sources.</p></div><div ref={summaryRef} className="evidence-summary" aria-live="polite"><span>current focus</span><strong>{selected.label}</strong><EvidencePill state={selected.evidence} /><button className="quiet-button" onClick={() => followed ? onOpenThread() : onFollow(selected.id)}><Link2 size={14} /> {followed ? 'Open followed path' : 'Follow focus'}</button></div></div><div className="evidence-table"><div className="evidence-table-head"><span>RELATIONSHIP</span><span>STATUS</span><span>BASIS</span><span>ACTIONS</span></div>{shown.map((edge) => { const from = nodeById(edge.from); const to = nodeById(edge.to); const nextId = edge.from === selected.id ? edge.to : edge.from; return <div key={edge.id} className="evidence-row"><span className="evidence-relationship"><strong>{from.label}</strong><small>{edge.label}</small><strong>{to.label}</strong></span><EvidencePill state={edge.evidence} /><span className="evidence-basis">{edge.rationale}</span><span className="evidence-row-actions"><button onClick={() => followed ? onOpenThread() : onFollow(nextId)}>{followed ? 'Open path' : 'Follow'} <ChevronRight size={13} /></button><button onClick={() => onOpen(nextId)}>Inspect <CircleHelp size={13} /></button></span></div>; })}</div><div className="evidence-footnote"><CircleHelp size={15} /><span>Verified only removes attractive-looking connections that do not yet have direct support. That disappearance is a discovery too.</span></div></div>;
+  return <div className="evidence-view"><div className="evidence-view-head"><div><span className="eyebrow-label">EVIDENCE LAYER</span><h2>Keep the distinction visible.</h2><p>Every connection has a status, a basis, a scale, and a time signal. Follow the relationship or inspect its sources.</p></div><div ref={summaryRef} className="evidence-summary" aria-live="polite"><span>current focus</span><strong>{selected.label}</strong><EvidencePill state={selected.evidence} /><button className="quiet-button" onClick={() => followed ? onOpenThread() : onFollow(selected.id)}><Link2 size={14} /> {followed ? 'Open followed path' : 'Follow focus'}</button></div></div><div className="evidence-table"><div className="evidence-table-head"><span>RELATIONSHIP</span><span>STATUS</span><span>BASIS + SCALE / TIME</span><span>ACTIONS</span></div>{shown.map((edge) => { const from = nodeById(edge.from); const to = nodeById(edge.to); const nextId = edge.from === selected.id ? edge.to : edge.from; return <div key={edge.id} className="evidence-row"><span className="evidence-relationship"><strong>{from.label}</strong><small>{edge.label}</small><strong>{to.label}</strong></span><EvidencePill state={edge.evidence} /><span className="evidence-basis"><span>{edge.rationale}</span><RelationshipContext edge={edge} /></span><span className="evidence-row-actions"><button onClick={() => followed ? onOpenThread() : onFollow(nextId)}>{followed ? 'Open path' : 'Follow'} <ChevronRight size={13} /></button><button onClick={() => onOpen(nextId)}>Inspect <CircleHelp size={13} /></button></span></div>; })}</div><div className="evidence-footnote"><CircleHelp size={15} /><span>Scale describes reach: micro/local, meso/regional, or macro/transnational. The time signal records recurrence, expansion, or reconfiguration when documented; neither alone proves actor growth, intent, or responsibility.</span></div></div>;
 }
 
 function CompareView({ followed, selectedId, onFollow, onSelectCase }: { followed: boolean; selectedId: string; onFollow: () => void; onSelectCase: (id: string) => void }) {
