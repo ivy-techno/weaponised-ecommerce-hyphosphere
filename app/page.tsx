@@ -79,6 +79,7 @@ type EvidenceAttachment = {
   title: string;
   summary: string;
   fields: Array<{ label: string; value: string }>;
+  sample: { label: string; value: string };
   note: string;
 };
 
@@ -200,6 +201,32 @@ const nodes: ResearchNode[] = [
 ];
 
 const evidenceAttachments: Record<string, EvidenceAttachment> = {
+  northline: {
+    label: 'ATTACHED DEMO RECORD · CA-2024-04',
+    title: 'Northline cohort case note',
+    summary: 'A case bundle that gives the investigation a visible starting point: two regional accounts with a repeated onboarding pattern.',
+    fields: [
+      { label: 'identifier', value: 'northline · case 04' },
+      { label: 'observed in', value: '2 regional cases · field notes' },
+      { label: 'record shape', value: 'sequence · context · timestamps' },
+      { label: 'stack position', value: 'Visible story / reporting' },
+    ],
+    sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'onboarding step repeats before public messaging appears' },
+    note: 'Illustrative case note: it shows the kind of repeated surface pattern that can justify looking for deeper enabling layers.',
+  },
+  lantern: {
+    label: 'ATTACHED DEMO RECORD · CA-2023-11',
+    title: 'Lantern House comparison case',
+    summary: 'A second case with a different public story, retained to test whether a similar sequence recurs without assuming the cases share a cause.',
+    fields: [
+      { label: 'identifier', value: 'lantern-house · case 11' },
+      { label: 'observed in', value: 'interview log · 2023' },
+      { label: 'match basis', value: 'similar sequence · different public story' },
+      { label: 'stack position', value: 'Visible story / reporting' },
+    ],
+    sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'same shape, different names and public narrative' },
+    note: 'Illustrative comparison note: resemblance opens a question; it does not establish a shared operator, intent, or origin.',
+  },
   service: {
     label: 'ATTACHED DEMO RECORD · SR-2024-04',
     title: 'Atlas Relay service trace',
@@ -210,7 +237,60 @@ const evidenceAttachments: Record<string, EvidenceAttachment> = {
       { label: 'match basis', value: 'same account identifier · 11 matching rows' },
       { label: 'stack position', value: 'Commercial services · Interfaces & operations' },
     ],
+    sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'service account identifier recurs beside case and dataset references' },
     note: 'Demo attachment: it supports the relationship being tested without establishing an operator, motive, or causal chain.',
+  },
+  greybox: {
+    label: 'ATTACHED DEMO RECORD · DS-2024-21',
+    title: 'Greybox traces dataset extract',
+    summary: 'A small dataset view that makes recurrence visible across records which would otherwise look like separate cases.',
+    fields: [
+      { label: 'identifier', value: 'greybox · dataset v2.1' },
+      { label: 'observed in', value: '38 rows · 2021–2024' },
+      { label: 'match basis', value: '11 rows share Atlas Relay identifier' },
+      { label: 'stack position', value: 'Data & brokerage' },
+    ],
+    sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'row 11 · atlas-relay · Northline context · captured 2024' },
+    note: 'Illustrative dataset row: it explains the shape of the evidence without reproducing a source file or claiming that recurrence proves coordination.',
+  },
+  longarc: {
+    label: 'ATTACHED DEMO RECORD · RC-2022-18',
+    title: 'The Long Arc reporting capture',
+    summary: 'An archived public account that adds sequence and context to the investigation, while remaining indirect evidence about the deeper stack.',
+    fields: [
+      { label: 'identifier', value: 'long-arc · archive capture 18' },
+      { label: 'observed in', value: 'archived webpage · 2022' },
+      { label: 'match basis', value: 'sequence + service reference' },
+      { label: 'stack position', value: 'Visible story / reporting' },
+    ],
+    sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'headline · publication date · reported sequence · named service' },
+    note: 'Illustrative reporting capture: it shows how public journalism can anchor a timeline without being mistaken for direct technical evidence.',
+  },
+  invite: {
+    label: 'ATTACHED DEMO RECORD · PA-2023-07',
+    title: 'Invite fragment platform artefact',
+    summary: 'A small interface capture that may extend the trail backwards by showing how access, invitations, or workflow tooling appeared at an earlier point.',
+    fields: [
+      { label: 'identifier', value: 'invite-fragment · screenshot 07' },
+      { label: 'observed in', value: 'invitation flow · 2023' },
+      { label: 'match basis', value: 'visual / template similarity' },
+      { label: 'stack position', value: 'Platforms & distribution · Interfaces & operations' },
+    ],
+    sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'invite screen · account prompt · workflow marker' },
+    note: 'Illustrative screenshot description: a visual match can extend a research trail, but it remains an inference until corroborated.',
+  },
+  harbor: {
+    label: 'ATTACHED DEMO RECORD · IN-2024-09',
+    title: 'Quiet Harbor CDN observation',
+    summary: 'A deeper infrastructure trace testing whether the visible pattern reaches a shared technical rail; one source currently contradicts the match.',
+    fields: [
+      { label: 'identifier', value: 'quiet-harbor · infrastructure record' },
+      { label: 'observed in', value: 'hostname + CDN resolution · 2024' },
+      { label: 'match basis', value: 'shared endpoint candidate' },
+      { label: 'stack position', value: 'Infrastructure' },
+    ],
+    sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'CNAME → quiet-harbor · source conflict retained' },
+    note: 'Disputed infrastructure example: a technical overlap is worth checking, but the conflict stays visible and no attribution is implied.',
   },
 };
 
@@ -1022,7 +1102,7 @@ function EvidenceCardStack({ selected, cardIds, connected, lit, followed, onSele
   const statusLabel = lit ? 'CONTINUOUS TRACE' : connected ? 'LINKED · OPEN QUESTION' : 'BUILD THE STACK';
   const statusText = lit ? 'A common service and complete stack positions continue across these cards, so the route lights up.' : connected ? 'The cards continue through the map, but at least one relationship remains uncertain.' : 'Open another connected record to place a new card on top and compare its stack position.';
 
-  return <dialog open className="evidence-drawer" aria-label="Evidence inspection"><div className="drawer-head"><div><span className="eyebrow-label">WHY IS THIS CONNECTED?</span><h2>{selected.label}</h2></div><button className="icon-button" onClick={onClose} aria-label="Close evidence drawer"><X size={17} /></button></div><section className={`evidence-card-stack ${lit ? 'is-lit' : connected ? 'is-candidate' : ''}`} aria-label="Evidence card stack"><div className="evidence-card-stack-head"><span>EVIDENCE CARD STACK</span><small>{cards.length} card{cards.length === 1 ? '' : 's'} · newest on top</small></div><div className="evidence-card-stack-cards">{visibleCards.map((card, index) => { const isTop = card.id === selected.id; return <button type="button" key={card.id} className={`evidence-card-peek evidence-card-peek-${card.accent} ${isTop ? 'is-top' : ''}`} style={{ zIndex: index + 1 }} onClick={() => onSelectCard(card.id)} aria-current={isTop ? 'true' : undefined}><span className="evidence-card-peek-index">{(index + 1).toString().padStart(2, '0')}</span><span className="evidence-card-peek-copy"><strong>{card.label}</strong><small>{card.stackLayers.join(' · ')}</small></span><span className="evidence-card-peek-status">{isTop ? 'FRONT' : 'PEEK'}</span></button>; })}</div><div className={`evidence-card-stack-status ${lit ? 'is-lit' : connected ? 'is-candidate' : ''}`}><Sparkles size={14} /><div><span>{statusLabel}</span><p>{statusText}</p></div></div><p className="evidence-card-stack-note">Stack colour and position remain visible beneath the front card. A lit route is a navigable research lead, not proof of one operator or intent.</p></section><div className="drawer-object"><div className={`object-icon object-${selected.accent}`}><NodeIcon kind={selected.kind} /></div><div><span>{selected.kind}</span><strong>{selected.source}</strong></div><EvidencePill state={selected.evidence} /></div><div className="drawer-stack-position"><span className="drawer-label">STACK POSITION</span><StackLayerPills layers={selected.stackLayers} /><p>The same actor or artefact can sit across more than one layer. This label describes where it appears in the teaching model; it is not a claim that the layer caused the operation.</p></div>{attachment && <div className="drawer-section"><span className="drawer-label">ATTACHED EXAMPLE</span><div className="evidence-attachment"><div className="evidence-attachment-head"><span>{attachment.label}</span><EvidencePill state={selected.evidence} /></div><strong>{attachment.title}</strong><p>{attachment.summary}</p><div className="evidence-attachment-grid">{attachment.fields.map((field) => <div key={field.label}><span>{field.label}</span><strong>{field.value}</strong></div>)}</div><div className="evidence-attachment-note"><CircleHelp size={14} /><span>{attachment.note}</span></div></div></div>}<div className="drawer-section"><span className="drawer-label">BASIS</span><p>{selected.preview} {selected.evidence === 'disputed' ? 'This connection needs inspection before it can carry the investigation forward.' : 'The trail keeps this distinction visible as it expands.'}</p></div><div className="drawer-section"><span className="drawer-label">WHY THIS IS INCLUDED</span><p>{selected.inclusionReason}</p></div><div className="drawer-section"><span className="drawer-label">SUPPORTING MATERIAL</span><div className="source-stack"><div><FileText size={15} /><span>Research object preview<strong>{selected.source}</strong></span><span className="source-state">local corpus</span></div><div><Clock3 size={15} /><span>Capture context<strong>{selected.subtext}</strong></span><span className="source-state">retained</span></div></div></div><div className="drawer-section"><span className="drawer-label">PROVENANCE NOTE</span><div className="provenance-note"><CircleHelp size={15} /><p>Evidence class is preserved from the demo corpus. Inference is not promoted to verification by following the path.</p></div></div><div className="drawer-footer"><button className="quiet-button" onClick={() => { onClose(); if (!followed) onFollow(selected.id); }}><Link2 size={15} /> {followed ? 'Open followed path' : 'Follow this'}</button><button className="primary-button" onClick={onSave}><Bookmark size={15} /> Save discovery</button></div></dialog>;
+  return <dialog open className="evidence-drawer" aria-label="Evidence inspection"><div className="drawer-head"><div><span className="eyebrow-label">WHY IS THIS CONNECTED?</span><h2>{selected.label}</h2></div><button className="icon-button" onClick={onClose} aria-label="Close evidence drawer"><X size={17} /></button></div><section className={`evidence-card-stack ${lit ? 'is-lit' : connected ? 'is-candidate' : ''}`} aria-label="Evidence card stack"><div className="evidence-card-stack-head"><span>EVIDENCE CARD STACK</span><small>{cards.length} card{cards.length === 1 ? '' : 's'} · newest on top</small></div><div className="evidence-card-stack-cards">{visibleCards.map((card, index) => { const isTop = card.id === selected.id; return <button type="button" key={card.id} className={`evidence-card-peek evidence-card-peek-${card.accent} ${isTop ? 'is-top' : ''}`} style={{ zIndex: index + 1 }} onClick={() => onSelectCard(card.id)} aria-current={isTop ? 'true' : undefined}><span className="evidence-card-peek-index">{(index + 1).toString().padStart(2, '0')}</span><span className="evidence-card-peek-copy"><strong>{card.label}</strong><small>{card.stackLayers.join(' · ')}</small></span><span className="evidence-card-peek-status">{isTop ? 'FRONT' : 'PEEK'}</span></button>; })}</div><div className={`evidence-card-stack-status ${lit ? 'is-lit' : connected ? 'is-candidate' : ''}`}><Sparkles size={14} /><div><span>{statusLabel}</span><p>{statusText}</p></div></div><p className="evidence-card-stack-note">Stack colour and position remain visible beneath the front card. A lit route is a navigable research lead, not proof of one operator or intent.</p></section><div className="drawer-object"><div className={`object-icon object-${selected.accent}`}><NodeIcon kind={selected.kind} /></div><div><span>{selected.kind}</span><strong>{selected.source}</strong></div><EvidencePill state={selected.evidence} /></div><div className="drawer-stack-position"><span className="drawer-label">STACK POSITION</span><StackLayerPills layers={selected.stackLayers} /><p>The same actor or artefact can sit across more than one layer. This label describes where it appears in the teaching model; it is not a claim that the layer caused the operation.</p></div>{attachment && <div className="drawer-section"><span className="drawer-label">ATTACHED EXAMPLE</span><div className="evidence-attachment"><div className="evidence-attachment-head"><span>{attachment.label}</span><EvidencePill state={selected.evidence} /></div><strong>{attachment.title}</strong><p>{attachment.summary}</p><div className="evidence-attachment-grid">{attachment.fields.map((field) => <div key={field.label}><span>{field.label}</span><strong>{field.value}</strong></div>)}</div><div className="evidence-attachment-sample"><span>{attachment.sample.label}</span><strong>{attachment.sample.value}</strong></div><div className="evidence-attachment-note"><CircleHelp size={14} /><span>{attachment.note}</span></div></div></div>}<div className="drawer-section"><span className="drawer-label">BASIS</span><p>{selected.preview} {selected.evidence === 'disputed' ? 'This connection needs inspection before it can carry the investigation forward.' : 'The trail keeps this distinction visible as it expands.'}</p></div><div className="drawer-section"><span className="drawer-label">WHY THIS IS INCLUDED</span><p>{selected.inclusionReason}</p></div><div className="drawer-section"><span className="drawer-label">SUPPORTING MATERIAL</span><div className="source-stack"><div><FileText size={15} /><span>Research object preview<strong>{selected.source}</strong></span><span className="source-state">local corpus</span></div><div><Clock3 size={15} /><span>Capture context<strong>{selected.subtext}</strong></span><span className="source-state">retained</span></div></div></div><div className="drawer-section"><span className="drawer-label">PROVENANCE NOTE</span><div className="provenance-note"><CircleHelp size={15} /><p>Evidence class is preserved from the demo corpus. Inference is not promoted to verification by following the path.</p></div></div><div className="drawer-footer"><button className="quiet-button" onClick={() => { onClose(); if (!followed) onFollow(selected.id); }}><Link2 size={15} /> {followed ? 'Open followed path' : 'Follow this'}</button><button className="primary-button" onClick={onSave}><Bookmark size={15} /> Save discovery</button></div></dialog>;
 }
 
 function ThreadView({ selectedId, followed, evidenceOnly, onSelect, onFollow, onOpenEvidence, onToggleVerified, onChangeView }: { selectedId: string; followed: boolean; evidenceOnly: boolean; onSelect: (id: string) => void; onFollow: (id: string) => void; onOpenEvidence: (id: string) => void; onToggleVerified: () => void; onChangeView: (view: View) => void }) {
