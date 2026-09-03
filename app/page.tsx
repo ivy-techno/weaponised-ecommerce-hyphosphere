@@ -209,7 +209,7 @@ const evidenceAttachments: Record<string, EvidenceAttachment> = {
       { label: 'identifier', value: 'northline · case 04' },
       { label: 'observed in', value: '2 regional cases · field notes' },
       { label: 'record shape', value: 'sequence · context · timestamps' },
-      { label: 'stack position', value: 'Visible story / reporting' },
+      { label: 'stack position', value: 'Level 1 / 6 · Visible story / reporting' },
     ],
     sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'onboarding step repeats before public messaging appears' },
     note: 'Illustrative case note: it shows the kind of repeated surface pattern that can justify looking for deeper enabling layers.',
@@ -222,7 +222,7 @@ const evidenceAttachments: Record<string, EvidenceAttachment> = {
       { label: 'identifier', value: 'lantern-house · case 11' },
       { label: 'observed in', value: 'interview log · 2023' },
       { label: 'match basis', value: 'similar sequence · different public story' },
-      { label: 'stack position', value: 'Visible story / reporting' },
+      { label: 'stack position', value: 'Level 1 / 6 · Visible story / reporting' },
     ],
     sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'same shape, different names and public narrative' },
     note: 'Illustrative comparison note: resemblance opens a question; it does not establish a shared operator, intent, or origin.',
@@ -235,7 +235,7 @@ const evidenceAttachments: Record<string, EvidenceAttachment> = {
       { label: 'identifier', value: 'atlas-relay · shared service' },
       { label: 'observed in', value: 'Northline cohort · Greybox traces' },
       { label: 'match basis', value: 'same account identifier · 11 matching rows' },
-      { label: 'stack position', value: 'Commercial services · Interfaces & operations' },
+      { label: 'stack position', value: 'Levels 3 + 5 / 6 · services + operations' },
     ],
     sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'service account identifier recurs beside case and dataset references' },
     note: 'Demo attachment: it supports the relationship being tested without establishing an operator, motive, or causal chain.',
@@ -248,7 +248,7 @@ const evidenceAttachments: Record<string, EvidenceAttachment> = {
       { label: 'identifier', value: 'greybox · dataset v2.1' },
       { label: 'observed in', value: '38 rows · 2021–2024' },
       { label: 'match basis', value: '11 rows share Atlas Relay identifier' },
-      { label: 'stack position', value: 'Data & brokerage' },
+      { label: 'stack position', value: 'Level 4 / 6 · Data & brokerage' },
     ],
     sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'row 11 · atlas-relay · Northline context · captured 2024' },
     note: 'Illustrative dataset row: it explains the shape of the evidence without reproducing a source file or claiming that recurrence proves coordination.',
@@ -261,7 +261,7 @@ const evidenceAttachments: Record<string, EvidenceAttachment> = {
       { label: 'identifier', value: 'long-arc · archive capture 18' },
       { label: 'observed in', value: 'archived webpage · 2022' },
       { label: 'match basis', value: 'sequence + service reference' },
-      { label: 'stack position', value: 'Visible story / reporting' },
+      { label: 'stack position', value: 'Level 1 / 6 · Visible story / reporting' },
     ],
     sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'headline · publication date · reported sequence · named service' },
     note: 'Illustrative reporting capture: it shows how public journalism can anchor a timeline without being mistaken for direct technical evidence.',
@@ -274,7 +274,7 @@ const evidenceAttachments: Record<string, EvidenceAttachment> = {
       { label: 'identifier', value: 'invite-fragment · screenshot 07' },
       { label: 'observed in', value: 'invitation flow · 2023' },
       { label: 'match basis', value: 'visual / template similarity' },
-      { label: 'stack position', value: 'Platforms & distribution · Interfaces & operations' },
+      { label: 'stack position', value: 'Levels 2 + 5 / 6 · platforms + interfaces' },
     ],
     sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'invite screen · account prompt · workflow marker' },
     note: 'Illustrative screenshot description: a visual match can extend a research trail, but it remains an inference until corroborated.',
@@ -287,7 +287,7 @@ const evidenceAttachments: Record<string, EvidenceAttachment> = {
       { label: 'identifier', value: 'quiet-harbor · infrastructure record' },
       { label: 'observed in', value: 'hostname + CDN resolution · 2024' },
       { label: 'match basis', value: 'shared endpoint candidate' },
-      { label: 'stack position', value: 'Infrastructure' },
+      { label: 'stack position', value: 'Level 6 / 6 · Infrastructure' },
     ],
     sample: { label: 'WHAT THE RECORD LOOKS LIKE', value: 'CNAME → quiet-harbor · source conflict retained' },
     note: 'Disputed infrastructure example: a technical overlap is worth checking, but the conflict stays visible and no attribution is implied.',
@@ -736,7 +736,9 @@ function NodeIcon({ kind }: { kind: string }) {
 }
 
 function StackLayerPills({ layers }: { layers: StackLayer[] }) {
-  return <span className="stack-layer-pills" aria-label={`Ecommerce stack position: ${layers.join(', ')}`}>{layers.map((layer) => <span className="stack-layer-pill" key={layer}>{layer}</span>)}</span>;
+  const total = stackLayerDetails.length;
+  const numberedLayers = layers.map((layer) => ({ layer, number: stackLayerDetails.findIndex((item) => item.layer === layer) + 1 }));
+  return <span className="stack-layer-pills" aria-label={`Ecommerce stack position: ${numberedLayers.map(({ layer, number }) => `level ${number} of ${total}, ${layer}`).join('; ')}`}>{numberedLayers.map(({ layer, number }) => <span className="stack-layer-pill" key={layer}><b>{number.toString().padStart(2, '0')} / {total.toString().padStart(2, '0')}</b><span>{layer}</span></span>)}</span>;
 }
 
 function AppMark() {
