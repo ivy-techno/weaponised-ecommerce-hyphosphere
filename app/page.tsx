@@ -959,7 +959,7 @@ export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(false);
   const [scrollPromptVisible, setScrollPromptVisible] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const stageContentRef = useRef<HTMLDivElement>(null);
   const previousViewRef = useRef(view);
@@ -970,6 +970,14 @@ export default function Home() {
     { label: 'Northline cohort', detail: 'starting point', time: '09:14', active: false },
     { label: 'Atlas Relay', detail: 'relationship selected', time: '09:16', active: true },
   ]);
+
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem('hyphosphere-sound-enabled') === 'false') setSoundEnabled(false);
+    } catch {
+      // Keep the default-on experience when browser storage is unavailable.
+    }
+  }, []);
   const stateRef = useRef({ view, evidenceOnly, selectedId, followed, saved });
 
   useEffect(() => {
@@ -1123,6 +1131,11 @@ export default function Home() {
   const toggleSound = useCallback(() => {
     const willEnable = !soundEnabled;
     setSoundEnabled(willEnable);
+    try {
+      window.localStorage.setItem('hyphosphere-sound-enabled', String(willEnable));
+    } catch {
+      // The control still works for this session when browser storage is unavailable.
+    }
     if (willEnable) {
       playUiSound('click', true);
       announce('Interface sounds enabled. Clicks and reveals now have audio cues.');
