@@ -681,10 +681,9 @@ export default function Home() {
     const refreshScrollPrompt = () => {
       const documentHeight = document.documentElement.scrollHeight;
       const hasMoreBelow = documentHeight - window.innerHeight > 140;
-      const nearTop = window.scrollY < 110;
       const nearBottom = window.scrollY + window.innerHeight >= documentHeight - 70;
       const modalOpen = evidenceOpen || stackOpen || Boolean(collectionSourceId) || Boolean(exampleSourceId) || notebookOpen || Boolean(conceptDetailLabel) || Boolean(stackLayerDetailLabel);
-      setScrollPromptVisible(hasMoreBelow && nearTop && !nearBottom && !modalOpen && !mobileNavOpen);
+      setScrollPromptVisible(hasMoreBelow && !nearBottom && !modalOpen && !mobileNavOpen);
     };
 
     refreshScrollPrompt();
