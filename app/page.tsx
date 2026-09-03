@@ -871,6 +871,7 @@ export default function Home() {
   const stageContentRef = useRef<HTMLDivElement>(null);
   const previousViewRef = useRef(view);
   const evidencePeekTimerRef = useRef<number | null>(null);
+  const evidencePeekDelayRef = useRef<number | null>(null);
   const pointerWasInEvidenceRef = useRef(true);
   const [connectionStatusOpen, setConnectionStatusOpen] = useState(false);
   const webmcpReady = typeof document !== 'undefined' && Boolean((document as Document & { modelContext?: unknown }).modelContext);
@@ -917,7 +918,9 @@ export default function Home() {
     if (!evidenceOpen) {
       pointerWasInEvidenceRef.current = true;
       if (evidencePeekTimerRef.current !== null) window.clearTimeout(evidencePeekTimerRef.current);
+      if (evidencePeekDelayRef.current !== null) window.clearTimeout(evidencePeekDelayRef.current);
       evidencePeekTimerRef.current = null;
+      evidencePeekDelayRef.current = null;
       return;
     }
 
@@ -928,28 +931,37 @@ export default function Home() {
       if (!drawer) return;
       const bounds = drawer.getBoundingClientRect();
       const pointerInDrawer = bounds.left <= event.clientX && event.clientX <= bounds.right && bounds.top <= event.clientY && event.clientY <= bounds.bottom;
-      if (pointerInDrawer) {
+      const pointerInReturnZone = event.clientX >= window.innerWidth - 72 && bounds.top <= event.clientY && event.clientY <= bounds.bottom;
+      if (pointerInDrawer || pointerInReturnZone) {
         pointerWasInEvidenceRef.current = true;
         setEvidencePeeking(false);
         if (evidencePeekTimerRef.current !== null) window.clearTimeout(evidencePeekTimerRef.current);
+        if (evidencePeekDelayRef.current !== null) window.clearTimeout(evidencePeekDelayRef.current);
         evidencePeekTimerRef.current = null;
+        evidencePeekDelayRef.current = null;
         return;
       }
       if (!pointerWasInEvidenceRef.current) return;
       pointerWasInEvidenceRef.current = false;
-      setEvidencePeeking(true);
+      if (evidencePeekDelayRef.current !== null) window.clearTimeout(evidencePeekDelayRef.current);
       if (evidencePeekTimerRef.current !== null) window.clearTimeout(evidencePeekTimerRef.current);
-      evidencePeekTimerRef.current = window.setTimeout(() => {
-        setEvidencePeeking(false);
-        evidencePeekTimerRef.current = null;
-      }, 1400);
+      evidencePeekDelayRef.current = window.setTimeout(() => {
+        setEvidencePeeking(true);
+        evidencePeekDelayRef.current = null;
+        evidencePeekTimerRef.current = window.setTimeout(() => {
+          setEvidencePeeking(false);
+          evidencePeekTimerRef.current = null;
+        }, 2400);
+      }, 260);
     };
 
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
     return () => {
       window.removeEventListener('pointermove', handlePointerMove);
       if (evidencePeekTimerRef.current !== null) window.clearTimeout(evidencePeekTimerRef.current);
+      if (evidencePeekDelayRef.current !== null) window.clearTimeout(evidencePeekDelayRef.current);
       evidencePeekTimerRef.current = null;
+      evidencePeekDelayRef.current = null;
     };
   }, [evidenceOpen]);
 
