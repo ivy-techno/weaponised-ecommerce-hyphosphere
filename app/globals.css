@@ -477,8 +477,6 @@ body { overflow-x: hidden; }
 .story-intro-role span { color: #a7d8c6; font-size: 8px; font-weight: 800; letter-spacing: .12em; }
 .story-intro-role strong { color: #f1fbf5; font-size: 10px; line-height: 1.4; }
 .story-intro-role small { color: #bdd6cc; font-size: 9px; line-height: 1.4; }
-.story-intro-link { width: max-content; max-width: 100%; color: #d5f0e2; font-size: 9px; font-weight: 700; line-height: 1.4; text-decoration: none; }
-.story-intro-link:hover, .story-intro-link:focus-visible { color: #ffffff; text-decoration: underline; text-underline-offset: 3px; }
 .view-switcher { overflow-x: auto; scrollbar-width: thin; }
 .stage-heading-actions { flex-wrap: wrap; }
 .orientation-copy p, .orientation-agent-note { max-width: 100%; }
