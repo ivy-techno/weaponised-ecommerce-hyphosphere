@@ -188,6 +188,8 @@ button { cursor: pointer; }
 .primary-button:hover { background: #0f4f4d; transform: translateY(-1px); }
 .view-switcher { max-width: 1420px; display: flex; align-items: center; gap: 22px; margin: 0 auto 14px; border-bottom: 1px solid var(--line); }
 .view-switcher button { padding: 0 1px 10px; color: var(--ink-faint); background: transparent; border: 0; border-bottom: 2px solid transparent; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.view-switcher-source { display: inline-flex; align-items: center; gap: 5px; }
+.view-switcher-source svg { color: var(--amber); }
 .view-switcher button:hover, .view-switcher button.is-active { color: var(--teal-deep); border-bottom-color: var(--teal); }
 .view-switcher-hint { display: flex; align-items: center; gap: 5px; margin-left: auto; color: #9aa9a7; padding-bottom: 10px; font-size: 10px; }
 .stage-content { max-width: 1420px; min-height: 680px; display: grid; grid-template-columns: minmax(0, 1fr) 255px; gap: 17px; margin: 0 auto; }
@@ -1686,14 +1688,16 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .patchwork-area-head > span { display: inline-flex; align-items: center; gap: 6px; font-size: 8px; font-weight: 800; letter-spacing: .13em; }
 .patchwork-area-head > span svg { color: var(--amber); }
 .patchwork-area-head > small { color: var(--ink-faint); font-size: 8px; }
-.patchwork-area-track { min-width: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; overflow: hidden; border-radius: 8px; }
+.patchwork-area-track { min-width: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; overflow: hidden; border-radius: 8px; }
 .patchwork-area-panel { min-width: 0; position: relative; display: flex; align-items: end; min-height: 84px; padding: 0; overflow: hidden; color: #fffdf1; background: #1b4d4c; border: 0; text-align: left; cursor: pointer; }
-.patchwork-area-panel::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(180deg, rgb(15 54 55 / 5%), rgb(15 54 55 / 80%)), url('/assets/field-notes-patchwork.png'); background-position: center, var(--patchwork-position); background-size: cover, 500% 100%; transition: transform 320ms ease, filter 220ms ease; }
+.patchwork-area-panel::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(180deg, rgb(15 54 55 / 5%), rgb(15 54 55 / 80%)), url('/assets/field-notes-patchwork.png'); background-position: center, var(--patchwork-position); background-size: cover, 700% 100%; transition: transform 320ms ease, filter 220ms ease; }
 .patchwork-area-panel-1 { --patchwork-position: 0% center; }
-.patchwork-area-panel-2 { --patchwork-position: 25% center; }
-.patchwork-area-panel-3 { --patchwork-position: 50% center; }
-.patchwork-area-panel-4 { --patchwork-position: 75% center; }
-.patchwork-area-panel-5 { --patchwork-position: 100% center; }
+.patchwork-area-panel-2 { --patchwork-position: 16.66% center; }
+.patchwork-area-panel-3 { --patchwork-position: 33.33% center; }
+.patchwork-area-panel-4 { --patchwork-position: 50% center; }
+.patchwork-area-panel-5 { --patchwork-position: 66.66% center; }
+.patchwork-area-panel-6 { --patchwork-position: 83.33% center; }
+.patchwork-area-panel-7 { --patchwork-position: 100% center; }
 .patchwork-area-panel-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 20%, rgb(9 45 48 / 79%) 100%); }
 .patchwork-area-panel-copy { min-width: 0; position: relative; z-index: 1; display: grid; gap: 3px; width: 100%; padding: 10px 10px 9px; }
 .patchwork-area-panel-copy b { color: #f4d08d; font-family: var(--display); font-size: 16px; line-height: 1; }
@@ -1709,8 +1713,10 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .patchwork-area-panel-3 { background: #b87937; }
 .patchwork-area-panel-4 { background: #267d76; }
 .patchwork-area-panel-5 { background: #bd6f63; }
+.patchwork-area-panel-6 { background: #7a9b69; }
+.patchwork-area-panel-7 { background: #806da6; }
 @media (max-width: 900px) {
-  .patchwork-area-track { overflow-x: auto; grid-template-columns: repeat(5, minmax(142px, 1fr)); scrollbar-width: thin; }
+  .patchwork-area-track { overflow-x: auto; grid-template-columns: repeat(7, minmax(142px, 1fr)); scrollbar-width: thin; }
   .patchwork-area-panel { min-height: 80px; }
 }
 @media (max-width: 640px) {
