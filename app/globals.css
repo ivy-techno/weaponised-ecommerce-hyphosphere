@@ -255,7 +255,10 @@ button { cursor: pointer; }
 .agent-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--violet); box-shadow: 0 0 0 4px #e5e0f1; }
 .connection-status-panel { margin-top: 9px; padding: 13px; background: #f8fbf7; border: 1px solid #c9dad4; border-radius: 8px; box-shadow: 0 8px 18px rgb(31 62 58 / 8%); animation: toast-in 180ms ease both; }
 .connection-status-panel.is-ready { background: #e8f5ef; border-color: #afd4c4; }
-.connection-status-popover { width: min(340px, calc(100vw - 32px)); position: absolute; top: calc(100% + 10px); right: 32px; z-index: 55; margin-top: 0; box-shadow: 0 16px 30px rgb(31 62 58 / 17%); }
+.connection-status-popover { width: min(340px, calc(100vw - 32px)); position: fixed; z-index: 55; margin-top: 0; box-shadow: 0 16px 30px rgb(31 62 58 / 17%); }
+.connection-status-origin-top { top: 76px; right: 32px; }
+.connection-status-origin-sidebar { left: 240px; bottom: 24px; }
+.connection-status-origin-trail { right: 24px; bottom: 24px; }
 .connection-status-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .connection-status-head strong { color: var(--teal-deep); font-size: 9px; letter-spacing: .1em; }
 .connection-status-panel h3 { margin: 10px 0 5px; color: var(--ink); font-family: var(--display); font-size: 14px; letter-spacing: -.04em; }
@@ -263,7 +266,8 @@ button { cursor: pointer; }
 .connection-status-close { margin-top: 11px; padding: 0; color: var(--teal-deep); background: transparent; border: 0; font-size: 9px; font-weight: 700; }
 
 @media (max-width: 640px) {
-  .connection-status-popover { right: 15px; }
+  .connection-status-origin-top { top: 70px; right: 15px; }
+  .connection-status-origin-sidebar, .connection-status-origin-trail { right: 15px; bottom: 15px; left: 15px; width: auto; }
 }
 
 .source-citation-button { width: 100%; min-width: 0; padding: 0; color: inherit; background: transparent; border: 0; text-align: left; cursor: pointer; }
