@@ -41,6 +41,19 @@ type AgentBriefRecord = { id: string; title: string; kind: string; provider: str
 type AgentBriefRequest = { query: string; scope: SearchScope; stackFilter: StackLayer | 'all'; requestId: number };
 type AgentBriefSnapshot = { query: string; scope: SearchScope; stackFilter: StackLayer | 'all'; records: Array<{ id: string; title: string; kind: string; provider: string; stackLayers: StackLayer[]; signal: string; sourceId?: string; nodeId?: string }>; keptIds: string[] };
 type SavedAgentBrief = AgentBriefSnapshot & { id: string; savedAt: string };
+type SignalFeedItem = {
+  id: string;
+  headline: string;
+  sourceTitle: string;
+  sourceKind: string;
+  sourceUrl: string;
+  sourceId?: string;
+  freshness: string;
+  infowarLabel: string;
+  stackLayers: StackLayer[];
+  relevance: string;
+};
+type SavedSignalItem = SignalFeedItem & { savedAt: string };
 
 type ResearchNode = {
   id: string;
@@ -450,6 +463,81 @@ const sourceStackLayers = (source: ResearchSource): StackLayer[] => {
   return ['Commercial services', 'Data & brokerage', 'Interfaces & operations'];
 };
 
+const signalFeedItems: SignalFeedItem[] = [
+  {
+    id: 'signal-meta-cib',
+    headline: 'Platform indicators make a Pakistan-based CIB network inspectable.',
+    sourceTitle: 'Pakistan-based CIB network indicators',
+    sourceKind: 'PLATFORM INDICATORS',
+    sourceUrl: externalSources.find((source) => source.id === 'meta-cib-pakistan')?.url ?? '',
+    sourceId: 'meta-cib-pakistan',
+    freshness: 'source lead · disclosure record',
+    infowarLabel: 'CIB / influence operations',
+    stackLayers: ['Platforms & distribution', 'Interfaces & operations'],
+    relevance: 'public disclosure → platform artefacts → paid distribution',
+  },
+  {
+    id: 'signal-tactical-tech',
+    headline: 'The Influence Industry maps the commercial business of digital persuasion.',
+    sourceTitle: 'The Influence Industry',
+    sourceKind: 'RESEARCH PROJECT',
+    sourceUrl: externalSources.find((source) => source.id === 'tactical-tech-influence-industry')?.url ?? '',
+    sourceId: 'tactical-tech-influence-industry',
+    freshness: 'source lead · project overview',
+    infowarLabel: 'political influence',
+    stackLayers: ['Commercial services', 'Data & brokerage', 'Platforms & distribution'],
+    relevance: 'data → targeting → platforms → persuasion',
+  },
+  {
+    id: 'signal-occrp',
+    headline: 'OCCRP Aleph turns public records into linked entity trails.',
+    sourceTitle: 'OCCRP Aleph',
+    sourceKind: 'INVESTIGATIVE DATABASE',
+    sourceUrl: externalSources.find((source) => source.id === 'occrp-aleph')?.url ?? '',
+    sourceId: 'occrp-aleph',
+    freshness: 'source lead · searchable collection',
+    infowarLabel: 'investigative method',
+    stackLayers: ['Data & brokerage', 'Interfaces & operations'],
+    relevance: 'entities → documents → relationships',
+  },
+  {
+    id: 'signal-fbi-labour',
+    headline: 'False online job ads can lead into scam-compound digital labour.',
+    sourceTitle: 'False job ads & scam-compound labour',
+    sourceKind: 'OFFICIAL ALERT',
+    sourceUrl: externalSources.find((source) => source.id === 'fbi-labor-trafficking-scam-alert')?.url ?? '',
+    sourceId: 'fbi-labor-trafficking-scam-alert',
+    freshness: 'source lead · official alert',
+    infowarLabel: 'digital labour / coercion',
+    stackLayers: ['Visible story / reporting', 'Platforms & distribution', 'Interfaces & operations'],
+    relevance: 'recruitment → coerced labour → online fraud',
+  },
+  {
+    id: 'signal-graphika',
+    headline: 'Cheap Tricks follows AI-enabled influence operations across platforms.',
+    sourceTitle: 'Cheap Tricks',
+    sourceKind: 'RESEARCH REPORT',
+    sourceUrl: externalSources.find((source) => source.id === 'graphika-cheap-tricks')?.url ?? '',
+    sourceId: 'graphika-cheap-tricks',
+    freshness: 'source lead · research report',
+    infowarLabel: 'AI-enabled influence',
+    stackLayers: ['Visible story / reporting'],
+    relevance: 'cases → timing → attribution signals',
+  },
+  {
+    id: 'signal-amazon',
+    headline: 'Amazon co-purchasing data reveals an ordinary recommendation network.',
+    sourceTitle: 'Amazon co-purchasing network',
+    sourceKind: 'COMMERCE NETWORK DATASET',
+    sourceUrl: externalSources.find((source) => source.id === 'amazon-copurchase-network')?.url ?? '',
+    sourceId: 'amazon-copurchase-network',
+    freshness: 'source lead · commerce baseline',
+    infowarLabel: 'commercial baseline',
+    stackLayers: ['Platforms & distribution', 'Data & brokerage'],
+    relevance: 'recommendation → products → behavioural graph',
+  },
+];
+
 const sourceManifest = () => externalSources.map((source) => ({ id: source.id, title: source.title, provider: source.provider, kind: source.kind, access: source.access, resourceUrl: source.url, stackLayers: sourceStackLayers(source), tags: source.tags, linkedOnly: true }));
 
 function SourceCitationCard({ source, compact = false }: { source: ResearchSource; compact?: boolean }) {
@@ -842,8 +930,8 @@ function makeAgentBriefSnapshot(query: string, scope: SearchScope, stackFilter: 
   };
 }
 
-function AgentBriefNotebookDialog({ briefs, onClose, onCompare }: { briefs: SavedAgentBrief[]; onClose: () => void; onCompare: (id: string) => void }) {
-  return <dialog open className="agent-brief-notebook-dialog" aria-label="Saved agent briefs"><div className="agent-brief-notebook-card"><div className="notebook-dialog-head"><div><span className="eyebrow-label">NOTEBOOK · AGENT BRIEFS</span><h2>Saved research scans</h2><p>Retained candidate sets stay on this device so you can compare them with the existing Hyphosphere assets.</p></div><button className="icon-button" onClick={onClose} aria-label="Close saved agent briefs"><X size={17} /></button></div><div className="agent-brief-notebook-list">{briefs.map((brief) => <article className="agent-brief-notebook-entry" key={brief.id}><div className="agent-brief-notebook-entry-copy"><span>{brief.scope === 'web' ? 'WEB INDEX' : brief.scope === 'curated' ? 'CURATED RECORDS' : 'LOCAL + LINKED'} · {brief.stackFilter === 'all' ? 'ALL SIX LEVELS' : `LEVEL ${(stackLayerDetails.findIndex((item) => item.layer === brief.stackFilter) + 1).toString().padStart(2, '0')}`}</span><strong>{brief.query}</strong><small>{brief.keptIds.length} retained · {brief.records.length} candidates · {new Date(brief.savedAt).toLocaleDateString()}</small></div><button className="quiet-button" onClick={() => onCompare(brief.id)}>Compare with active assets <GitBranch size={13} /></button></article>)}</div><div className="agent-brief-notebook-note"><CircleHelp size={15} /><p>Notebook entries are device-local in this proof of concept. A shared observatory would eventually add durable storage, provenance, and collaborative review.</p></div><div className="notebook-dialog-actions"><button className="quiet-button" onClick={onClose}>Close notebook</button></div></div></dialog>;
+function AgentBriefNotebookDialog({ briefs, signalItems, onClose, onCompare }: { briefs: SavedAgentBrief[]; signalItems: SavedSignalItem[]; onClose: () => void; onCompare: (id: string) => void }) {
+  return <dialog open className="agent-brief-notebook-dialog" aria-label="Saved agent briefs"><div className="agent-brief-notebook-card"><div className="notebook-dialog-head"><div><span className="eyebrow-label">NOTEBOOK · AGENT BRIEFS</span><h2>Saved research scans</h2><p>Retained candidate sets stay on this device so you can compare them with the existing Hyphosphere assets.</p></div><button className="icon-button" onClick={onClose} aria-label="Close saved agent briefs"><X size={17} /></button></div><div className="agent-brief-notebook-list">{briefs.map((brief) => <article className="agent-brief-notebook-entry" key={brief.id}><div className="agent-brief-notebook-entry-copy"><span>{brief.scope === 'web' ? 'WEB INDEX' : brief.scope === 'curated' ? 'CURATED RECORDS' : 'LOCAL + LINKED'} · {brief.stackFilter === 'all' ? 'ALL SIX LEVELS' : `LEVEL ${(stackLayerDetails.findIndex((item) => item.layer === brief.stackFilter) + 1).toString().padStart(2, '0')}`}</span><strong>{brief.query}</strong><small>{brief.keptIds.length} retained · {brief.records.length} candidates · {new Date(brief.savedAt).toLocaleDateString()}</small></div><button className="quiet-button" onClick={() => onCompare(brief.id)}>Compare with active assets <GitBranch size={13} /></button></article>)}</div>{signalItems.length > 0 && <section className="agent-brief-notebook-signals"><div className="agent-brief-notebook-signals-head"><span className="eyebrow-label">SAVED SIGNAL LEADS</span><small>{signalItems.length} retained</small></div><div className="agent-brief-notebook-signal-list">{signalItems.map((item) => <article key={item.id}><div><strong>{item.headline}</strong><small>{item.sourceTitle} · {item.infowarLabel}</small><StackLayerPills layers={item.stackLayers} /></div><a href={item.sourceUrl} target="_blank" rel="noreferrer">Open source <ExternalLink size={12} /></a></article>)}</div></section>}<div className="agent-brief-notebook-note"><CircleHelp size={15} /><p>Notebook entries are device-local in this proof of concept. A shared observatory would eventually add durable storage, provenance, and collaborative review.</p></div><div className="notebook-dialog-actions"><button className="quiet-button" onClick={onClose}>Close notebook</button></div></div></dialog>;
 }
 
 function AgentBriefCompareDialog({ brief, onClose }: { brief: SavedAgentBrief; onClose: () => void }) {
@@ -943,14 +1031,14 @@ function BranchField() {
 }
 
 function PatchworkAreaRibbon({ view, savedCount, notebookOpen, onChangeView, onOpenNotebook }: { view: View; savedCount: number; notebookOpen: boolean; onChangeView: (view: View) => void; onOpenNotebook: () => void }) {
-  const panels: Array<{ view?: View; label: string; detail: string; action: string; activeViews?: View[] }> = [
-    { view: 'concept-demo', label: 'Curated demo', detail: 'orientation + definitions', action: 'Open the search demo' },
+  const panels: Array<{ view?: View; label: string; detail: string; action: string; tag?: string; activeViews?: View[] }> = [
+    { view: 'concept-demo', label: 'Curated demo', detail: 'orientation + definitions', action: 'Open the search demo', tag: 'SEARCH!' },
     { view: 'investigations', label: 'Investigation paths', detail: 'one problem · many readings', action: 'Choose a path', activeViews: ['investigations', 'thread', 'map', 'evidence', 'compare'] },
     { view: 'terrain', label: 'Source ecology', detail: 'six enabling levels', action: 'Explore the layers' },
     { view: 'concepts', label: 'Concepts & theories', detail: 'ideas to test', action: 'Open the lenses' },
     { view: 'artifacts', label: 'Research artifacts', detail: 'sources to inspect', action: 'Inspect the records' },
     { view: 'outputs', label: 'Possible outputs', detail: 'notes to make', action: 'See what can emerge' },
-    { label: 'Saved notebook', detail: savedCount ? `${savedCount} saved trail${savedCount === 1 ? '' : 's'}` : 'retain a trail', action: 'Open saved work' },
+    { label: 'Saved notebook', detail: savedCount ? `${savedCount} saved trail${savedCount === 1 ? '' : 's'}` : 'retain a trail', action: 'Open saved work', tag: 'SAVE!' },
   ];
   return (
     <nav className="patchwork-area-ribbon" aria-label="Hyphosphere research areas">
@@ -965,7 +1053,7 @@ function PatchworkAreaRibbon({ view, savedCount, notebookOpen, onChangeView, onO
             onChangeView(panel.view);
             if (panel.view === 'concept-demo') window.requestAnimationFrame(() => document.querySelector('.agent-brief-surface')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
           };
-          return <a href={href} key={panel.label} className={`patchwork-area-panel patchwork-area-panel-${index + 1} ${active ? 'is-active' : ''}`} onClick={panel.view ? handleClick : (event) => { if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); onOpenNotebook(); }} aria-label={`${panel.label}: ${panel.action}`} aria-selected={active} role="tab"><span className="patchwork-area-panel-shade" /><span className="patchwork-area-panel-copy"><b>{index.toString().padStart(2, '0')}</b><strong>{panel.label}</strong><small>{panel.detail}</small><em>{panel.action} <ChevronRight size={12} /></em></span></a>;
+          return <a href={href} key={panel.label} className={`patchwork-area-panel patchwork-area-panel-${index + 1} ${active ? 'is-active' : ''}`} onClick={panel.view ? handleClick : (event) => { if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); onOpenNotebook(); }} aria-label={`${panel.label}: ${panel.action}`} aria-selected={active} role="tab"><span className="patchwork-area-panel-shade" /><span className="patchwork-area-panel-copy"><b>{index.toString().padStart(2, '0')}</b><strong>{panel.label}</strong><small>{panel.detail}</small>{panel.tag && <span className="patchwork-area-panel-tag">{panel.tag}</span>}<em>{panel.action} <ChevronRight size={12} /></em></span></a>;
         })}
       </div>
     </nav>
@@ -1040,6 +1128,24 @@ function AgentBriefSurface({ onOpenExample, onOpenCollection, onOpenEvidence, on
   return <section className="agent-brief-surface" aria-label="Agent-assisted research brief"><div className="agent-brief-head"><div><span className="eyebrow-label">WEBMCP RESEARCH BRIEF · CURATED DEMO</span><h2>Ask the wider field a question.</h2><p>Ask a question or choose a starting prompt. The prototype searches its curated records and linked source index, then returns a small candidate set to inspect, retain, and turn into a possible output.</p></div><div className="agent-brief-status"><Network size={18} /><span>LOCAL + LINKED SOURCES</span><small>Live imports are future observatory work.</small></div></div><details className="agent-instruction"><summary><span>AGENT INSTRUCTION</span><strong>How the research brief is composed</strong><ChevronRight size={14} /></summary><p>{AGENT_RESEARCH_INSTRUCTION}</p></details><form className="agent-brief-form" onSubmit={(event) => { event.preventDefault(); runBrief(query); }}><label className="agent-brief-field" htmlFor="terrain-search"><span>RUN A RESEARCH SCAN</span><small>ask a question across selected sources and stack levels</small></label><p className="agent-brief-distinction"><strong>Different from the quick index above:</strong> this scan assembles a candidate set for inspection; it does not simply jump to a known record.</p><div className="agent-brief-scope" role="group" aria-label="Research scan scope"><span>SCAN SCOPE</span><div>{searchScopes.map((scope) => <button type="button" className={`agent-brief-scope-option ${searchScope === scope.id ? 'is-selected' : ''}`} key={scope.id} onClick={() => setSearchScope(scope.id)} aria-pressed={searchScope === scope.id}>{scope.label}</button>)}</div><small>{searchScopes.find((scope) => scope.id === searchScope)?.detail}</small></div><div className="agent-brief-stack-filter" role="group" aria-label="Filter research scan by ecommerce stack level"><span>STACK FILTER</span><div>{stackFilters.map((filter) => <button type="button" className={`agent-brief-stack-option ${stackFilter === filter.id ? 'is-selected' : ''}`} key={filter.id} onClick={() => setStackFilter(filter.id)} aria-pressed={stackFilter === filter.id}>{filter.id === 'all' ? 'ALL' : `${(stackLayerDetails.findIndex((item) => item.layer === filter.id) + 1).toString().padStart(2, '0')} · ${filter.label}`}</button>)}</div><small>{stackFilter === 'all' ? 'search every level of the enabling assemblage' : `show records tagged ${stackFilter}`}</small></div><div className="agent-brief-controls"><input id="terrain-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ask: what is the latest on info war + ecommerce?" aria-label="Ask a research question for the agent scan" /><button type="submit" className="primary-button"><Search size={14} /> Run scan</button><button type="button" className="quiet-button" onClick={() => runBrief('')}><Sparkles size={14} /> I’m feeling lucky</button></div><div className="agent-brief-suggestions" aria-label="Suggested research questions">{suggestions.map((suggestion) => <button type="button" className="agent-brief-suggestion" key={suggestion} onClick={() => runBrief(suggestion)}>{suggestion}<ChevronRight size={12} /></button>)}</div></form>{brief && <div className="agent-brief-results" aria-live="polite"><div className="agent-brief-results-head"><div><span className="eyebrow-label">RAPID FIELD SCAN · {searchScope === 'web' ? 'LINKED WEB INDEX' : searchScope === 'curated' ? 'CURATED RECORDS' : 'LOCAL + LINKED SOURCES'}</span><h3>{query}</h3></div><span>{brief.length} candidate records · {kept.length} retained</span></div>{searchScope === 'web' && <p className="agent-brief-scope-note"><Globe2 size={13} /> Live web import is not connected in this proof of concept; these are link-ready web sources from the curated index.</p>}{searchScope === 'curated' && <p className="agent-brief-scope-note"><Archive size={13} /> These results come from the reproducible local demonstration corpus.</p>}{searchScope === 'both' && <p className="agent-brief-scope-note"><Network size={13} /> This cross-check pairs local demonstration records with the linked source index; it does not imply a live web fetch.</p>}<p className="agent-brief-scope-note"><Layers2 size={13} /> Stack filter: {stackFilter === 'all' ? 'all six levels' : `level ${(stackLayerDetails.findIndex((item) => item.layer === stackFilter) + 1).toString().padStart(2, '0')} · ${stackFilter}`}</p><div className="agent-brief-result-layout"><div className="agent-brief-visual" aria-label={`Illustrative stack lens showing ${brief.length} candidate records`}><div className="agent-brief-visual-core"><Network size={22} /><span>STACK LENS</span><strong>{kept.length} retained</strong><small>of {brief.length} candidates</small></div><div className="agent-brief-visual-links">{brief.map((record, index) => <div className="agent-brief-visual-link" key={record.id}><b>{(index + 1).toString().padStart(2, '0')}</b><span><strong>{record.title}</strong><small>{record.stackLayers[0]}</small></span></div>)}</div><p>Illustrative connections across source types — a lead to inspect, not an inferred causal chain.</p></div><div className="agent-brief-result-list">{brief.map((record, index) => { const isKept = kept.includes(record.id); return <div className={`agent-brief-result-row ${isKept ? 'is-kept' : ''}`} key={record.id}><button type="button" className="agent-brief-result-main" onClick={() => toggleKept(record.id)} aria-pressed={isKept}><span className="agent-brief-result-main-head"><b>{(index + 1).toString().padStart(2, '0')}</b><small>{record.kind} · {record.provider}</small><em>{isKept ? 'RETAINED' : 'SELECT TO RETAIN'}</em></span><strong>{record.title}</strong><StackLayerPills layers={record.stackLayers} /><span className="agent-brief-result-signal"><Clock3 size={12} /><span>signal: {record.signal}</span></span></button><div className="agent-brief-result-actions">{record.source ? <><button type="button" onClick={() => onOpenExample(record.source?.id ?? '')}>Citation</button><button type="button" onClick={() => onOpenCollection(record.source?.id ?? '')}>Profile</button><a href={record.source.url} target="_blank" rel="noreferrer" aria-label={`Open original source for ${record.title}`}><ExternalLink size={12} /></a></> : <button type="button" onClick={() => onOpenEvidence(record.node?.id ?? '')}>Inspect</button>}</div></div>; })}</div></div><div className="agent-brief-followup"><div><span className="eyebrow-label">WHAT SHOULD THIS BECOME?</span><p>Retain the records you want to carry forward, then choose the form of the next research note.</p></div><div className="agent-output-options">{outputOptions.map((option) => <button type="button" className={`agent-output-option ${outputChoice === option ? 'is-selected' : ''}`} key={option} onClick={() => { setOutputChoice(option); onOpenOutputs(); }}>{option}<ChevronRight size={12} /></button>)}<button type="button" className="agent-output-option agent-output-presentation" onClick={() => { setOutputChoice('Show me the lot together'); onOpenPresentation(makeAgentBriefSnapshot(query, searchScope, stackFilter, brief, kept)); }}><Sparkles size={12} /> Show me the lot together</button><button type="button" className="agent-output-option" onClick={() => { setOutputChoice('Saved to notebook'); onSaveBrief(makeAgentBriefSnapshot(query, searchScope, stackFilter, brief, kept)); }}>Save brief to notebook <Bookmark size={12} /></button>{outputChoice && <small className="agent-output-choice">{outputChoice} selected</small>}</div></div><p className="agent-brief-caveat"><CircleHelp size={14} /> The scan surfaces candidates for review. It does not import every record or establish coordination.</p></div>}</section>;
 }
 
+function SignalFeed({ items, savedIds, active, paused, status, onToggleActive, onSave, onOpenExample }: { items: SignalFeedItem[]; savedIds: string[]; active: boolean; paused: boolean; status: string; onToggleActive: () => void; onSave: (item: SignalFeedItem) => void; onOpenExample: (sourceId: string) => void }) {
+  const renderedItems = items.length ? [...items, ...items] : [];
+  const toggleLabel = !active ? 'Activate feed' : paused ? 'Resume feed' : 'Pause feed';
+  return <section className={`signal-feed ${active ? 'is-active' : ''} ${paused ? 'is-paused' : ''}`} aria-label="Agent mediated signal feed">
+    <div className="signal-feed-control">
+      <span className="eyebrow-label">AGENT-MEDIATED FETCH</span>
+      <h2>Relevant headlines, one lead at a time.</h2>
+      <p>A connected agent can place current, link-backed reporting here, then classify each lead by information-warfare relevance and ecommerce stack position.</p>
+      <div className="signal-feed-control-status"><span className="live-dot" /><strong>{status}</strong><small>{items.length} link-ready leads · live fetch requires an agent</small></div>
+      <button type="button" className="signal-feed-toggle" onClick={onToggleActive} aria-pressed={active && !paused}>{active && !paused ? <Pause size={14} /> : <Play size={14} />}{toggleLabel}</button>
+      <small className="signal-feed-control-note">Hover or focus the headline field to pause motion while reading. Save a lead to the notebook for later comparison.</small>
+    </div>
+    <div className="signal-feed-viewport">
+      {renderedItems.length ? <div className="signal-feed-track">{renderedItems.map((item, index) => { const duplicate = index >= items.length; const saved = savedIds.includes(item.id); return <article className="signal-feed-item" key={`${item.id}-${index}`} aria-hidden={duplicate || undefined}><div className="signal-feed-item-copy"><div className="signal-feed-item-meta"><span>{item.freshness}</span><span>{item.sourceKind}</span></div><a className="signal-feed-headline" href={item.sourceUrl} target="_blank" rel="noreferrer" tabIndex={duplicate ? -1 : undefined}>{item.headline} <ExternalLink size={12} /></a><div className="signal-feed-tags"><span className="signal-feed-tag signal-feed-tag-infowar">{item.infowarLabel}</span>{item.stackLayers.slice(0, 3).map((layer) => <span className="signal-feed-tag signal-feed-tag-stack" key={layer}>{(stackLayerDetails.findIndex((record) => record.layer === layer) + 1).toString().padStart(2, '0')} / 06 · {layer}</span>)}</div><small className="signal-feed-relevance">{item.relevance}</small></div><div className="signal-feed-item-actions">{item.sourceId && <button type="button" onClick={() => onOpenExample(item.sourceId!)} tabIndex={duplicate ? -1 : undefined}>Citation</button>}<button type="button" onClick={() => onSave(item)} aria-pressed={saved} tabIndex={duplicate ? -1 : undefined}>{saved ? 'Saved' : 'Save lead'} <Bookmark size={12} /></button></div></article>; })}</div> : <div className="signal-feed-empty"><Globe2 size={18} /><strong>No agent leads yet.</strong><span>Activate the feed or ask the connected agent to publish link-backed headlines here.</span></div>}
+    </div>
+  </section>;
+}
+
 function EvidenceRibbon({ onOpenExample, onOpenDatasets }: { onOpenExample: (sourceId: string) => void; onOpenDatasets: () => void }) {
   const ribbonSources = externalSources.slice(0, 6);
   return <section className="evidence-ribbon" aria-label="Illustrative source index ribbon"><div className="evidence-ribbon-head"><span><Sparkles size={12} /> FIELD NOTES · EXPLORE DATASETS</span><span className="evidence-ribbon-head-actions"><small>illustrative index only · select a panel to open the direct citation</small><button type="button" className="evidence-ribbon-more" onClick={onOpenDatasets}>More datasets <ChevronRight size={12} /></button></span></div><div className="evidence-ribbon-track"><div className="evidence-ribbon-art"><div className="evidence-ribbon-hotspots" aria-label="Clickable source panels">{ribbonSources.map((source, index) => <button type="button" className={`evidence-ribbon-hotspot ribbon-hotspot-${index + 1}`} key={source.id} onClick={() => onOpenExample(source.id)} aria-label={`Open direct source citation for ${source.title}`}><span className="evidence-ribbon-hotspot-label"><b>{(index + 1).toString().padStart(2, '0')}</b><span><strong>{source.title}</strong><small>{source.kind}</small></span></span></button>)}</div></div></div></section>;
@@ -1068,6 +1174,20 @@ export default function Home() {
       return [];
     }
   });
+  const [savedSignalItems, setSavedSignalItems] = useState<SavedSignalItem[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const stored = window.localStorage.getItem('hyphosphere-saved-signal-items');
+      const parsed = stored ? JSON.parse(stored) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
+  const [signalFeedEntries, setSignalFeedEntries] = useState<SignalFeedItem[]>(signalFeedItems);
+  const [signalFeedActive, setSignalFeedActive] = useState(false);
+  const [signalFeedPaused, setSignalFeedPaused] = useState(false);
+  const [signalFeedStatus, setSignalFeedStatus] = useState('CURATED LINK-READY LEADS');
   const [compareBriefId, setCompareBriefId] = useState<string | null>(null);
   const [presentationSnapshot, setPresentationSnapshot] = useState<AgentBriefSnapshot | null>(null);
   const [conceptDetailLabel, setConceptDetailLabel] = useState<string | null>(null);
@@ -1099,6 +1219,13 @@ export default function Home() {
       // Notebook entries remain available for this session when storage is unavailable.
     }
   }, [savedAgentBriefs]);
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('hyphosphere-saved-signal-items', JSON.stringify(savedSignalItems));
+    } catch {
+      // Signal leads remain available for this session when storage is unavailable.
+    }
+  }, [savedSignalItems]);
   const stateRef = useRef({ view, evidenceOnly, selectedId, followed, saved });
 
   useEffect(() => {
@@ -1355,6 +1482,26 @@ export default function Home() {
     announce('Agent brief saved to your notebook. Compare it with the existing Hyphosphere assets.');
   }, [announce]);
 
+  const saveSignal = useCallback((item: SignalFeedItem) => {
+    setSavedSignalItems((current) => current.some((savedItem) => savedItem.id === item.id) ? current : [...current, { ...item, savedAt: new Date().toISOString() }]);
+    setAgentMessage(`Signal lead saved: ${item.headline}`);
+    pushToast('Signal lead saved to your notebook');
+  }, [pushToast]);
+
+  const toggleSignalFeed = useCallback(() => {
+    if (!signalFeedActive) {
+      setSignalFeedActive(true);
+      setSignalFeedPaused(false);
+      setAgentMessage('Signal feed activated. Hover or focus the headlines to pause them.');
+      return;
+    }
+    setSignalFeedPaused((current) => {
+      const next = !current;
+      setAgentMessage(next ? 'Signal feed paused for inspection.' : 'Signal feed resumed.');
+      return next;
+    });
+  }, [signalFeedActive]);
+
   const exportDiscovery = useCallback(() => {
     const markdown = `# The service beneath the surface\n\nSaved from Hyphosphere on 31 August 2026.\n\n## Finding\nAtlas Relay appears across the Northline cohort and the Greybox traces dataset. The service connection is supported; the extension to Invite fragment remains inferred.\n\n## Evidence state\n- Verified: Greybox traces recurrence\n- Supported: Northline cohort → Atlas Relay\n- Inferred: Atlas Relay → Invite fragment\n- Disputed: The Long Arc → Quiet Harbor CDN\n\n## Investigation trail\nNorthline cohort → Atlas Relay → Greybox traces → Invite fragment\n\n## Source classes\nReporting · archived webpages · dataset · platform artefacts · commercial services · infrastructure records\n`;
     const blob = new Blob([markdown], { type: 'text/markdown' });
@@ -1390,6 +1537,44 @@ export default function Home() {
       saveAgentBrief(agentBriefSnapshot);
       return { ok: true, action, result: 'agent brief saved to notebook', query: agentBriefSnapshot.query, retained: agentBriefSnapshot.keptIds.length };
     }
+    if (action === 'publish_signal_feed') {
+      const rawItems = Array.isArray(input.items) ? input.items : [];
+      const validLayers = stackLayerDetails.map((detail) => detail.layer);
+      const normalized = rawItems.map((raw, index) => {
+        if (!raw || typeof raw !== 'object') return null;
+        const record = raw as Record<string, unknown>;
+        const headline = typeof record.headline === 'string' ? record.headline.trim() : '';
+        const sourceTitle = typeof record.sourceTitle === 'string' ? record.sourceTitle.trim() : '';
+        const sourceUrl = typeof record.sourceUrl === 'string' ? record.sourceUrl.trim() : '';
+        if (!headline || !sourceTitle || !sourceUrl.startsWith('https://')) return null;
+        const stackLayers = Array.isArray(record.stackLayers) ? record.stackLayers.filter((layer): layer is StackLayer => typeof layer === 'string' && validLayers.includes(layer as StackLayer)) : [];
+        return {
+          id: `agent-signal:${Date.now()}-${index}`,
+          headline,
+          sourceTitle,
+          sourceKind: typeof record.sourceKind === 'string' ? record.sourceKind : 'AGENT SOURCE',
+          sourceUrl,
+          freshness: typeof record.freshness === 'string' ? record.freshness : 'agent supplied · current fetch',
+          infowarLabel: typeof record.infowarLabel === 'string' ? record.infowarLabel : 'information warfare relevance',
+          stackLayers: stackLayers.length ? stackLayers : ['Visible story / reporting'],
+          relevance: typeof record.relevance === 'string' ? record.relevance : 'agent-ranked lead for researcher review',
+        } satisfies SignalFeedItem;
+      }).filter((item): item is SignalFeedItem => Boolean(item));
+      if (!normalized.length) return { ok: false, action, error: 'Supply at least one HTTPS headline with sourceTitle, sourceUrl, and optional stack labels.' };
+      setSignalFeedEntries(normalized);
+      setSignalFeedStatus('AGENT SUPPLIED · REVIEW LINKS');
+      setSignalFeedActive(true);
+      setSignalFeedPaused(false);
+      setAgentMessage(`Agent supplied ${normalized.length} signal lead${normalized.length === 1 ? '' : 's'} for review.`);
+      return { ok: true, action, status: 'agent-mediated signal feed published', count: normalized.length, items: normalized.map((item) => ({ headline: item.headline, sourceTitle: item.sourceTitle, sourceUrl: item.sourceUrl, infowarLabel: item.infowarLabel, stackLayers: item.stackLayers, relevance: item.relevance })) };
+    }
+    if (action === 'save_signal_feed_item') {
+      const itemId = typeof input.itemId === 'string' ? input.itemId : '';
+      const item = signalFeedEntries.find((entry) => entry.id === itemId);
+      if (!item) return { ok: false, action, error: 'Signal item not found in the active feed.' };
+      saveSignal(item);
+      return { ok: true, action, result: 'signal lead saved to notebook', item: { headline: item.headline, sourceUrl: item.sourceUrl } };
+    }
     if (action === 'draft_possible_output') {
       setView('outputs');
       setConceptDetailLabel(null);
@@ -1421,7 +1606,7 @@ export default function Home() {
       return { ok: true, action, query, scope, stackLayer, visibleSurface: 'agent research brief', scopeNote: scope === 'web' ? 'Live web import is not connected in this proof of concept; use the linked source index as a starting point.' : scope === 'curated' ? 'Results are from the reproducible local demonstration corpus.' : 'Results combine local demonstration records with the linked source index; no live web fetch is implied.', objects: scope === 'web' ? [] : matchingNodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind, source: node.source, stackLayers: node.stackLayers })), externalSources: scope === 'curated' ? [] : matchingSources.map((source) => ({ id: source.id, title: source.title, provider: source.provider, url: source.url, stackLayers: sourceStackLayers(source), access: source.access })) };
     }
     return { ok: false, error: 'Unknown action' };
-  }, [agentBriefSnapshot, followNode, openEvidence, saveAgentBrief, saveDiscovery, toggleVerified]);
+  }, [agentBriefSnapshot, followNode, openEvidence, saveAgentBrief, saveDiscovery, saveSignal, signalFeedEntries, toggleVerified]);
 
   useEffect(() => {
     const documentWithModelContext = document as Document & {
@@ -1441,10 +1626,12 @@ export default function Home() {
     modelContext.registerTool({ name: 'show_terrain', description: 'Switch the shared investigation to the source Terrain view.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('show_terrain'));
     modelContext.registerTool({ name: 'save_discovery', description: 'Save the active finding with its trail and evidence distinctions.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('save_discovery'));
     modelContext.registerTool({ name: 'draft_possible_output', description: 'Draft a cautious possible output from the active cluster: a suggestive cluster summary and a micro case study with related reporting links. This does not convert a hypothesis into a verified finding.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('draft_possible_output'));
-    modelContext.registerTool({ name: 'list_source_collections', description: 'List every linked database, dataset, report, and repository available in the Hyphosphere research index, optionally filtered to one ecommerce stack level. Returns original resource URLs and access notes; these are linked sources, not downloaded or imported records.', inputSchema: { type: 'object', properties: { stackLayer: { type: 'string', enum: [...stackLayerDetails.map((item) => item.layer)], description: 'Optional ecommerce stack level to filter by.' } } } }, (input) => runAgentAction('list_source_collections', input));
-    modelContext.registerTool({ name: 'search_research', description: 'Search the selected Hyphosphere research scope and optional ecommerce stack level. Choose web for the link-ready web-source index, curated for local demonstration records, or both to cross-check them. Live web/database import is not connected in this proof of concept.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A research term, dataset name, provider, or source type.' }, scope: { type: 'string', enum: ['web', 'curated', 'both'], description: 'Search web, curated records, or both. Defaults to both.' }, stackLayer: { type: 'string', enum: [...stackLayerDetails.map((item) => item.layer)], description: 'Optional stack level filter. Omit to search all six levels.' } }, required: ['query'] } }, (input) => runAgentAction('search_research', input));
-    modelContext.registerTool({ name: 'run_research_brief', description: 'Run the visible agent-assisted research brief, placing a small candidate set on screen for the researcher to inspect and retain. Use the source scope and ecommerce stack filter when useful; live import is not connected in this proof of concept.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A focused research question.' }, scope: { type: 'string', enum: ['web', 'curated', 'both'], description: 'Search web, curated records, or both. Defaults to both.' }, stackLayer: { type: 'string', enum: [...stackLayerDetails.map((item) => item.layer)], description: 'Optional stack level filter.' } }, required: ['query'] } }, (input) => runAgentAction('search_research', input));
+    modelContext.registerTool({ name: 'list_source_collections', description: 'List every linked database, dataset, report, and repository available in the Hyphosphere research index, optionally filtered to one ecommerce stack level. Returns original resource URLs and access notes; these are linked sources, not downloaded or imported records.', inputSchema: { type: 'object', properties: { stackLayer: { type: 'string', enum: stackLayerDetails.map((item) => item.layer), description: 'Optional ecommerce stack level to filter by.' } } } }, (input) => runAgentAction('list_source_collections', input));
+    modelContext.registerTool({ name: 'search_research', description: 'Search the selected Hyphosphere research scope and optional ecommerce stack level. Choose web for the link-ready web-source index, curated for local demonstration records, or both to cross-check them. Live web/database import is not connected in this proof of concept.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A research term, dataset name, provider, or source type.' }, scope: { type: 'string', enum: ['web', 'curated', 'both'], description: 'Search web, curated records, or both. Defaults to both.' }, stackLayer: { type: 'string', enum: stackLayerDetails.map((item) => item.layer), description: 'Optional stack level filter. Omit to search all six levels.' } }, required: ['query'] } }, (input) => runAgentAction('search_research', input));
+    modelContext.registerTool({ name: 'run_research_brief', description: 'Run the visible agent-assisted research brief, placing a small candidate set on screen for the researcher to inspect and retain. Use the source scope and ecommerce stack filter when useful; live import is not connected in this proof of concept.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A focused research question.' }, scope: { type: 'string', enum: ['web', 'curated', 'both'], description: 'Search web, curated records, or both. Defaults to both.' }, stackLayer: { type: 'string', enum: stackLayerDetails.map((item) => item.layer), description: 'Optional stack level filter.' } }, required: ['query'] } }, (input) => runAgentAction('search_research', input));
     modelContext.registerTool({ name: 'save_agent_brief', description: 'Save the retained visible agent research brief to the device-local Hyphosphere notebook so it can be compared with existing demo assets.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('save_agent_brief'));
+    modelContext.registerTool({ name: 'publish_signal_feed', description: 'Publish current, link-backed headlines into the visible agent-mediated signal feed. Supply HTTPS source links, information-warfare labels, ecommerce stack positions, and a brief relevance note; the researcher can pause, inspect, and decide what to save.', inputSchema: { type: 'object', properties: { items: { type: 'array', items: { type: 'object', properties: { headline: { type: 'string' }, sourceTitle: { type: 'string' }, sourceKind: { type: 'string' }, sourceUrl: { type: 'string' }, freshness: { type: 'string' }, infowarLabel: { type: 'string' }, stackLayers: { type: 'array', items: { type: 'string', enum: stackLayerDetails.map((item) => item.layer) } }, relevance: { type: 'string' } }, required: ['headline', 'sourceTitle', 'sourceUrl'] } } }, required: ['items'] } }, (input) => runAgentAction('publish_signal_feed', input));
+    modelContext.registerTool({ name: 'save_signal_feed_item', description: 'Save one item from the active agent signal feed to the device-local notebook for later comparison.', inputSchema: { type: 'object', properties: { itemId: { type: 'string', description: 'The id of the signal item to retain.' } }, required: ['itemId'] } }, (input) => runAgentAction('save_signal_feed_item', input));
   }, [runAgentAction]);
 
   const changeView = (nextView: View) => {
@@ -1476,13 +1663,17 @@ export default function Home() {
           event.preventDefault();
           changeView('concept-demo');
         }}><div className="brand-lockup"><AppMark /><div><div className="brand-name">hyphosphere</div><div className="brand-caption">research console</div></div></div></a>
-         <div className="topbar-center"><div className="topbar-project-title" aria-label="Project title"><strong>weaponised ecommerce</strong><small>infowar observatory · WebMCP proof of concept</small></div></div>
+         <div className="topbar-center"><a className="topbar-project-title" href="/" aria-label="Return to the Hyphosphere homepage" onClick={(event) => {
+           if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+           event.preventDefault();
+           changeView('concept-demo');
+         }}><span className="topbar-project-home">home</span><strong>weaponised ecommerce</strong><small>infowar observatory · WebMCP proof of concept</small></a></div>
         <div className="topbar-actions"><button type="button" className={`sound-toggle ${soundEnabled ? 'is-on' : ''}`} onClick={toggleSound} aria-pressed={soundEnabled} aria-label={soundEnabled ? 'Mute interface sounds' : 'Enable interface sounds'} title={soundEnabled ? 'Mute interface sounds' : 'Enable interface sounds'} data-sound="none">{soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}</button><button className={`topbar-status agent-status-link ${webmcpReady ? 'is-ready' : ''}`} onClick={() => setConnectionStatusOpen((open) => !open)} aria-expanded={connectionStatusOpen} aria-controls="hyphosphere-connection-status" aria-label="Open human and agent connection status"><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} /> <span>{webmcpReady ? 'agent link ready' : 'local corpus'}</span></button></div>{connectionStatusOpen && <div id="hyphosphere-connection-status" className={`connection-status-panel connection-status-popover connection-status-origin-${connectionStatusOrigin} ${webmcpReady ? 'is-ready' : ''}`} aria-live="polite"><div className="connection-status-head"><span className="drawer-label">CONNECTION STATUS</span><strong>{webmcpReady ? 'LINKED' : 'LOCAL MODE'}</strong></div><h3>{webmcpReady ? 'An agent can use this field.' : 'This field is running locally.'}</h3><p>{webmcpReady ? 'The agent can use structured actions for follow, evidence, terrain, save, and search. You retain responsibility for judging sources and claims.' : 'No agent is connected in this browser. The investigation still works as a self-contained demo, and a compatible WebMCP-enabled browser may expose these actions.'}</p><button className="connection-status-close" onClick={() => setConnectionStatusOpen(false)}>Close status</button></div>}
       </header>
 
       <div className="workspace-grid">
         <section className="main-stage">
-          <PatchworkAreaRibbon view={view} savedCount={(saved ? 1 : 0) + savedAgentBriefs.length} notebookOpen={notebookOpen} onChangeView={changeView} onOpenNotebook={() => { setNotebookOpen(true); setMobileNavOpen(false); setAgentMessage(saved || savedAgentBriefs.length ? 'Notebook opened: saved findings and agent briefs are ready for review.' : 'Notebook opened. Save a discovery or agent brief to keep a trail here.'); }} />
+          <PatchworkAreaRibbon view={view} savedCount={(saved ? 1 : 0) + savedAgentBriefs.length + savedSignalItems.length} notebookOpen={notebookOpen} onChangeView={changeView} onOpenNotebook={() => { setNotebookOpen(true); setMobileNavOpen(false); setAgentMessage(saved || savedAgentBriefs.length || savedSignalItems.length ? 'Notebook opened: saved findings, signal leads, and agent briefs are ready for review.' : 'Notebook opened. Save a discovery, signal lead, or agent brief to keep a trail here.'); }} />
           <div className={`main-stage-identity identity-view-${view}`} aria-hidden="true"><BranchField /></div>
            {view === 'concept-demo' ? <>
           <div className="story-intro">
@@ -1506,6 +1697,7 @@ export default function Home() {
             </div>
           </div>
           <AgentBriefSurface onOpenExample={openExample} onOpenCollection={openCollection} onOpenEvidence={openEvidence} onOpenOutputs={() => changeView('outputs')} onSaveBrief={saveAgentBrief} onOpenPresentation={setPresentationSnapshot} agentRequest={agentBriefRequest} onBriefStateChange={handleBriefStateChange} />
+          <SignalFeed items={signalFeedEntries} savedIds={savedSignalItems.map((item) => item.id)} active={signalFeedActive} paused={signalFeedPaused} status={signalFeedStatus} onToggleActive={toggleSignalFeed} onSave={saveSignal} onOpenExample={openExample} />
           <EvidenceRibbon onOpenExample={openExample} onOpenDatasets={() => changeView('artifacts')} />
           </> : <>
            {isActiveInvestigationView && <>
@@ -1532,7 +1724,7 @@ export default function Home() {
       {stackLayerDetail && <dialog open className="stack-layer-dialog" aria-label={`Commercial stack layer: ${stackLayerDetail.layer}`}><div className="stack-layer-dialog-card"><div className="stack-layer-dialog-head"><div><span className="eyebrow-label">COMMERCIAL STACK · LEVEL {stackLayerDetails.findIndex((item) => item.layer === stackLayerDetail.layer) + 1}</span><h2>{stackLayerDetail.layer}</h2></div><button className="icon-button" onClick={() => setStackLayerDetailLabel(null)} aria-label="Close stack layer explanation"><X size={17} /></button></div><div className={`stack-layer-dialog-band stack-learning-${stackLayerDetail.accent}`}><span>WHAT THIS LEVEL CONTAINS</span><strong>{stackLayerDetail.shortLabel}</strong><p>{stackLayerDetail.detail}</p></div><div className="stack-layer-dialog-copy"><div><span>WHY IT MATTERS</span><p>{stackLayerDetail.significance}</p></div><div><span>HOW TO USE IT</span><p>Look for traces at this level, then compare them with the levels above and below. A trace can occupy more than one level, and a match does not establish intent or responsibility.</p></div></div><div className="stack-layer-evidence"><div className="stack-layer-evidence-head"><span>CONNECTED MATERIAL</span><small>{stackLayerNodes.length} demo object{stackLayerNodes.length === 1 ? '' : 's'} · {stackLayerSources.length} external collection{stackLayerSources.length === 1 ? '' : 's'}</small></div>{stackLayerNodes.length > 0 && <div className="stack-layer-evidence-group"><span className="stack-layer-evidence-label">IN THE DEMO</span>{stackLayerNodes.map((node) => <button type="button" className="stack-layer-evidence-row" key={node.id} onClick={() => { setStackLayerDetailLabel(null); openEvidence(node.id); }}><span className={`artifact-icon artifact-${node.accent}`}><NodeIcon kind={node.kind} /></span><span><strong>{node.label}</strong><small>{node.kind} · {node.source} · {node.evidence}</small></span><ChevronRight size={14} /></button>)}</div>}{stackLayerSources.length > 0 && <div className="stack-layer-evidence-group"><span className="stack-layer-evidence-label">REPORTING &amp; DATA COLLECTIONS</span>{stackLayerSources.map((source) => <div className="stack-layer-evidence-row stack-layer-source-row" key={source.id}><span className="stack-source-mark"><Database size={14} /></span><span><strong>{source.title}</strong><small>{source.provider} · {source.kind}</small></span><span className="stack-layer-source-actions"><button type="button" onClick={() => { setStackLayerDetailLabel(null); openCollection(source.id); }}>Profile</button><button type="button" onClick={() => { setStackLayerDetailLabel(null); openExample(source.id); }}>Citation</button><a href={source.url} target="_blank" rel="noreferrer" aria-label={`Open original source for ${source.title}`}><ExternalLink size={13} /></a></span></div>)}</div>}{!stackLayerNodes.length && !stackLayerSources.length && <p className="stack-layer-no-evidence">No linked examples are assigned to this level yet. Use the level as a question for future collection work.</p>}<p className="stack-layer-evidence-note">These examples show where a record can sit in the teaching model. They do not prove that the organisations or services are part of one operation.</p></div><div className="stack-layer-dialog-actions"><button className="quiet-button" onClick={() => setStackLayerDetailLabel(null)}>Close explanation</button><button className="primary-button" onClick={() => { setStackLayerDetailLabel(null); changeView('terrain'); }}>Open source layers <ChevronRight size={14} /></button></div></div></dialog>}
       {collectionSource && collectionProfileData && <dialog open className="collection-dialog" aria-label={`Collection profile for ${collectionSource.title}`}><div className="collection-dialog-card"><div className="collection-dialog-head"><div><span className="eyebrow-label">COLLECTION PROFILE · {collectionSource.kind}</span><h2>{collectionSource.title}</h2><p>{collectionSource.provider}</p></div><button className="icon-button" onClick={() => setCollectionSourceId(null)} aria-label="Close collection profile"><X size={17} /></button></div><div className="collection-dialog-notice"><Database size={15} /><p>Reading guide only: the original source remains authoritative. Hyphosphere has not imported or independently verified every record yet; checking and extending the collection is a joint researcher task.</p></div><div className="collection-profile-grid"><div><span>WHAT IT CONTAINS</span><p>{collectionProfileData.scope}</p></div><div><span>COVERAGE</span><p>{collectionProfileData.dateRange}</p></div><div><span>RECORD SHAPE</span><p>{collectionProfileData.recordShape}</p></div><div><span>WHY IT IS HERE</span><p>{collectionSource.whyIncluded}</p></div><div><span>OBSERVATORY QUESTION</span><p>{collectionProfileData.researchQuestion}</p></div><div><span>LIMITATIONS</span><p>{collectionProfileData.limitations}</p></div></div><div className="collection-stack-section"><span className="eyebrow-label">STACK POSITION IN THIS DEMO</span><StackLayerPills layers={sourceStackLayers(collectionSource)} /><p>The label shows which part of the enabling assemblage this collection helps a researcher inspect. A collection can touch more than one layer.</p></div><div className="collection-dialog-actions"><button className="quiet-button" onClick={() => { setCollectionSourceId(null); openExample(collectionSource.id); }}><FileText size={14} /> Open citation</button><button className="quiet-button" onClick={() => setCollectionSourceId(null)}>Close profile</button><a className="primary-button" href={collectionSource.url} target="_blank" rel="noreferrer">Open original source <ExternalLink size={14} /></a></div></div></dialog>}
       {notebookOpen && <dialog open id="hyphosphere-notebook" className="notebook-dialog" aria-label="Hyphosphere notebook"><div className="notebook-dialog-card"><div className="notebook-dialog-head"><div><span className="eyebrow-label">NOTEBOOK · SAVED DISCOVERY</span><h2>Your investigation notebook</h2><p>{saved ? 'A compact record of what you followed, what supports it, and what remains open.' : 'A place to keep a finding once you are ready to return to it.'}</p></div><button className="icon-button" onClick={() => setNotebookOpen(false)} aria-label="Close notebook"><X size={17} /></button></div>{saved ? <div className="notebook-content"><div className="notebook-finding"><div className="notebook-finding-top"><span><Bookmark size={14} /> SAVED FINDING</span><span>LOCAL DEMO CORPUS</span></div><h3>The service beneath the surface</h3><p>Atlas Relay appears across the Northline cohort and the Greybox traces dataset. The service connection is supported; the extension to Invite fragment remains inferred.</p></div><div className="notebook-grid"><section className="notebook-section"><span className="drawer-label">INVESTIGATION TRAIL</span><div className="notebook-trail">{['Northline cohort', 'Atlas Relay', 'Greybox traces', 'Invite fragment'].map((label, index) => <div key={label}><span>{(index + 1).toString().padStart(2, '0')}</span><strong>{label}</strong></div>)}</div></section><section className="notebook-section"><span className="drawer-label">EVIDENCE STATES</span><div className="notebook-evidence-list"><div><EvidencePill state="verified" /><span>Greybox recurrence</span></div><div><EvidencePill state="supported" /><span>Northline → Atlas Relay</span></div><div><EvidencePill state="inferred" /><span>Atlas Relay → Invite fragment</span></div><div><EvidencePill state="disputed" /><span>The Long Arc → Quiet Harbor CDN</span></div></div></section></div><div className="notebook-note"><CircleHelp size={15} /><p>Saving preserves the path and its uncertainty; it does not turn an inference into a verified claim. In this proof of concept, the notebook is session-local. Export Markdown to keep a durable copy.</p></div></div> : <div className="notebook-empty"><Bookmark size={28} /><h3>Nothing saved yet.</h3><p>Start with Atlas Relay, follow a relationship, and save the finding when you want to keep the trail for later.</p><button className="primary-button" onClick={() => { setNotebookOpen(false); setSelectedId('service'); changeView('thread'); }}>Start the investigation <ChevronRight size={14} /></button></div>}<div className="notebook-dialog-actions">{saved && <button className="quiet-button" onClick={() => { setNotebookOpen(false); setSelectedId('service'); changeView('thread'); }}>Open followed path <ChevronRight size={14} /></button>}{saved && <button className="primary-button" onClick={exportDiscovery}><Download size={14} /> Export Markdown</button>}<button className="quiet-button" onClick={() => setNotebookOpen(false)}>Close notebook</button></div></div></dialog>}
-      {notebookOpen && savedAgentBriefs.length > 0 && <AgentBriefNotebookDialog briefs={savedAgentBriefs} onClose={() => setNotebookOpen(false)} onCompare={(id) => { setNotebookOpen(false); setCompareBriefId(id); }} />}
+      {notebookOpen && (savedAgentBriefs.length > 0 || savedSignalItems.length > 0) && <AgentBriefNotebookDialog briefs={savedAgentBriefs} signalItems={savedSignalItems} onClose={() => setNotebookOpen(false)} onCompare={(id) => { setNotebookOpen(false); setCompareBriefId(id); }} />}
       {compareBrief && <AgentBriefCompareDialog brief={compareBrief} onClose={() => setCompareBriefId(null)} />}
     </main>
   );
