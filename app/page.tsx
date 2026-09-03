@@ -536,7 +536,11 @@ const sourceVisualKind = (source: ResearchSource): SourceVisualKind => {
   return 'record';
 };
 
-function ExampleThumbnail({ source, compact = false }: { source: ResearchSource; compact?: boolean }) {
+function ExampleThumbnail({ source, compact = false, dialog = false }: { source: ResearchSource; compact?: boolean; dialog?: boolean }) {
+  if (dialog || !compact) {
+    const sourceIndex = Math.max(0, externalSources.findIndex((item) => item.id === source.id)) % 6;
+    return <div className="example-dialog-source-visual" style={{ backgroundPosition: `center, ${sourceIndex * 20}% center` }} role="img" aria-label={`Illustrative evidence visual for ${source.title}`}><div className="example-dialog-source-visual-label"><span>ILLUSTRATIVE EVIDENCE VISUAL · PANEL {(sourceIndex + 1).toString().padStart(2, '0')}</span><strong>{source.example.label}</strong></div></div>;
+  }
   const visualKind = sourceVisualKind(source);
   const firstField = source.example.fields[0];
   const secondField = source.example.fields[1];
