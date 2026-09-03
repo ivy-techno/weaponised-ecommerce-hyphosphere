@@ -637,6 +637,15 @@ const collectionProfile = (source: ResearchSource): CollectionProfile => collect
   researchQuestion: source.whyIncluded,
 };
 
+const possibleOutput = {
+  clusterTitle: 'Northline cohort → Atlas Relay → Greybox traces → The Long Arc',
+  clusterSummary: 'Suggestive of a recurring enabling layer crossing case material, a commercial service record, a dataset, and public reporting.',
+  caseStudyTitle: 'Atlas Relay: a service beneath two public stories',
+  caseStudyBody: 'The cluster begins with two cases whose public stories differ. Atlas Relay is the ordinary service layer worth testing between them; Greybox traces provide a structured recurrence, while The Long Arc adds public sequence. Read alongside broader reporting on cross-platform influence operations and the commercial influence industry, the cluster becomes a research lead about the enabling field—not a claim that those sources document Atlas Relay itself.',
+  relatedReporting: ['graphika-cheap-tricks', 'tactical-tech-influence-industry'],
+  reviewNote: 'Possible output only: a researcher must inspect the linked material, check geography and time, and decide which relationships survive review.',
+};
+
 const edges: ResearchEdge[] = [
   {
     id: 'northline-service',
@@ -821,6 +830,11 @@ function StackLayerPills({ layers }: { layers: StackLayer[] }) {
   const total = stackLayerDetails.length;
   const numberedLayers = layers.map((layer) => ({ layer, number: stackLayerDetails.findIndex((item) => item.layer === layer) + 1 }));
   return <span className="stack-layer-pills" aria-label={`Ecommerce stack position: ${numberedLayers.map(({ layer, number }) => `level ${number} of ${total}, ${layer}`).join('; ')}`}>{numberedLayers.map(({ layer, number }) => <span className="stack-layer-pill" key={layer}><b>{number.toString().padStart(2, '0')} / {total.toString().padStart(2, '0')}</b><span>{layer}</span></span>)}</span>;
+}
+
+function PossibleOutputPanel({ onOpenArtifacts }: { onOpenArtifacts: () => void }) {
+  const reporting = possibleOutput.relatedReporting.map((id) => externalSources.find((source) => source.id === id)).filter((source): source is ResearchSource => Boolean(source));
+  return <section className="possible-output-panel" aria-label="Possible WebMCP research output"><div className="possible-output-head"><div><span className="eyebrow-label">WEBMCP OUTPUTS · DRAFT FOR RESEARCHER REVIEW</span><h3>What might the instrument produce?</h3><p>A candidate cluster can be summarised without collapsing it into a conclusion, then expanded into a short case study with linked reporting for context.</p></div><span className="possible-output-status">POSSIBLE OUTPUT</span></div><div className="possible-output-grid"><article className="possible-output-card possible-output-cluster"><span className="possible-output-label">01 · SUGGESTED CLUSTER</span><strong>{possibleOutput.clusterTitle}</strong><p>{possibleOutput.clusterSummary}</p><div className="possible-output-meta"><span>LEAD STATUS</span><b>suggestive · supported + verified</b></div></article><article className="possible-output-card possible-output-case"><span className="possible-output-label">02 · MICRO CASE STUDY DRAFT</span><strong>{possibleOutput.caseStudyTitle}</strong><p>{possibleOutput.caseStudyBody}</p><div className="possible-output-links"><span>RELATED REPORTING FOR CONTEXT</span>{reporting.map((source) => <a key={source.id} href={source.url} target="_blank" rel="noreferrer">{source.title} · {source.provider} <ExternalLink size={12} /></a>)}</div></article></div><div className="possible-output-footer"><p><CircleHelp size={14} /> {possibleOutput.reviewNote}</p><button className="quiet-button" onClick={onOpenArtifacts}><Archive size={14} /> Inspect research artifacts <ChevronRight size={13} /></button></div></section>;
 }
 
 function AppMark() {
@@ -1122,6 +1136,12 @@ export default function Home() {
       saveDiscovery();
       return { ok: true, action, result: 'discovery saved' };
     }
+    if (action === 'draft_possible_output') {
+      setView('concepts');
+      setConceptDetailLabel(null);
+      setAgentMessage('Possible output drafted: candidate cluster and micro case study are ready for researcher review.');
+      return { ok: true, action, status: 'draft for researcher review', cluster: possibleOutput.clusterTitle, summary: possibleOutput.clusterSummary, microCaseStudy: { title: possibleOutput.caseStudyTitle, body: possibleOutput.caseStudyBody }, relatedReporting: possibleOutput.relatedReporting.map((id) => externalSources.find((source) => source.id === id)).filter((source): source is ResearchSource => Boolean(source)).map((source) => ({ title: source.title, provider: source.provider, url: source.url })), caveat: possibleOutput.reviewNote };
+    }
     if (action === 'show_terrain') {
       setView('terrain');
       setAgentMessage('Terrain view opened: source ecology is now in focus.');
@@ -1155,6 +1175,7 @@ export default function Home() {
     modelContext.registerTool({ name: 'set_evidence_threshold', description: 'Change the evidence threshold for the shared investigation state.', inputSchema: { type: 'object', properties: { verifiedOnly: { type: 'boolean', description: 'Only show verified relationships.' } } } }, (input) => runAgentAction('set_evidence_threshold', input));
     modelContext.registerTool({ name: 'show_terrain', description: 'Switch the shared investigation to the source Terrain view.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('show_terrain'));
     modelContext.registerTool({ name: 'save_discovery', description: 'Save the active finding with its trail and evidence distinctions.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('save_discovery'));
+    modelContext.registerTool({ name: 'draft_possible_output', description: 'Draft a cautious possible output from the active cluster: a suggestive cluster summary and a micro case study with related reporting links. This does not convert a hypothesis into a verified finding.', inputSchema: { type: 'object', properties: {} } }, () => runAgentAction('draft_possible_output'));
     modelContext.registerTool({ name: 'search_research', description: 'Search local research objects and the curated external source index, returning original links for external datasets and reports.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'A research term, dataset name, provider, or source type.' } }, required: ['query'] } }, (input) => runAgentAction('search_research', input));
   }, [runAgentAction]);
 
@@ -1286,6 +1307,7 @@ function CorpusView({ mode, selectedId, onSelect, onOpenEvidence, onOpenExample,
 
   return (
     <div className="corpus-view">
+      {concepts && <PossibleOutputPanel onOpenArtifacts={() => onChangeMode('artifacts')} />}
       <div className="surface-header">
         <div>
           <span className="eyebrow-label">{concepts ? 'RESEARCH CONCEPTS' : 'RESEARCH ARTIFACTS'}</span>
