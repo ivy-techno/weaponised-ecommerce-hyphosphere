@@ -27,10 +27,12 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  Volume2,
+  VolumeX,
   Waypoints,
   X,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type View = 'thread' | 'map' | 'terrain' | 'evidence' | 'compare' | 'concepts' | 'artifacts' | 'outputs';
 type EvidenceState = 'verified' | 'supported' | 'inferred' | 'disputed';
@@ -856,6 +858,10 @@ function AppMark() {
   return <div className="app-mark" aria-hidden="true"><span /><span /><span /></div>;
 }
 
+function EvidenceRibbon({ onOpenExample }: { onOpenExample: (sourceId: string) => void }) {
+  return <section className="evidence-ribbon" aria-label="Evidence preview ribbon"><div className="evidence-ribbon-head"><span><Sparkles size={12} /> FIELD NOTES</span><small>source-shaped previews · select to inspect</small></div><div className="evidence-ribbon-track">{externalSources.slice(0, 6).map((source) => <button type="button" className={`evidence-ribbon-card ribbon-${sourceVisualKind(source)}`} key={source.id} onClick={() => onOpenExample(source.id)} aria-label={`Open preview for ${source.title}`}><ExampleThumbnail source={source} compact /><span className="evidence-ribbon-label"><strong>{source.title}</strong><small>{source.kind}</small></span></button>)}</div></section>;
+}
+
 export default function Home() {
   const [view, setView] = useState<View>('thread');
   const [selectedId, setSelectedId] = useState('service');
@@ -877,10 +883,12 @@ export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(false);
   const [scrollPromptVisible, setScrollPromptVisible] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const stageContentRef = useRef<HTMLDivElement>(null);
   const previousViewRef = useRef(view);
   const [connectionStatusOpen, setConnectionStatusOpen] = useState(false);
+  const soundContextRef = useRef<AudioContext | null>(null);
   const webmcpReady = typeof document !== 'undefined' && Boolean((document as Document & { modelContext?: unknown }).modelContext);
   const [trail, setTrail] = useState([
     { label: 'Northline cohort', detail: 'starting point', time: '09:14', active: false },
@@ -992,6 +1000,41 @@ export default function Home() {
   const pushToast = useCallback((message: string) => {
     setToast(message);
     window.setTimeout(() => setToast(''), 3600);
+  }, []);
+
+  const playUiSound = useCallback((kind: 'click' | 'reveal') => {
+    if (!soundEnabled || typeof window === 'undefined') return;
+    const AudioContextConstructor = window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextConstructor) return;
+    const audioContext = soundContextRef.current ?? new AudioContextConstructor();
+    soundContextRef.current = audioContext;
+    if (audioContext.state === 'suspended') void audioContext.resume();
+    const now = audioContext.currentTime;
+    const isReveal = kind === 'reveal';
+    const duration = isReveal ? 0.22 : 0.055;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    oscillator.type = isReveal ? 'sine' : 'triangle';
+    oscillator.frequency.setValueAtTime(isReveal ? 520 : 245, now);
+    if (isReveal) oscillator.frequency.exponentialRampToValueAtTime(720, now + duration * 0.6);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(isReveal ? 0.028 : 0.014, now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start(now);
+    oscillator.stop(now + duration + 0.02);
+  }, [soundEnabled]);
+
+  const handleSurfaceClick = useCallback((event: ReactMouseEvent<HTMLElement>) => {
+    const target = event.target instanceof Element ? event.target.closest<HTMLElement>('[data-sound], button, a') : null;
+    if (!target || target.dataset.sound === 'none' || target.getAttribute('aria-disabled') === 'true') return;
+    const isReveal = target.dataset.sound === 'reveal' || target.matches('.follow-button, .orientation-cta, .terrain-tile, .stack-learning-layer, .stack-step-button, .thread-step-card, .source-thumbnail-button, .source-example-button, .source-profile-button, .search-preview-button, .search-inspect-button');
+    playUiSound(isReveal ? 'reveal' : 'click');
+  }, [playUiSound]);
+
+  useEffect(() => () => {
+    if (soundContextRef.current) void soundContextRef.current.close();
   }, []);
 
   const announce = useCallback((message: string) => {
@@ -1158,11 +1201,11 @@ export default function Home() {
   };
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" onClickCapture={handleSurfaceClick}>
       <header className="topbar">
         <div className="brand-lockup"><AppMark /><div><div className="brand-name">hyphosphere</div><div className="brand-caption">research terrain</div></div></div>
         <div className="topbar-center"><div className="command-search-wrap"><div className="command-search"><Search size={16} /><input ref={searchInputRef} value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search objects and sources" aria-label="Search research objects and external sources" /><span className="keycap">⌘ K</span></div>{search.trim() && <div className="search-results" aria-label="Research search results"><div className="search-results-heading">RESEARCH INDEX · LOCAL + EXTERNAL</div>{searchResults.nodes.map((node) => <button key={node.id} className="search-result-row" onClick={() => { setSelectedId(node.id); setView('map'); setSearch(''); announce(`${node.label} selected in the relationship map.`); }}><span className="search-result-kind">OBJECT</span><span className="search-result-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small></span><ChevronRight size={14} /></button>)}{searchResults.sources.map((source) => <div key={source.id} className="search-result-row search-result-source"><span className="search-result-kind search-result-kind-source">SOURCE</span><span className="search-result-copy"><strong>{source.title}</strong><small>{source.provider} · {source.kind}</small></span><span className="search-result-actions"><button className="search-inspect-button" onClick={() => { openCollection(source.id); setSearch(''); }}>Profile</button><button className="search-preview-button" onClick={() => { openExample(source.id); setSearch(''); }}>Example</button><a className="search-open-link" href={source.url} target="_blank" rel="noreferrer" aria-label={`Open original source for ${source.title}`}><ExternalLink size={14} /></a></span></div>)}{!searchResults.nodes.length && !searchResults.sources.length && <div className="search-empty">No matching objects or sources. Try “troll,” “procurement,” “OCCRP,” or “ecommerce.”</div>}</div>}</div></div>
-        <div className="topbar-actions"><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} title={webmcpReady ? 'WebMCP ready' : 'WebMCP awaiting compatible browser'} /><button className={`topbar-status agent-status-link ${webmcpReady ? 'is-ready' : ''}`} onClick={() => { setConnectionStatusOpen((open) => !open); setControlsOpen(false); }} aria-expanded={connectionStatusOpen} aria-controls="hyphosphere-connection-status" aria-label="Open human and agent connection status">{webmcpReady ? 'agent link ready' : 'local corpus'}</button><div className="controls-wrap"><button className="avatar-button" onClick={() => setControlsOpen((open) => !open)} aria-expanded={controlsOpen} aria-label="Open Hyphosphere controls"><Compass size={15} /></button>{controlsOpen && <div className="controls-popover" aria-live="polite"><span>HYPHOSPHERE CONTROLS</span><strong>{webmcpReady ? 'WebMCP connection ready' : 'Deterministic corpus active'}</strong><p>{webmcpReady ? 'An agent can use the same follow, evidence, terrain, save, and search actions shown here. You remain responsible for interpreting what the evidence means.' : 'This view is self-contained. A compatible WebMCP-enabled browser may expose the site controls to an agent, while you retain the evidentiary judgement.'}</p><button onClick={() => { setControlsOpen(false); announce('Controls closed. Your investigation remains in focus.'); }}>Close</button></div>}</div></div>{connectionStatusOpen && <div id="hyphosphere-connection-status" className={`connection-status-panel connection-status-popover ${webmcpReady ? 'is-ready' : ''}`} aria-live="polite"><div className="connection-status-head"><span className="drawer-label">CONNECTION STATUS</span><strong>{webmcpReady ? 'LINKED' : 'LOCAL MODE'}</strong></div><h3>{webmcpReady ? 'An agent can use this field.' : 'This field is running locally.'}</h3><p>{webmcpReady ? 'The site exposes its follow, evidence, terrain, save, and search actions through WebMCP. You remain responsible for interpreting the evidence.' : 'A compatible WebMCP-enabled browser may expose the site controls to an agent. The current investigation still works as a self-contained research demo.'}</p><button className="connection-status-close" onClick={() => setConnectionStatusOpen(false)}>Close status</button></div>}
+        <div className="topbar-actions"><button type="button" className={`sound-toggle ${soundEnabled ? 'is-on' : ''}`} onClick={() => setSoundEnabled((enabled) => !enabled)} aria-pressed={soundEnabled} aria-label={soundEnabled ? 'Mute interface sounds' : 'Enable interface sounds'} title={soundEnabled ? 'Mute interface sounds' : 'Enable interface sounds'} data-sound="none">{soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}</button><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} title={webmcpReady ? 'WebMCP ready' : 'WebMCP awaiting compatible browser'} /><button className={`topbar-status agent-status-link ${webmcpReady ? 'is-ready' : ''}`} onClick={() => { setConnectionStatusOpen((open) => !open); setControlsOpen(false); }} aria-expanded={connectionStatusOpen} aria-controls="hyphosphere-connection-status" aria-label="Open human and agent connection status">{webmcpReady ? 'agent link ready' : 'local corpus'}</button><div className="controls-wrap"><button className="avatar-button" onClick={() => setControlsOpen((open) => !open)} aria-expanded={controlsOpen} aria-label="Open Hyphosphere controls"><Compass size={15} /></button>{controlsOpen && <div className="controls-popover" aria-live="polite"><span>HYPHOSPHERE CONTROLS</span><strong>{webmcpReady ? 'WebMCP connection ready' : 'Deterministic corpus active'}</strong><p>{webmcpReady ? 'An agent can use the same follow, evidence, terrain, save, and search actions shown here. You remain responsible for interpreting what the evidence means.' : 'This view is self-contained. A compatible WebMCP-enabled browser may expose the site controls to an agent, while you retain the evidentiary judgement.'}</p><button onClick={() => { setControlsOpen(false); announce('Controls closed. Your investigation remains in focus.'); }}>Close</button></div>}</div></div>{connectionStatusOpen && <div id="hyphosphere-connection-status" className={`connection-status-panel connection-status-popover ${webmcpReady ? 'is-ready' : ''}`} aria-live="polite"><div className="connection-status-head"><span className="drawer-label">CONNECTION STATUS</span><strong>{webmcpReady ? 'LINKED' : 'LOCAL MODE'}</strong></div><h3>{webmcpReady ? 'An agent can use this field.' : 'This field is running locally.'}</h3><p>{webmcpReady ? 'The site exposes its follow, evidence, terrain, save, and search actions through WebMCP. You remain responsible for interpreting the evidence.' : 'A compatible WebMCP-enabled browser may expose the site controls to an agent. The current investigation still works as a self-contained research demo.'}</p><button className="connection-status-close" onClick={() => setConnectionStatusOpen(false)}>Close status</button></div>}
         <button className="mobile-menu" onClick={() => setMobileNavOpen((open) => !open)} aria-label="Toggle navigation"><PanelRight size={18} /></button>
       </header>
 
@@ -1193,6 +1236,7 @@ export default function Home() {
 
         <section className="main-stage">
           <div className="story-intro"><div className="story-intro-kicker"><span className="story-dot" /><span>THESIS PROOF OF CONCEPT</span></div><div className="story-intro-text"><strong>A student researcher. A challenge…</strong><p>To find and map the digital infrastructure enabling online information operations. But a purpose built tool was needed to gather diverse traces and begin to understand the links between cases, platforms, services, datasets, and reporting. This is the first glimpse of a larger WebMCP online observatory project mapping digital phenomena: its direction remains open, and building the instrument is already part of the discovery.</p></div><div className="story-intro-role"><span>YOUR ROLE</span><strong>Choose a clue → follow the link → check the evidence</strong><small>Build the instrument while the inquiry takes shape.</small></div></div>
+          <EvidenceRibbon onOpenExample={openExample} />
           <div className="problem-framing"><div className="problem-framing-copy"><span className="eyebrow-label">WHY THIS EXISTS</span><strong>The visible post is only the surface.</strong><p>Influence operations are often encountered as posts, adverts, or takedowns. The harder question is what sits behind them: the services, data, platforms, and infrastructure that make a visible moment possible.</p><div className="webmcp-explainer"><span>WHAT WEBMCP ADDS</span><p>It lets a researcher and an AI agent work through the same evidence surface—searching, following relationships, and inspecting sources—while the researcher keeps the judgement.</p></div></div><div className="problem-framing-example"><span>ONE SIMPLE EXAMPLE</span><div className="problem-chain"><span>public advert</span><i>→</i><span>platform trace</span><i>→</i><span>shared service</span><i>→</i><span>deeper stack</span></div><p>Hyphosphere helps a researcher gather those traces and test the links without turning a pattern into proof.</p><button onClick={() => { setView('thread'); openEvidence('service'); setMobileNavOpen(false); announce('Atlas Relay example opened. The evidence drawer is now visible.'); }}>Open the Atlas Relay example <ChevronRight size={15} /></button></div></div>
           <div className="stage-heading"><div><div className="eyebrow"><span>INVESTIGATION 01</span><span className="eyebrow-line" /><span>START HERE</span></div><h1>Find what is shared.</h1><p>Hyphosphere helps you test whether the same service, platform, or infrastructure appears across different cases. Start with Atlas Relay, follow the relationship, and inspect what supports it.</p></div><div className="stage-heading-actions"><button className={`quiet-button ${evidenceOnly ? 'is-selected' : ''}`} onClick={toggleVerified}><Filter size={15} /> {evidenceOnly ? 'Verified only' : 'Full terrain'}</button><button className="primary-button" onClick={saveDiscovery}><Bookmark size={15} /> {saved ? 'Saved' : 'Save discovery'}</button></div></div>
           <div className="orientation-panel"><div className="orientation-copy"><span className="eyebrow-label">START WITH ONE RELATIONSHIP</span><strong>{followed ? 'The shared layer is now visible.' : 'Trace Atlas Relay across two cases.'}</strong><p>{followed ? 'Atlas Relay has revealed two more objects. Check what supports each connection before you save the finding.' : 'Northline cohort and Lantern House tell different stories. Atlas Relay is the ordinary layer worth testing between them.'}</p><span className="orientation-agent-note">RESEARCH CONCEPTS = ideas to test · RESEARCH ARTIFACTS = sources to inspect</span></div><div className="orientation-steps" aria-label="Guided investigation steps"><button type="button" className={`orientation-step ${selectedId === 'service' ? 'is-active' : ''}`} onClick={() => { changeView('map'); setSelectedId('service'); setMobileNavOpen(false); announce('Atlas Relay clue selected in the relationship map.'); }} aria-label="Choose the Atlas Relay clue"><b>01</b><span>Choose a clue<small>Atlas Relay is selected</small><em>Open Atlas Relay in the map</em></span></button><button type="button" className={`orientation-step ${followed ? 'is-complete' : ''}`} onClick={() => { changeView('thread'); followNode('service'); setMobileNavOpen(false); }} aria-label="Follow the Atlas Relay relationship"><b>02</b><span>Follow it<small>{followed ? 'Path opened' : 'Reveal related objects'}</small><em>Open the followed path</em></span></button><button type="button" className={`orientation-step ${evidenceOpen ? 'is-active' : ''}`} onClick={() => { changeView('evidence'); openEvidence('service'); setMobileNavOpen(false); announce('Atlas Relay evidence opened.'); }} aria-label="Check Atlas Relay evidence"><b>03</b><span>Check evidence<small>{evidenceOpen ? 'Evidence drawer open' : 'Keep uncertainty visible'}</small><em>Inspect the attached record</em></span></button><button type="button" className={`orientation-step ${saved ? 'is-complete' : ''}`} onClick={() => { saveDiscovery(); setNotebookOpen(true); setMobileNavOpen(false); }} aria-label="Save the current finding"><b>04</b><span>Save a finding<small>{saved ? 'Notebook available' : 'Export the trail'}</small><em>Open saved discovery</em></span></button></div><button className="orientation-cta" onClick={() => { if (followed) { changeView('terrain'); } else { changeView('thread'); followNode('service'); } }}>{followed ? 'Open source layers' : 'Start with Atlas Relay'} <ChevronRight size={15} /></button></div>
