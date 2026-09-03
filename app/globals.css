@@ -1353,9 +1353,11 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .primer-information { background: linear-gradient(145deg, rgb(247 253 250 / 94%), rgb(226 243 235 / 92%)); }
 .primer-stack { background: linear-gradient(145deg, rgb(255 252 242 / 95%), rgb(244 234 210 / 91%)); border-color: #ded3b9; }
 .primer-stack:hover, .primer-stack:focus-visible, .primer-stack.is-active { border-color: #d0a860; box-shadow: 0 0 0 2px rgb(208 168 96 / 17%), 0 9px 20px rgb(131 98 44 / 10%); }
-.primer-card-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.primer-card-top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; }
 .primer-card-top > b { color: var(--teal); font-family: var(--display); font-size: 21px; line-height: 1; }
 .primer-stack .primer-card-top > b { color: var(--amber); }
+.primer-card-top > span { min-width: 0; display: grid; gap: 3px; }
+.primer-card-top > span small { color: var(--ink-faint); font-size: 7px; font-weight: 800; letter-spacing: .1em; line-height: 1.2; overflow-wrap: anywhere; }
 .primer-card h2 { margin: 0; color: var(--ink); font-family: var(--display); font-size: clamp(22px, 1.8vw, 28px); line-height: 1.04; letter-spacing: -.05em; overflow-wrap: anywhere; text-wrap: balance; }
 .primer-card p, .primer-bridge p { margin: 0; color: var(--ink-soft); font-size: 11px; line-height: 1.45; }
 .primer-definition strong { color: var(--ink); }
