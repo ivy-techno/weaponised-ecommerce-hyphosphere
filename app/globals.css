@@ -1756,11 +1756,10 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .patchwork-area-panel-6 { --patchwork-position: 83.33% center; }
 .patchwork-area-panel-7 { --patchwork-position: 100% center; }
 .patchwork-area-panel-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 18%, rgb(7 35 37 / 12%) 40%, rgb(7 35 37 / 72%) 68%, rgb(5 28 30 / 96%) 100%); }
-.patchwork-area-panel-copy { min-width: 0; position: relative; z-index: 1; display: grid; gap: 3px; width: 100%; padding: 10px 10px 9px; text-shadow: 0 2px 3px rgb(3 20 22 / 100%), 0 0 9px rgb(3 20 22 / 78%); }
+.patchwork-area-panel-copy { min-width: 0; min-height: 91px; position: relative; z-index: 1; display: grid; grid-template-rows: auto auto auto auto; align-content: end; gap: 3px; width: 100%; padding: 10px 10px 9px; text-shadow: 0 2px 3px rgb(3 20 22 / 100%), 0 0 9px rgb(3 20 22 / 78%); }
 .patchwork-area-panel-copy b { color: #ffda95; font-family: var(--display); font-size: 17px; line-height: 1; text-shadow: 0 1px 2px rgb(4 24 26 / 96%), 0 0 7px rgb(4 24 26 / 58%); }
 .patchwork-area-panel-copy strong { min-width: 0; overflow: hidden; color: #fffef5; font-size: 11px; line-height: 1.15; text-overflow: ellipsis; text-shadow: 0 1px 2px rgb(4 24 26 / 100%), 0 0 7px rgb(4 24 26 / 72%); white-space: nowrap; }
 .patchwork-area-panel-copy small { min-width: 0; overflow: hidden; color: #edf8f1; font-size: 8px; font-weight: 650; line-height: 1.2; text-overflow: ellipsis; text-shadow: 0 1px 2px rgb(4 24 26 / 100%), 0 0 6px rgb(4 24 26 / 78%); text-transform: uppercase; white-space: nowrap; }
-.patchwork-area-panel-tag { color: #ffda95; font-size: 8px; font-weight: 900; letter-spacing: .14em; line-height: 1; text-shadow: 0 1px 2px rgb(4 24 26 / 100%), 0 0 7px rgb(4 24 26 / 68%); }
 .patchwork-area-panel-copy em { display: inline-flex; align-items: center; gap: 3px; color: #ffda95; font-size: 7px; font-style: normal; font-weight: 800; opacity: 0; text-shadow: 0 2px 3px rgb(3 20 22 / 100%), 0 0 9px rgb(3 20 22 / 82%); transform: translateY(4px); transition: opacity 180ms ease, transform 180ms ease; }
 .patchwork-area-panel-copy em svg { transition: transform 180ms ease; }
 .patchwork-area-panel:hover::before, .patchwork-area-panel:focus-visible::before, .patchwork-area-panel.is-active::before { filter: var(--graphic-filter) saturate(1.06); transform: scale(1.04); }

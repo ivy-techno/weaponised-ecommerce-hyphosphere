@@ -1047,14 +1047,14 @@ function BranchField() {
 }
 
 function PatchworkAreaRibbon({ view, savedCount, notebookOpen, onChangeView, onOpenNotebook }: { view: View; savedCount: number; notebookOpen: boolean; onChangeView: (view: View) => void; onOpenNotebook: () => void }) {
-  const panels: Array<{ view?: View; label: string; detail: string; action: string; tag?: string; activeViews?: View[] }> = [
-    { view: 'concept-demo', label: 'Curated demo', detail: 'orientation + definitions', action: 'Open the search demo', tag: 'SEARCH!' },
+  const panels: Array<{ view?: View; label: string; detail: string; action: string; activeViews?: View[] }> = [
+    { view: 'concept-demo', label: 'Curated demo', detail: 'orientation + definitions', action: 'Open the search demo' },
     { view: 'investigations', label: 'Investigation paths', detail: 'one problem · many readings', action: 'Choose a path', activeViews: ['investigations', 'thread', 'map', 'evidence', 'compare'] },
     { view: 'terrain', label: 'Source ecology', detail: 'six enabling levels', action: 'Explore the layers' },
     { view: 'concepts', label: 'Concepts & theories', detail: 'ideas to test', action: 'Open the lenses' },
     { view: 'artifacts', label: 'Research artifacts', detail: 'sources to inspect', action: 'Inspect the records' },
     { view: 'outputs', label: 'Possible outputs', detail: 'notes to make', action: 'See what can emerge' },
-    { label: 'Saved notebook', detail: savedCount ? `${savedCount} saved trail${savedCount === 1 ? '' : 's'}` : 'retain a trail', action: 'Open saved work', tag: 'SAVE!' },
+    { label: 'Saved notebook', detail: savedCount ? `${savedCount} saved trail${savedCount === 1 ? '' : 's'}` : 'retain a trail', action: 'Open saved work' },
   ];
   return (
     <nav className="patchwork-area-ribbon" aria-label="Hyphosphere research areas">
@@ -1069,7 +1069,7 @@ function PatchworkAreaRibbon({ view, savedCount, notebookOpen, onChangeView, onO
             onChangeView(panel.view);
             if (panel.view === 'concept-demo') window.requestAnimationFrame(() => document.querySelector('.agent-brief-surface')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
           };
-          return <a href={href} key={panel.label} className={`patchwork-area-panel patchwork-area-panel-${index + 1} ${active ? 'is-active' : ''}`} onClick={panel.view ? handleClick : (event) => { if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); onOpenNotebook(); }} aria-label={`${panel.label}: ${panel.action}`} aria-selected={active} role="tab"><span className="patchwork-area-panel-shade" /><span className="patchwork-area-panel-copy"><b>{index.toString().padStart(2, '0')}</b><strong>{panel.label}</strong><small>{panel.detail}</small>{panel.tag && <span className="patchwork-area-panel-tag">{panel.tag}</span>}<em>{panel.action} <ChevronRight size={12} /></em></span></a>;
+          return <a href={href} key={panel.label} className={`patchwork-area-panel patchwork-area-panel-${index + 1} ${active ? 'is-active' : ''}`} onClick={panel.view ? handleClick : (event) => { if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); onOpenNotebook(); }} aria-label={`${panel.label}: ${panel.action}`} aria-selected={active} role="tab"><span className="patchwork-area-panel-shade" /><span className="patchwork-area-panel-copy"><b>{index.toString().padStart(2, '0')}</b><strong>{panel.label}</strong><small>{panel.detail}</small><em>{panel.action} <ChevronRight size={12} /></em></span></a>;
         })}
       </div>
     </nav>
