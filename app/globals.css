@@ -89,7 +89,7 @@ button { cursor: pointer; }
 .keycap { padding: 3px 6px; border: 1px solid #d2dfdb; border-radius: 5px; font-size: 10px; color: var(--ink-faint); white-space: nowrap; }
 .topbar-actions { justify-content: flex-end; gap: 8px; }
 .controls-wrap { position: relative; }
-.controls-popover { width: 190px; position: absolute; top: calc(100% + 12px); right: 0; z-index: 50; display: grid; gap: 5px; padding: 12px; color: var(--ink-soft); background: #f8fbf7; border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 12px 30px rgb(31 62 58 / 15%); font-size: 10px; }
+.controls-popover { width: min(290px, calc(100vw - 32px)); max-height: calc(100vh - 96px); overflow-y: auto; position: fixed; top: 76px; right: 20px; z-index: 50; display: grid; gap: 5px; padding: 12px; color: var(--ink-soft); background: #f8fbf7; border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 12px 30px rgb(31 62 58 / 15%); font-size: 10px; animation: toast-in 180ms ease both; }
 .controls-popover span { color: var(--teal); font-size: 8px; font-weight: 800; letter-spacing: .12em; }
 .controls-popover strong { color: var(--ink); font-size: 10px; }
 .controls-popover p { margin: 4px 0 2px; color: var(--ink-soft); font-size: 9px; line-height: 1.4; }
