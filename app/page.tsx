@@ -997,7 +997,7 @@ function EvidenceRibbon({ onOpenExample }: { onOpenExample: (sourceId: string) =
 }
 
 export default function Home() {
-  const [view, setView] = useState<View>('thread');
+  const [view, setView] = useState<View>('concept-demo');
   const [selectedId, setSelectedId] = useState('service');
   const [evidenceOnly, setEvidenceOnly] = useState(false);
   const [followed, setFollowed] = useState(false);
