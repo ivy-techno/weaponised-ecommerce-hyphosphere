@@ -1135,20 +1135,36 @@ export default function Home() {
     soundContextRef.current = audioContext;
     if (audioContext.state === 'suspended') void audioContext.resume();
     const now = audioContext.currentTime;
-    const isReveal = kind === 'reveal';
-    const duration = isReveal ? 0.22 : 0.055;
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    oscillator.type = isReveal ? 'sine' : 'triangle';
-    oscillator.frequency.setValueAtTime(isReveal ? 520 : 245, now);
-    if (isReveal) oscillator.frequency.exponentialRampToValueAtTime(720, now + duration * 0.6);
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(isReveal ? 0.055 : 0.032, now + 0.008);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-    oscillator.start(now);
-    oscillator.stop(now + duration + 0.02);
+    const scheduleTone = (frequency: number, start: number, duration: number, peak: number, type: OscillatorType, bend = 1) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const filter = audioContext.createBiquadFilter();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency * 0.985, start);
+      oscillator.frequency.exponentialRampToValueAtTime(frequency * bend, start + Math.min(0.035, duration * 0.25));
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2600, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(peak, start + 0.009);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      oscillator.connect(gain);
+      gain.connect(filter);
+      filter.connect(audioContext.destination);
+      oscillator.start(start);
+      oscillator.stop(start + duration + 0.025);
+    };
+
+    if (kind === 'reveal') {
+      // A tiny rising arpeggio makes a newly revealed path feel like a discovery.
+      scheduleTone(659.25, now, 0.28, 0.024, 'sine', 1.01);
+      scheduleTone(783.99, now + 0.065, 0.31, 0.026, 'triangle', 1.012);
+      scheduleTone(1046.5, now + 0.13, 0.42, 0.032, 'sine', 1.006);
+      scheduleTone(1318.5, now + 0.135, 0.24, 0.008, 'sine', 1.004);
+    } else {
+      // A soft paired “spark” keeps ordinary clicks friendly without becoming noisy.
+      scheduleTone(523.25, now, 0.14, 0.026, 'triangle', 1.018);
+      scheduleTone(783.99, now + 0.018, 0.12, 0.011, 'sine', 1.012);
+    }
   }, [soundEnabled]);
 
   const handleSurfaceClick = useCallback((event: ReactMouseEvent<HTMLElement>) => {
