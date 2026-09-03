@@ -870,3 +870,64 @@ body { overflow-x: hidden; }
   .notebook-dialog-actions { justify-content: stretch; }
   .notebook-dialog-actions > * { flex: 1; }
 }
+
+/* Concepts are active teaching prompts, and the stack visual gives them a navigable depth model. */
+.concept-card { position: relative; color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+.concept-card:hover, .concept-card:focus-visible { border-color: var(--teal); outline: none; box-shadow: 0 9px 22px rgb(45 72 66 / 9%); transform: translateY(-2px); }
+.concept-card > div:nth-child(2) { min-width: 0; }
+.concept-card-action { display: inline-flex; align-items: center; gap: 4px; margin-top: 11px; color: var(--teal-deep); font-size: 9px; font-weight: 800; }
+.concept-card-action svg { transition: transform 160ms ease; }
+.concept-card:hover .concept-card-action svg, .concept-card:focus-visible .concept-card-action svg { transform: translateX(2px); }
+.stack-learning-panel { min-width: 0; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 16px; margin-top: 19px; padding: 17px; background: #e7f1ec; border: 1px solid #c9ddd5; border-radius: 10px; }
+.stack-learning-copy { min-width: 0; }
+.stack-learning-copy h3 { margin: 7px 0 7px; color: var(--ink); font-family: var(--display); font-size: 22px; line-height: 1.05; letter-spacing: -.05em; }
+.stack-learning-copy > p { margin: 0; color: var(--ink-soft); font-size: 10px; line-height: 1.5; }
+.stack-learning-note { display: flex; align-items: flex-start; gap: 7px; margin-top: 14px; padding-top: 11px; color: #766b56; border-top: 1px solid rgb(118 107 86 / 19%); font-size: 9px; line-height: 1.4; }
+.stack-learning-note svg { flex: 0 0 auto; color: var(--amber); }
+.stack-learning-visual { min-width: 0; padding: 2px; }
+.stack-learning-axis { display: flex; align-items: center; gap: 7px; color: var(--ink-faint); font-size: 7px; font-weight: 800; letter-spacing: .1em; }
+.stack-learning-axis i { height: 1px; flex: 1; background: linear-gradient(to right, #e08b7e, #8bbdb0); }
+.stack-learning-layers { display: grid; gap: 5px; margin-top: 8px; }
+.stack-learning-layer { min-width: 0; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 7px; align-items: center; padding: 8px 9px; color: var(--ink); font: inherit; text-align: left; background: #f6faf6; border: 1px solid #d2e3dc; border-left: 4px solid var(--teal); border-radius: 6px; cursor: pointer; }
+.stack-learning-layer:hover, .stack-learning-layer:focus-visible { outline: 2px solid rgb(34 123 119 / 18%); outline-offset: 1px; background: #fff; }
+.stack-learning-layer > span { color: var(--ink-faint); font-size: 8px; font-weight: 800; }
+.stack-learning-layer strong { min-width: 0; display: block; color: var(--ink); font-family: var(--display); font-size: 11px; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.stack-learning-layer small { min-width: 0; display: block; margin-top: 1px; color: var(--ink-faint); font-size: 8px; line-height: 1.25; overflow-wrap: anywhere; }
+.stack-learning-layer svg { flex: 0 0 auto; color: var(--teal-deep); }
+.stack-learning-coral { border-left-color: var(--coral); }.stack-learning-pink { border-left-color: #bd8aa6; }.stack-learning-amber { border-left-color: var(--amber); }.stack-learning-violet { border-left-color: var(--violet); }.stack-learning-teal { border-left-color: var(--teal); }.stack-learning-slate { border-left-color: #879b9c; }
+.stack-learning-hint { display: block; margin-top: 8px; color: var(--ink-faint); font-size: 8px; text-align: right; }
+.concept-dialog, .stack-layer-dialog { width: 100%; max-width: none; height: 100%; max-height: none; position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; margin: 0; padding: 20px; background: rgb(24 49 52 / 47%); border: 0; }
+.concept-dialog::backdrop, .stack-layer-dialog::backdrop { background: rgb(24 49 52 / 47%); }
+.concept-dialog-card, .stack-layer-dialog-card { width: min(680px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; padding: 25px; color: var(--ink); background: #f8fbf7; border: 1px solid #c9dad4; border-radius: 13px; box-shadow: 0 24px 60px rgb(24 49 52 / 25%); }
+.concept-dialog-head, .stack-layer-dialog-head { display: flex; justify-content: space-between; gap: 16px; align-items: start; padding-bottom: 17px; border-bottom: 1px solid var(--line); }
+.concept-dialog-head h2, .stack-layer-dialog-head h2 { margin: 8px 0 0; color: var(--ink); font-family: var(--display); font-size: 29px; line-height: 1.02; letter-spacing: -.06em; }
+.concept-dialog-callout { margin-top: 16px; padding: 14px; border: 1px solid #c9ddd5; border-left: 4px solid var(--teal); border-radius: 8px; background: #e8f1ed; }
+.concept-dialog-callout.concept-amber { border-left-color: var(--amber); background: #fbf5ed; }.concept-dialog-callout.concept-violet { border-left-color: var(--violet); background: #f4f0fb; }.concept-dialog-callout.concept-coral { border-left-color: var(--coral); background: #fcf0ee; }
+.concept-dialog-callout strong { display: block; color: var(--ink); font-family: var(--display); font-size: 18px; letter-spacing: -.04em; }
+.concept-dialog-callout p { margin: 5px 0 0; color: var(--ink-soft); font-size: 10px; line-height: 1.45; }
+.concept-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 15px; }
+.concept-detail-grid > div { min-width: 0; padding: 11px; background: #eef6f1; border: 1px solid #d2e3dc; border-radius: 8px; }
+.concept-detail-grid > div > span, .stack-layer-dialog-copy > div > span { color: var(--teal-deep); font-size: 8px; font-weight: 800; letter-spacing: .1em; }
+.concept-detail-grid p, .stack-layer-dialog-copy p { margin: 6px 0 0; color: var(--ink-soft); font-size: 9px; line-height: 1.46; overflow-wrap: anywhere; }
+.concept-dialog-note { display: flex; align-items: flex-start; gap: 8px; margin-top: 14px; padding: 11px; color: #665c76; background: #f4f0fb; border: 1px solid #dfd4f0; border-radius: 7px; }
+.concept-dialog-note svg { flex: 0 0 auto; color: var(--violet); }.concept-dialog-note span { font-size: 9px; line-height: 1.45; }
+.concept-dialog-actions, .stack-layer-dialog-actions { display: flex; justify-content: end; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.concept-dialog-actions .primary-button, .concept-dialog-actions .quiet-button, .stack-layer-dialog-actions .primary-button, .stack-layer-dialog-actions .quiet-button { text-decoration: none; }
+.stack-layer-dialog-band { margin-top: 16px; padding: 15px; background: #e8f1ed; border: 1px solid #c9ddd5; border-left: 5px solid var(--teal); border-radius: 8px; }
+.stack-layer-dialog-band.stack-learning-coral { border-left-color: var(--coral); background: #fcf0ee; }.stack-layer-dialog-band.stack-learning-pink { border-left-color: #bd8aa6; background: #f8f0f5; }.stack-layer-dialog-band.stack-learning-amber { border-left-color: var(--amber); background: #fbf5ed; }.stack-layer-dialog-band.stack-learning-violet { border-left-color: var(--violet); background: #f4f0fb; }.stack-layer-dialog-band.stack-learning-slate { border-left-color: #879b9c; background: #eff4f4; }
+.stack-layer-dialog-band > span { color: var(--teal-deep); font-size: 8px; font-weight: 800; letter-spacing: .1em; }.stack-layer-dialog-band strong { display: block; margin-top: 8px; color: var(--ink); font-family: var(--display); font-size: 19px; letter-spacing: -.04em; }.stack-layer-dialog-band p { margin: 6px 0 0; color: var(--ink-soft); font-size: 10px; line-height: 1.48; }
+.stack-layer-dialog-copy { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 9px; }.stack-layer-dialog-copy > div { min-width: 0; padding: 11px; background: #eef6f1; border: 1px solid #d2e3dc; border-radius: 8px; }
+
+@media (max-width: 720px) {
+  .stack-learning-panel { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .concept-dialog, .stack-layer-dialog { padding: 10px; }
+  .concept-dialog-card, .stack-layer-dialog-card { max-height: calc(100vh - 20px); padding: 18px; border-radius: 10px; }
+  .concept-dialog-head h2, .stack-layer-dialog-head h2 { font-size: 23px; }
+  .concept-detail-grid, .stack-layer-dialog-copy { grid-template-columns: 1fr; }
+  .concept-dialog-actions, .stack-layer-dialog-actions { justify-content: stretch; }
+  .concept-dialog-actions > *, .stack-layer-dialog-actions > * { flex: 1; }
+  .stack-learning-layer { grid-template-columns: 21px minmax(0, 1fr) auto; }
+}
