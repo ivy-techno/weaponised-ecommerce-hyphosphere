@@ -58,11 +58,18 @@ button { cursor: pointer; }
 .brand-lockup { gap: 11px; }
 .brand-name { font-family: var(--display); font-size: 17px; font-weight: 800; letter-spacing: -0.06em; }
 .brand-caption { color: var(--ink-faint); font-size: 9px; letter-spacing: 0.11em; text-transform: uppercase; margin-top: 3px; }
-.app-mark { width: 31px; height: 31px; border: 1px solid var(--teal); border-radius: 50%; display: grid; place-content: center; position: relative; transform: rotate(-26deg); background: #e7f0ec; }
-.app-mark span { position: absolute; width: 14px; height: 5px; border: 1.4px solid var(--teal); border-radius: 99px; }
-.app-mark span:nth-child(1) { transform: translate(-2px, -4px) rotate(-25deg); }
-.app-mark span:nth-child(2) { transform: translate(2px, 0) rotate(-25deg); }
-.app-mark span:nth-child(3) { transform: translate(-1px, 4px) rotate(-25deg); }
+.app-mark { width: 31px; height: 31px; position: relative; display: grid; place-items: center; border: 1px solid var(--teal); border-radius: 50%; background: #e7f0ec; overflow: visible; }
+.app-mark svg { width: 26px; height: 26px; overflow: visible; }
+.app-mark-orbit { fill: none; stroke: rgb(204 139 54 / 68%); stroke-width: .7; stroke-dasharray: 2.5 4.5; transform-origin: 16px 16px; animation: app-mark-orbit 12s ease-in-out infinite; }
+.app-mark-network { transform-origin: 16px 16px; animation: app-mark-network 12s ease-in-out infinite; }
+.app-mark-line { fill: none; stroke: var(--teal); stroke-linecap: round; stroke-width: 1.15; vector-effect: non-scaling-stroke; stroke-dasharray: 16 16; stroke-dashoffset: 16; opacity: 0; animation: app-mark-line 12s ease-in-out infinite; }
+.app-mark-line-1 { animation-delay: .04s; }.app-mark-line-2 { animation-delay: .2s; }.app-mark-line-3 { animation-delay: .36s; }.app-mark-line-4 { animation-delay: .52s; }.app-mark-line-5 { animation-delay: .68s; }.app-mark-line-6 { animation-delay: .84s; }
+.app-mark-node { fill: #f8fbf7; stroke: var(--teal); stroke-width: 1; transform-box: fill-box; transform-origin: center; opacity: 0; animation: app-mark-node 12s ease-in-out infinite; }
+.app-mark-node-core { fill: #d69a43; stroke: #fff9ef; stroke-width: 1.1; animation-delay: .72s; }.app-mark-node-1 { animation-delay: .98s; }.app-mark-node-2 { animation-delay: 1.14s; }.app-mark-node-3 { animation-delay: 1.3s; }.app-mark-node-4 { animation-delay: 1.46s; }
+@keyframes app-mark-line { 0%, 5% { stroke-dashoffset: 16; opacity: 0; } 12%, 67% { stroke-dashoffset: 0; opacity: 1; } 78%, 89% { stroke-dashoffset: 16; opacity: 0; } 100% { stroke-dashoffset: 16; opacity: 0; } }
+@keyframes app-mark-node { 0%, 9% { opacity: 0; transform: scale(.3); } 17%, 67% { opacity: 1; transform: scale(1); } 78%, 89% { opacity: 0; transform: scale(.3); } 100% { opacity: 0; transform: scale(.3); } }
+@keyframes app-mark-network { 0%, 8% { transform: scale(.76) rotate(-9deg); } 19%, 67% { transform: scale(1) rotate(0); } 78%, 89% { transform: scale(.76) rotate(9deg); } 100% { transform: scale(.76) rotate(9deg); } }
+@keyframes app-mark-orbit { 0%, 15% { transform: rotate(-22deg); opacity: .45; } 65% { transform: rotate(18deg); opacity: .9; } 80%, 100% { transform: rotate(42deg); opacity: .38; } }
 .topbar-center { display: flex; justify-content: center; }
 .command-search-wrap { width: min(100%, 450px); position: relative; }
 .command-search-wrap .command-search { width: 100%; }
