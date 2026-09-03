@@ -923,6 +923,17 @@ function BranchField() {
   return <svg className="branch-field" viewBox="0 0 260 120" aria-hidden="true"><path className="branch-field-line branch-field-line-1" d="M18 92 C61 90 77 61 114 64 S181 46 240 24" /><path className="branch-field-line branch-field-line-2" d="M62 79 C95 76 105 103 145 96 S207 94 242 109" /><path className="branch-field-line branch-field-line-3" d="M114 64 C122 39 145 26 176 29" /><path className="branch-field-line branch-field-line-4" d="M145 96 C162 77 182 69 211 72" /><circle className="branch-field-node branch-field-node-core" cx="114" cy="64" r="4" /><circle className="branch-field-node branch-field-node-1" cx="18" cy="92" r="2.5" /><circle className="branch-field-node branch-field-node-2" cx="240" cy="24" r="2.5" /><circle className="branch-field-node branch-field-node-3" cx="242" cy="109" r="2.5" /><circle className="branch-field-node branch-field-node-4" cx="176" cy="29" r="2.5" /><circle className="branch-field-node branch-field-node-5" cx="211" cy="72" r="2.5" /></svg>;
 }
 
+function PatchworkAreaRibbon({ view, savedCount, notebookOpen, onChangeView, onOpenNotebook }: { view: View; savedCount: number; notebookOpen: boolean; onChangeView: (view: View) => void; onOpenNotebook: () => void }) {
+  const panels: Array<{ view?: View; label: string; detail: string; action: string }> = [
+    { view: 'concept-demo', label: 'Curated demo', detail: 'orientation + definitions', action: 'Enter the context' },
+    { view: 'investigations', label: 'Investigation paths', detail: 'active + unfinished', action: 'Choose a path' },
+    { view: 'concepts', label: 'Concepts & theories', detail: 'ideas to test', action: 'Open the lenses' },
+    { view: 'artifacts', label: 'Research artifacts', detail: 'sources to inspect', action: 'Inspect the records' },
+    { label: 'Saved notebook', detail: savedCount ? `${savedCount} saved trail${savedCount === 1 ? '' : 's'}` : 'retain a trail', action: 'Open saved work' },
+  ];
+  return <nav className="patchwork-area-ribbon" aria-label="Hyphosphere research areas"><div className="patchwork-area-head"><span><Sparkles size={13} /> RESEARCH AREAS</span><small>one field · different ways to continue</small></div><div className="patchwork-area-track">{panels.map((panel, index) => { const active = panel.view ? view === panel.view : notebookOpen; return <button type="button" key={panel.label} className={`patchwork-area-panel patchwork-area-panel-${index + 1} ${active ? 'is-active' : ''}`} onClick={() => panel.view ? onChangeView(panel.view) : onOpenNotebook()} aria-label={`${panel.label}: ${panel.action}`} aria-current={active ? 'page' : undefined}><span className="patchwork-area-panel-shade" /><span className="patchwork-area-panel-copy"><b>{(index + 1).toString().padStart(2, '0')}</b><strong>{panel.label}</strong><small>{panel.detail}</small><em>{panel.action} <ChevronRight size={12} /></em></span></button>; })}</div></nav>;
+}
+
 const AGENT_RESEARCH_INSTRUCTION = 'Act as a careful research assistant. First use the source catalogue and stack filter when they help narrow the question; then search the linked data collections and current reporting for a focused question about information warfare and the ecommerce stack. Return a small candidate set and state the source URL, access or download note, date or recurrence signal, geography, stack position, evidence status, and why each item is relevant. Keep direct observation, support, inference, and dispute separate. Ask the researcher which records to retain, then offer a mini report, timeline, threshold note, or network map. Do not infer coordination, attribution, or responsibility from shared infrastructure. In this proof of concept, treat external links as starting points: they are not downloaded or independently verified records.';
 
 function ResearchPrimer() {
@@ -1439,10 +1450,10 @@ export default function Home() {
 
       <div className="workspace-grid">
         <aside className={`sidebar ${mobileNavOpen ? 'is-open' : ''}`}>
-          <div className="sidebar-scroll">
+            <div className="sidebar-scroll">
             <div className="sidebar-heading">ORIENTATION</div>
             <nav className="view-nav" aria-label="Site orientation">
-              <button className={view === 'concept-demo' ? 'is-active' : ''} onClick={() => changeView('concept-demo')}><Sparkles size={16} /> <span>Concept demo</span><small>00</small></button>
+              <button className={view === 'concept-demo' ? 'is-active' : ''} onClick={() => changeView('concept-demo')}><Sparkles size={16} /> <span>Curated demo</span><small>00</small></button>
             </nav>
             <div className="sidebar-divider" /><div className="sidebar-heading">SURFACES</div>
             <nav className="view-nav" aria-label="Research surfaces">
@@ -1463,10 +1474,11 @@ export default function Home() {
             <div className="sidebar-divider" /><div className="sidebar-heading">NOTEBOOK</div>
             <button className="notebook-link" onClick={() => { setNotebookOpen(true); setMobileNavOpen(false); setAgentMessage(saved || savedAgentBriefs.length ? 'Notebook opened: saved findings and agent briefs are ready for review.' : 'Notebook opened. Save a discovery or agent brief to keep a trail here.'); }} aria-expanded={notebookOpen} aria-controls="hyphosphere-notebook"><Bookmark size={15} /> <span>Saved discoveries</span><small>{(saved ? 1 : 0) + savedAgentBriefs.length}</small></button><button className="notebook-link" onClick={() => { changeView('terrain'); announce('Source ecology opened. Choose a layer to inspect its artifacts and external sources.'); }}><Archive size={15} /> <span>Source shelf</span><small>12</small></button>
           </div>
-          <div className="sidebar-footer"><div className="demo-label"><span className="demo-dot" /> DEMO CORPUS</div><p>Deterministic material for a guided investigation.</p><button className="agent-brief" onClick={() => { setConnectionStatusOrigin('sidebar'); setConnectionStatusOpen((open) => !open); setControlsOpen(false); }} aria-label="Open human and agent connection status"><span>HUMAN + AGENT</span><p>You choose what to follow. An agent can operate the same terrain controls and surface evidence; you decide what counts.</p><small>{connectionStatusOpen ? 'Close connection status' : 'Open connection status →'}</small></button></div>
+          <div className="sidebar-footer"><div className="demo-label"><span className="demo-dot" /> CURATED DEMO</div><p>Deterministic material for a guided investigation.</p><button className="agent-brief" onClick={() => { setConnectionStatusOrigin('sidebar'); setConnectionStatusOpen((open) => !open); setControlsOpen(false); }} aria-label="Open human and agent connection status"><span>HUMAN + AGENT</span><p>You choose what to follow. An agent can operate the same terrain controls and surface evidence; you decide what counts.</p><small>{connectionStatusOpen ? 'Close connection status' : 'Open connection status →'}</small></button></div>
         </aside>
 
         <section className="main-stage">
+          <PatchworkAreaRibbon view={view} savedCount={(saved ? 1 : 0) + savedAgentBriefs.length} notebookOpen={notebookOpen} onChangeView={changeView} onOpenNotebook={() => { setNotebookOpen(true); setMobileNavOpen(false); setAgentMessage(saved || savedAgentBriefs.length ? 'Notebook opened: saved findings and agent briefs are ready for review.' : 'Notebook opened. Save a discovery or agent brief to keep a trail here.'); }} />
           <div className={`main-stage-identity identity-view-${view}`} aria-hidden="true"><BranchField /></div>
           {view === 'concept-demo' ? <>
           <div className="concept-demo-heading"><div><div className="eyebrow"><span>ORIENTATION 00</span><span className="eyebrow-line" /><span>CONCEPT DEMO</span></div><h1>See the research problem before entering the console.</h1><p>This orientation gathers the working definitions, stack model, source collections, and agent-search idea in one place.</p></div><button className="primary-button" onClick={() => changeView('thread')}>Enter the investigation <ChevronRight size={15} /></button></div>
