@@ -1482,7 +1482,31 @@ export default function Home() {
           <div className={`main-stage-identity identity-view-${view}`} aria-hidden="true"><BranchField /></div>
           {view === 'concept-demo' ? <>
           <div className="concept-demo-heading"><div><div className="eyebrow"><span>ORIENTATION 00</span><span className="eyebrow-line" /><span>CONCEPT DEMO</span></div><h1>See the research problem before entering the console.</h1><p>This orientation gathers the working definitions, stack model, source collections, and agent-search idea in one place.</p></div><button className="primary-button" onClick={() => changeView('thread')}>Enter the investigation <ChevronRight size={15} /></button></div>
-          <div className="story-intro"><div className="story-intro-title"><span className="story-dot" /><span>THESIS PROOF OF CONCEPT</span></div><div className="story-intro-body"><div className="story-intro-copy"><div className="story-intro-text"><strong>A student researcher. A challenge…</strong><p>To find and map the digital infrastructure enabling online information operations. But a purpose built tool was needed to gather diverse traces and begin to understand the links between cases, platforms, services, datasets, and reporting. This is the first glimpse of a larger WebMCP online observatory project mapping digital phenomena: its direction remains open, and building the instrument is already part of the discovery.</p></div><div className="story-intro-why"><span>WHY THIS EXISTS</span><strong>The visible post is only the surface.</strong><p>People usually encounter an information operation as a post, advert, headline, or takedown. This proof of concept helps a researcher trace the less visible services, data, platforms, and infrastructure that may enable it.</p><div className="webmcp-explainer"><span>WHAT WEBMCP ADDS</span><p>WebMCP gives a researcher and an AI agent the same inspectable surface: search, follow, compare, and retain leads while the researcher keeps the judgement.</p></div></div></div><div className="story-intro-side"><div className="story-intro-role"><span>YOUR ROLE</span><strong>Choose a clue → follow the link → check the evidence</strong><small>Build the instrument while the inquiry takes shape.</small></div><div className="story-intro-example"><span>ONE SIMPLE EXAMPLE</span><div className="problem-chain"><span>public advert</span><i>→</i><span>platform trace</span><i>→</i><span>shared service</span><i>→</i><span>deeper stack</span></div><p>Start with the visible trace, then test whether related services, records, and infrastructure recur around it. A match opens a research lead; it does not settle intent or responsibility.</p><button onClick={() => { setView('thread'); openEvidence('service'); setMobileNavOpen(false); announce('Atlas Relay example opened. The evidence drawer is now visible.'); }}>Open the Atlas Relay example <ChevronRight size={15} /></button></div></div></div></div>
+          <div className="story-intro">
+            <div className="story-intro-title"><span className="story-dot" /><span>THESIS PROOF OF CONCEPT</span></div>
+            <div className="story-intro-body">
+              <div className="story-intro-copy">
+                <div className="story-intro-text">
+                  <strong>A student researcher. A challenge…</strong>
+                  <p>To find and map the digital infrastructure enabling online information operations. But a purpose built tool was needed to gather diverse traces and begin to understand the links between cases, platforms, services, datasets, and reporting. This is the first glimpse of a larger WebMCP online observatory project mapping digital phenomena: its direction remains open, and building the instrument is already part of the discovery.</p>
+                </div>
+                <div className="story-intro-why">
+                  <span>WHY THIS EXISTS</span>
+                  <strong>The visible post is only the surface.</strong>
+                  <p>People usually encounter an information operation as a post, advert, headline, or takedown. This proof of concept helps a researcher trace the less visible services, data, platforms, and infrastructure that may enable it.</p>
+                  <div className="webmcp-explainer"><span>WHAT WEBMCP ADDS</span><p>WebMCP gives a researcher and an AI agent the same inspectable surface: search, follow, compare, and retain leads while the researcher keeps the judgement.</p></div>
+                </div>
+              </div>
+              <div className="story-intro-side">
+                <div className="story-intro-role">
+                  <span>WHY THIS EXISTS</span>
+                  <strong>The visible post is only the surface.</strong>
+                  <small>People usually encounter an information operation as a post, advert, headline, or takedown. Hyphosphere helps a researcher trace the less visible services, data, platforms, and infrastructure that may enable it.</small>
+                </div>
+                <div className="story-intro-example"><span>ONE SIMPLE EXAMPLE</span><div className="problem-chain"><span>public advert</span><i>→</i><span>platform trace</span><i>→</i><span>shared service</span><i>→</i><span>deeper stack</span></div><p>Start with the visible trace, then test whether related services, records, and infrastructure recur around it. A match opens a research lead; it does not settle intent or responsibility.</p><button onClick={() => { setView('thread'); openEvidence('service'); setMobileNavOpen(false); announce('Atlas Relay example opened. The evidence drawer is now visible.'); }}>Open the Atlas Relay example <ChevronRight size={15} /></button></div>
+              </div>
+            </div>
+          </div>
           <ResearchPrimer />
           <AgentBriefSurface onOpenExample={openExample} onOpenCollection={openCollection} onOpenEvidence={openEvidence} onOpenOutputs={() => changeView('outputs')} onSaveBrief={saveAgentBrief} onOpenPresentation={setPresentationSnapshot} agentRequest={agentBriefRequest} onBriefStateChange={handleBriefStateChange} />
           <EvidenceRibbon onOpenExample={openExample} />
