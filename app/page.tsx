@@ -23,7 +23,6 @@ import {
   Map,
   Network,
   Pause,
-  PanelRight,
   Play,
   Search,
   ShieldCheck,
@@ -82,6 +81,28 @@ type ResearchExample = {
   note: string;
   accent: string;
 };
+
+const viewSlugs: Record<View, string> = {
+  'concept-demo': 'demo',
+  investigations: 'investigations',
+  thread: 'thread',
+  map: 'map',
+  terrain: 'terrain',
+  evidence: 'evidence',
+  compare: 'compare',
+  concepts: 'concepts',
+  artifacts: 'artifacts',
+  outputs: 'outputs',
+};
+
+const viewFromLocation = (): View => {
+  if (typeof window === 'undefined') return 'concept-demo';
+  const area = new URLSearchParams(window.location.search).get('area');
+  const match = (Object.entries(viewSlugs) as Array<[View, string]>).find(([, slug]) => slug === area || slug === area?.replace(/^\//, ''));
+  return match?.[0] ?? 'concept-demo';
+};
+
+const viewHref = (view: View) => view === 'concept-demo' ? '/' : `/?area=${viewSlugs[view]}`;
 
 
 type ResearchEdge = {
@@ -933,7 +954,7 @@ function PatchworkAreaRibbon({ view, savedCount, notebookOpen, onChangeView, onO
     { view: 'outputs', label: 'Possible outputs', detail: 'notes to make', action: 'See what can emerge' },
     { label: 'Saved notebook', detail: savedCount ? `${savedCount} saved trail${savedCount === 1 ? '' : 's'}` : 'retain a trail', action: 'Open saved work' },
   ];
-  return <nav className="patchwork-area-ribbon" aria-label="Hyphosphere research areas"><div className="patchwork-area-head"><span><Sparkles size={13} /> RESEARCH AREAS</span><small>one field · choose how to continue</small></div><div className="patchwork-area-track">{panels.map((panel, index) => { const active = panel.view ? (panel.activeViews ?? [panel.view]).includes(view) : notebookOpen; return <button type="button" key={panel.label} className={`patchwork-area-panel patchwork-area-panel-${index + 1} ${active ? 'is-active' : ''}`} onClick={() => panel.view ? onChangeView(panel.view) : onOpenNotebook()} aria-label={`${panel.label}: ${panel.action}`} aria-current={active ? 'page' : undefined}><span className="patchwork-area-panel-shade" /><span className="patchwork-area-panel-copy"><b>{(index + 1).toString().padStart(2, '0')}</b><strong>{panel.label}</strong><small>{panel.detail}</small><em>{panel.action} <ChevronRight size={12} /></em></span></button>; })}</div></nav>;
+  return <nav className="patchwork-area-ribbon" aria-label="Hyphosphere research areas"><div className="patchwork-area-head"><span><Sparkles size={13} /> RESEARCH AREAS</span><small>stable pages · choose how to continue</small></div><div className="patchwork-area-track" role="tablist" aria-label="Stable research area pages">{panels.map((panel, index) => { const active = panel.view ? (panel.activeViews ?? [panel.view]).includes(view) : notebookOpen; const href = panel.view ? viewHref(panel.view) : '/?area=notebook'; const handleClick = (event: ReactMouseEvent<HTMLAnchorElement>) => { if (!panel.view || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); onChangeView(panel.view); }; return <a href={href} key={panel.label} className={`patchwork-area-panel patchwork-area-panel-${index + 1} ${active ? 'is-active' : ''}`} onClick={panel.view ? handleClick : (event) => { if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); onOpenNotebook(); }} aria-label={`${panel.label}: ${panel.action}`} aria-selected={active} role="tab"><span className="patchwork-area-panel-shade" /><span className="patchwork-area-panel-copy"><b>{index.toString().padStart(2, '0')}</b><strong>{panel.label}</strong><small>{panel.detail}</small><em>{panel.action} <ChevronRight size={12} /></em></span></a>; })}</div></nav>;
 }
 
 const AGENT_RESEARCH_INSTRUCTION = 'Act as a careful research assistant. First use the source catalogue and stack filter when they help narrow the question; then search the linked data collections and current reporting for a focused question about information warfare and the ecommerce stack. Return a small candidate set and state the source URL, access or download note, date or recurrence signal, geography, stack position, evidence status, and why each item is relevant. Keep direct observation, support, inference, and dispute separate. Ask the researcher which records to retain, then offer a mini report, timeline, threshold note, or network map. Do not infer coordination, attribution, or responsibility from shared infrastructure. In this proof of concept, treat external links as starting points: they are not downloaded or independently verified records.';
@@ -997,7 +1018,7 @@ function EvidenceRibbon({ onOpenExample }: { onOpenExample: (sourceId: string) =
 }
 
 export default function Home() {
-  const [view, setView] = useState<View>('concept-demo');
+  const [view, setView] = useState<View>(() => viewFromLocation());
   const [selectedId, setSelectedId] = useState('service');
   const [evidenceOnly, setEvidenceOnly] = useState(false);
   const [followed, setFollowed] = useState(false);
@@ -1035,7 +1056,6 @@ export default function Home() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const stageContentRef = useRef<HTMLDivElement>(null);
-  const previousViewRef = useRef(view);
   const [connectionStatusOpen, setConnectionStatusOpen] = useState(false);
   const [connectionStatusOrigin, setConnectionStatusOrigin] = useState<'top' | 'sidebar' | 'trail'>('top');
   const soundContextRef = useRef<AudioContext | null>(null);
@@ -1090,11 +1110,15 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (previousViewRef.current !== view) {
-      window.requestAnimationFrame(() => stageContentRef.current?.scrollIntoView({ behavior: 'auto', block: 'start' }));
-      previousViewRef.current = view;
-    }
-  }, [view]);
+    const syncViewFromHistory = () => {
+      setView(viewFromLocation());
+      setNotebookOpen(false);
+      setConnectionStatusOpen(false);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    };
+    window.addEventListener('popstate', syncViewFromHistory);
+    return () => window.removeEventListener('popstate', syncViewFromHistory);
+  }, []);
 
   useEffect(() => {
     const refreshScrollPrompt = () => {
@@ -1428,6 +1452,12 @@ export default function Home() {
   }, [runAgentAction]);
 
   const changeView = (nextView: View) => {
+    if (typeof window !== 'undefined') {
+      const nextUrl = viewHref(nextView);
+      const currentUrl = `${window.location.pathname}${window.location.search}`;
+      if (currentUrl !== nextUrl) window.history.pushState({ area: viewSlugs[nextView] }, '', nextUrl);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
     setView(nextView);
     setEvidenceOpen(false);
     setStackOpen(false);
@@ -1442,51 +1472,21 @@ export default function Home() {
   };
 
   const isActiveInvestigationView = view === 'thread' || view === 'map' || view === 'evidence' || view === 'compare';
-  const isInvestigationView = view === 'investigations' || isActiveInvestigationView;
-
   return (
     <main className="app-shell" onClickCapture={handleSurfaceClick}>
       <header className="topbar">
         <div className="brand-lockup"><AppMark /><div><div className="brand-name">hyphosphere</div><div className="brand-caption">research terrain</div></div></div>
-        <div className="topbar-center"><div className="command-search-wrap"><div className="command-search"><Search size={16} /><span className="command-search-mode">QUICK INDEX</span><input ref={searchInputRef} value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Find an indexed object or source" aria-label="Quickly find a known research object or linked source" /><span className="keycap">⌘ K</span></div>{search.trim() && <div className="search-results" aria-label="Quick index results"><div className="search-results-heading">QUICK INDEX · JUMP TO A KNOWN OBJECT OR SOURCE</div>{searchResults.nodes.map((node) => <button key={node.id} className="search-result-row" onClick={() => { setSelectedId(node.id); setView('map'); setSearch(''); announce(`${node.label} selected in the relationship map.`); }}><span className="search-result-kind">OBJECT</span><span className="search-result-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small></span><ChevronRight size={14} /></button>)}{searchResults.sources.map((source) => <div key={source.id} className="search-result-row search-result-source"><span className="search-result-kind search-result-kind-source">SOURCE</span><span className="search-result-copy"><strong>{source.title}</strong><small>{source.provider} · {source.kind}</small></span><span className="search-result-actions"><button className="search-inspect-button" onClick={() => { openCollection(source.id); setSearch(''); }}>Profile</button><button className="search-preview-button" onClick={() => { openExample(source.id); setSearch(''); }}>Citation</button><a className="search-open-link" href={source.url} target="_blank" rel="noreferrer" aria-label={`Open original source for ${source.title}`}><ExternalLink size={14} /></a></span></div>)}{!searchResults.nodes.length && !searchResults.sources.length && <div className="search-empty">No matching objects or sources. Try “troll,” “procurement,” “OCCRP,” or “ecommerce.”</div>}</div>}</div></div>
+         <div className="topbar-center"><div className="command-search-wrap"><div className="command-search"><Search size={16} /><span className="command-search-mode">QUICK INDEX</span><input ref={searchInputRef} value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Find an indexed object or source" aria-label="Quickly find a known research object or linked source" /><span className="keycap">⌘ K</span></div>{search.trim() && <div className="search-results" aria-label="Quick index results"><div className="search-results-heading">QUICK INDEX · JUMP TO A KNOWN OBJECT OR SOURCE</div>{searchResults.nodes.map((node) => <button key={node.id} className="search-result-row" onClick={() => { setSelectedId(node.id); changeView('map'); setSearch(''); announce(`${node.label} selected in the relationship map.`); }}><span className="search-result-kind">OBJECT</span><span className="search-result-copy"><strong>{node.label}</strong><small>{node.kind} · {node.source}</small></span><ChevronRight size={14} /></button>)}{searchResults.sources.map((source) => <div key={source.id} className="search-result-row search-result-source"><span className="search-result-kind search-result-kind-source">SOURCE</span><span className="search-result-copy"><strong>{source.title}</strong><small>{source.provider} · {source.kind}</small></span><span className="search-result-actions"><button className="search-inspect-button" onClick={() => { openCollection(source.id); setSearch(''); }}>Profile</button><button className="search-preview-button" onClick={() => { openExample(source.id); setSearch(''); }}>Citation</button><a className="search-open-link" href={source.url} target="_blank" rel="noreferrer" aria-label={`Open original source for ${source.title}`}><ExternalLink size={14} /></a></span></div>)}{!searchResults.nodes.length && !searchResults.sources.length && <div className="search-empty">No matching objects or sources. Try “troll,” “procurement,” “OCCRP,” or “ecommerce.”</div>}</div>}</div></div>
         <div className="topbar-actions"><button type="button" className={`sound-toggle ${soundEnabled ? 'is-on' : ''}`} onClick={toggleSound} aria-pressed={soundEnabled} aria-label={soundEnabled ? 'Mute interface sounds' : 'Enable interface sounds'} title={soundEnabled ? 'Mute interface sounds' : 'Enable interface sounds'} data-sound="none">{soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}</button><button className={`topbar-status agent-status-link ${webmcpReady ? 'is-ready' : ''}`} onClick={() => { setConnectionStatusOrigin('top'); setConnectionStatusOpen((open) => !open); setControlsOpen(false); }} aria-expanded={connectionStatusOpen} aria-controls="hyphosphere-connection-status" aria-label="Open human and agent connection status"><span className={`connection-dot ${webmcpReady ? 'is-ready' : ''}`} /> <span>{webmcpReady ? 'agent link ready' : 'local corpus'}</span></button><div className="controls-wrap"><button className="avatar-button" onClick={() => setControlsOpen((open) => !open)} aria-expanded={controlsOpen} aria-label="Open general Hyphosphere controls" title="Open general site controls"><Compass size={15} /></button>{controlsOpen && <div className="controls-popover" aria-live="polite"><span>HYPHOSPHERE CONTROLS</span><strong>General site controls</strong><p>{webmcpReady ? 'Use this panel for site controls. Agent connection status is shown separately beside it.' : 'Use this panel for site controls. The investigation is currently running as a self-contained demo.'}</p><button onClick={() => { setControlsOpen(false); announce('Controls closed. Your investigation remains in focus.'); }}>Close</button></div>}</div></div>{connectionStatusOpen && <div id="hyphosphere-connection-status" className={`connection-status-panel connection-status-popover connection-status-origin-${connectionStatusOrigin} ${webmcpReady ? 'is-ready' : ''}`} aria-live="polite"><div className="connection-status-head"><span className="drawer-label">CONNECTION STATUS</span><strong>{webmcpReady ? 'LINKED' : 'LOCAL MODE'}</strong></div><h3>{webmcpReady ? 'An agent can use this field.' : 'This field is running locally.'}</h3><p>{webmcpReady ? 'The agent can use structured actions for follow, evidence, terrain, save, and search. You retain responsibility for judging sources and claims.' : 'No agent is connected in this browser. The investigation still works as a self-contained demo, and a compatible WebMCP-enabled browser may expose these actions.'}</p><button className="connection-status-close" onClick={() => setConnectionStatusOpen(false)}>Close status</button></div>}
-        <button className="mobile-menu" onClick={() => setMobileNavOpen((open) => !open)} aria-label="Toggle navigation"><PanelRight size={18} /></button>
       </header>
 
       <div className="workspace-grid">
-        <aside className={`sidebar ${mobileNavOpen ? 'is-open' : ''}`}>
-          <div className="sidebar-scroll">
-            <div className="sidebar-heading">RESEARCH AREAS</div>
-            <nav className="view-nav area-nav" aria-label="Research areas">
-              <button className={view === 'concept-demo' ? 'is-active' : ''} onClick={() => changeView('concept-demo')}><Sparkles size={16} /> <span>Curated demo</span><small>00</small></button>
-              <button className={view === 'investigations' || isInvestigationView ? 'is-active' : ''} onClick={() => changeView('investigations')}><Waypoints size={16} /> <span>Investigation paths</span><small>01</small></button>
-              <button className={view === 'terrain' ? 'is-active' : ''} onClick={() => changeView('terrain')}><Compass size={16} /> <span>Source ecology</span><small>02</small></button>
-              <button className={view === 'concepts' ? 'is-active' : ''} onClick={() => changeView('concepts')}><Sparkles size={16} /> <span>Concepts &amp; theories</span><small>03</small></button>
-              <button className={view === 'artifacts' ? 'is-active' : ''} onClick={() => changeView('artifacts')}><Archive size={16} /> <span>Research artifacts</span><small>04</small></button>
-              <button className={view === 'outputs' ? 'is-active' : ''} onClick={() => changeView('outputs')}><ArrowUpRight size={16} /> <span>Possible outputs</span><small>05</small></button>
-            </nav>
-            {isActiveInvestigationView && <>
-              <div className="sidebar-divider" /><div className="sidebar-heading">READ THE ACTIVE PATH</div>
-              <nav className="view-nav" aria-label="Ways to read the active investigation">
-                <button className={view === 'thread' ? 'is-active' : ''} onClick={() => changeView('thread')}><Waypoints size={16} /> <span>Followed path</span><small>01</small></button>
-                <button className={view === 'map' ? 'is-active' : ''} onClick={() => changeView('map')}><Map size={16} /> <span>Relationship map</span><small>02</small></button>
-                <button className={view === 'evidence' ? 'is-active' : ''} onClick={() => changeView('evidence')}><ShieldCheck size={16} /> <span>Evidence</span><small>03</small></button>
-                <button className={view === 'compare' ? 'is-active' : ''} onClick={() => changeView('compare')}><GitBranch size={16} /> <span>Compare cases</span><small>04</small></button>
-              </nav>
-            </>}
-            <div className="sidebar-divider" /><div className="sidebar-heading">YOUR WORK</div>
-            <button className="notebook-link" onClick={() => { setNotebookOpen(true); setMobileNavOpen(false); setAgentMessage(saved || savedAgentBriefs.length ? 'Notebook opened: saved findings and agent briefs are ready for review.' : 'Notebook opened. Save a discovery or agent brief to keep a trail here.'); }} aria-expanded={notebookOpen} aria-controls="hyphosphere-notebook"><Bookmark size={15} /> <span>Saved notebook</span><small>{(saved ? 1 : 0) + savedAgentBriefs.length}</small></button>
-          </div>
-          <div className="sidebar-footer"><div className="demo-label"><span className="demo-dot" /> CURATED DEMO</div><p>Deterministic material for a guided investigation.</p><button className="agent-brief" onClick={() => { setConnectionStatusOrigin('sidebar'); setConnectionStatusOpen((open) => !open); setControlsOpen(false); }} aria-label="Open human and agent connection status"><span>HUMAN + AGENT</span><p>You choose what to follow. An agent can operate the same terrain controls and surface evidence; you decide what counts.</p><small>{connectionStatusOpen ? 'Close connection status' : 'Open connection status →'}</small></button></div>
-        </aside>
-
         <section className="main-stage">
           <PatchworkAreaRibbon view={view} savedCount={(saved ? 1 : 0) + savedAgentBriefs.length} notebookOpen={notebookOpen} onChangeView={changeView} onOpenNotebook={() => { setNotebookOpen(true); setMobileNavOpen(false); setAgentMessage(saved || savedAgentBriefs.length ? 'Notebook opened: saved findings and agent briefs are ready for review.' : 'Notebook opened. Save a discovery or agent brief to keep a trail here.'); }} />
           <div className={`main-stage-identity identity-view-${view}`} aria-hidden="true"><BranchField /></div>
-          {view === 'concept-demo' ? <>
-          <div className="concept-demo-heading"><div><div className="eyebrow"><span>ORIENTATION 00</span><span className="eyebrow-line" /><span>CONCEPT DEMO</span></div><h1>See the research problem before entering the console.</h1><p>This orientation gathers the working definitions, stack model, source collections, and agent-search idea in one place.</p></div><button className="primary-button" onClick={() => changeView('thread')}>Enter the investigation <ChevronRight size={15} /></button></div>
+           {view === 'concept-demo' ? <>
           <div className="story-intro">
-            <div className="story-intro-title"><span className="story-dot" /><span>THESIS PROOF OF CONCEPT</span></div>
+             <div className="story-intro-title"><span className="story-dot" /><span>00 · THESIS PROOF OF CONCEPT</span></div>
             <div className="story-intro-body">
               <div className="story-intro-copy">
                 <div className="story-intro-text">
@@ -1500,13 +1500,8 @@ export default function Home() {
                   <div className="webmcp-explainer"><span>WHAT WEBMCP ADDS</span><p>WebMCP gives a researcher and an AI agent the same inspectable surface: search, follow, compare, and retain leads while the researcher keeps the judgement.</p></div>
                 </div>
               </div>
-              <div className="story-intro-side">
-                <div className="story-intro-role">
-                  <span>WHY THIS EXISTS</span>
-                  <strong>The visible post is only the surface.</strong>
-                  <small>People usually encounter an information operation as a post, advert, headline, or takedown. Hyphosphere helps a researcher trace the less visible services, data, platforms, and infrastructure that may enable it.</small>
-                </div>
-                <div className="story-intro-example"><span>ONE SIMPLE EXAMPLE</span><div className="problem-chain"><span>public advert</span><i>→</i><span>platform trace</span><i>→</i><span>shared service</span><i>→</i><span>deeper stack</span></div><p>Start with the visible trace, then test whether related services, records, and infrastructure recur around it. A match opens a research lead; it does not settle intent or responsibility.</p><button onClick={() => { setView('thread'); openEvidence('service'); setMobileNavOpen(false); announce('Atlas Relay example opened. The evidence drawer is now visible.'); }}>Open the Atlas Relay example <ChevronRight size={15} /></button></div>
+               <div className="story-intro-side">
+                 <div className="story-intro-example"><span>ONE SIMPLE EXAMPLE</span><div className="problem-chain"><span>public advert</span><i>→</i><span>platform trace</span><i>→</i><span>shared service</span><i>→</i><span>deeper stack</span></div><p>Start with the visible trace, then test whether related services, records, and infrastructure recur around it. A match opens a research lead; it does not settle intent or responsibility.</p><button onClick={() => { changeView('thread'); openEvidence('service'); setMobileNavOpen(false); announce('Atlas Relay example opened. The evidence drawer is now visible.'); }}>Open the Atlas Relay example <ChevronRight size={15} /></button></div>
               </div>
             </div>
           </div>
@@ -1514,10 +1509,10 @@ export default function Home() {
           <AgentBriefSurface onOpenExample={openExample} onOpenCollection={openCollection} onOpenEvidence={openEvidence} onOpenOutputs={() => changeView('outputs')} onSaveBrief={saveAgentBrief} onOpenPresentation={setPresentationSnapshot} agentRequest={agentBriefRequest} onBriefStateChange={handleBriefStateChange} />
           <EvidenceRibbon onOpenExample={openExample} />
           </> : <>
-          {isActiveInvestigationView && <>
-          <div className="stage-heading"><div><div className="eyebrow"><span>INVESTIGATION 01</span><span className="eyebrow-line" /><span>START HERE</span></div><h1>Find what is shared.</h1><p>This investigation helps you test whether a service, platform, or infrastructure layer recurs across different cases. Start with Atlas Relay, follow the path, and inspect what supports the connection.</p></div><div className="stage-heading-actions"><button className={`quiet-button ${evidenceOnly ? 'is-selected' : ''}`} onClick={toggleVerified}><Filter size={15} /> {evidenceOnly ? 'Verified only' : 'Full terrain'}</button><button className="primary-button" onClick={saveDiscovery}><Bookmark size={15} /> {saved ? 'Saved' : 'Save discovery'}</button></div></div>
+           {isActiveInvestigationView && <>
+           <div className="view-switcher" role="tablist" aria-label="Ways to read the active investigation">{(['thread', 'map', 'evidence', 'compare'] as View[]).map((tab) => <button key={tab} className={view === tab ? 'is-active' : ''} onClick={() => changeView(tab)} role="tab" aria-selected={view === tab}>{tab === 'thread' ? 'Followed path' : tab === 'map' ? 'Relationship map' : tab === 'evidence' ? 'Evidence' : 'Compare cases'}</button>)}<button type="button" className="view-switcher-source" onClick={() => changeView('terrain')}><Compass size={13} /> Source ecology</button><span className="view-switcher-hint"><Sparkles size={13} /> one problem, many ways to read it</span></div>
+           <div className="stage-heading"><div><div className="eyebrow"><span>INVESTIGATION 01</span><span className="eyebrow-line" /><span>START HERE</span></div><h1>Find what is shared.</h1><p>This investigation helps you test whether a service, platform, or infrastructure layer recurs across different cases. Start with Atlas Relay, follow the path, and inspect what supports the connection.</p></div><div className="stage-heading-actions"><button className={`quiet-button ${evidenceOnly ? 'is-selected' : ''}`} onClick={toggleVerified}><Filter size={15} /> {evidenceOnly ? 'Verified only' : 'Full terrain'}</button><button className="primary-button" onClick={saveDiscovery}><Bookmark size={15} /> {saved ? 'Saved' : 'Save discovery'}</button></div></div>
           <div className="orientation-panel"><div className="orientation-copy"><span className="eyebrow-label">START WITH ONE RELATIONSHIP</span><strong>{followed ? 'The shared layer is now visible.' : 'Trace Atlas Relay across two cases.'}</strong><p>{followed ? 'The path now includes related objects. Inspect what supports each connection, then save the finding.' : 'Northline cohort and Lantern House tell different stories. Atlas Relay is the shared service worth checking across both cases.'}</p><span className="orientation-agent-note">RESEARCH CONCEPTS = ideas to test · RESEARCH ARTIFACTS = sources to inspect</span></div><div className="orientation-steps" aria-label="Guided investigation steps"><button type="button" className={`orientation-step ${selectedId === 'service' ? 'is-active' : ''}`} onClick={() => { changeView('map'); setSelectedId('service'); setMobileNavOpen(false); announce('Atlas Relay clue selected in the relationship map.'); }} aria-label="Choose the Atlas Relay clue"><b>01</b><span>Choose a clue<small>Atlas Relay is selected</small><em>Open Atlas Relay in the map</em></span></button><button type="button" className={`orientation-step ${followed ? 'is-complete' : ''}`} onClick={() => { changeView('thread'); followNode('service'); setMobileNavOpen(false); }} aria-label="Follow the Atlas Relay relationship"><b>02</b><span>Follow it<small>{followed ? 'Path opened' : 'Reveal related objects'}</small><em>Open the followed path</em></span></button><button type="button" className={`orientation-step ${evidenceOpen ? 'is-active' : ''}`} onClick={() => { changeView('evidence'); openEvidence('service'); setMobileNavOpen(false); announce('Atlas Relay evidence opened.'); }} aria-label="Check Atlas Relay evidence"><b>03</b><span>Check evidence<small>{evidenceOpen ? 'Evidence drawer open' : 'Keep uncertainty visible'}</small><em>Inspect the evidence record</em></span></button><button type="button" className={`orientation-step ${saved ? 'is-complete' : ''}`} onClick={() => { saveDiscovery(); setNotebookOpen(true); setMobileNavOpen(false); }} aria-label="Save the current finding"><b>04</b><span>Save a finding<small>{saved ? 'Notebook available' : 'Export the trail'}</small><em>Open saved discovery</em></span></button></div><button className="orientation-cta" onClick={() => { if (followed) { changeView('terrain'); } else { changeView('thread'); followNode('service'); } }}>{followed ? 'Open source layers' : 'Start with Atlas Relay'} <ChevronRight size={15} /></button></div>
-          <div className="view-switcher" role="tablist" aria-label="Ways to read the active investigation">{(['thread', 'map', 'evidence', 'compare'] as View[]).map((tab) => <button key={tab} className={view === tab ? 'is-active' : ''} onClick={() => changeView(tab)} role="tab" aria-selected={view === tab}>{tab === 'thread' ? 'Followed path' : tab === 'map' ? 'Relationship map' : tab === 'evidence' ? 'Evidence' : 'Compare cases'}</button>)}<button type="button" className="view-switcher-source" onClick={() => changeView('terrain')}><Compass size={13} /> Source ecology</button><span className="view-switcher-hint"><Sparkles size={13} /> one problem, many ways to read it</span></div>
           </>}
           <div ref={stageContentRef} className="stage-content">
              {view === 'investigations' ? <InvestigationsView onOpenThread={() => changeView('thread')} onOpenMap={() => changeView('map')} /> : view === 'terrain' ? <TerrainView selectedLayer={selectedTerrainLayer} onFollow={() => followNode('service')} onOpenThread={() => changeView('thread')} onInspect={inspectTerrain} onOpenObject={openEvidence} onOpenExample={openExample} onOpenCollection={openCollection} onOpenAgentSearch={openTerrainAgentSearch} followed={followed} /> : view === 'evidence' ? <EvidenceView selected={selected} edges={edges} onOpen={openEvidence} onFollow={followNode} onOpenThread={() => changeView('thread')} followed={followed} evidenceOnly={evidenceOnly} /> : view === 'compare' ? <CompareView followed={followed} selectedId={selectedId} onFollow={() => { if (!followed) followNode('service'); changeView('thread'); }} onSelectCase={(id) => { setSelectedId(id); announce(`${nodeById(id).label} selected for comparison.`); }} /> : view === 'concepts' ? <CorpusView mode="concepts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onOpenCollection={openCollection} onOpenConcept={openConcept} onOpenStackLayer={openStackLayer} onChangeMode={changeView} /> : view === 'artifacts' ? <CorpusView mode="artifacts" selectedId={selectedId} onSelect={setSelectedId} onOpenEvidence={openEvidence} onOpenExample={openExample} onOpenCollection={openCollection} onOpenConcept={openConcept} onOpenStackLayer={openStackLayer} onChangeMode={changeView} /> : view === 'outputs' ? <PossibleOutputsView onOpenArtifacts={() => changeView('artifacts')} onOpenConcepts={() => changeView('concepts')} onOpenExample={setPossibleOutputExampleCode} /> : view === 'thread' ? <ThreadView selectedId={selectedId} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} onChangeView={changeView} /> : <MapView nodes={filteredNodes} edges={filteredEdges} selectedId={selectedId} visibleNodeIds={visibleNodeIds} followed={followed} evidenceOnly={evidenceOnly} onSelect={setSelectedId} onFollow={followNode} onOpenThread={() => changeView('thread')} onOpenEvidence={openEvidence} onToggleVerified={toggleVerified} onOpenStack={() => setStackOpen(true)} onOpenStackLayer={openStackLayer} />}

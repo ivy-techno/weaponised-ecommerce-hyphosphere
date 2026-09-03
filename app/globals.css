@@ -1728,3 +1728,8 @@ button.stack-layer-evidence-row { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   .patchwork-area-panel::before, .patchwork-area-panel-copy em, .patchwork-area-panel-copy em svg { transition: none; }
 }
+
+/* The patchwork ribbon is the single top-level area navigator. */
+.workspace-grid { grid-template-columns: minmax(0, 1fr); }
+.patchwork-area-ribbon { position: sticky; top: 0; z-index: 25; }
+.patchwork-area-panel { text-decoration: none; }
