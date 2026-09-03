@@ -363,6 +363,25 @@ const externalSources: ResearchSource[] = [
       accent: 'violet',
     },
   },
+  {
+    id: 'fbi-labor-trafficking-scam-alert',
+    title: 'False job ads & scam-compound labour',
+    provider: 'FBI Internet Crime Complaint Center',
+    kind: 'OFFICIAL ALERT',
+    description: 'An official alert on false online job advertisements linked to labour trafficking at Southeast Asia-based scam compounds, where victims may be coerced into online fraud.',
+    whyIncluded: 'Adds a human-labour perspective to the enabling stack: recruitment, coercion, digital work, commercial fraud, and operational infrastructure can meet in one reported pathway.',
+    access: 'Open official alert',
+    url: 'https://www.ic3.gov/PSA/2023/psa230522',
+    tags: ['human trafficking', 'forced labour', 'digital labour', 'false job ads', 'scam compounds', 'recruitment', 'online fraud'],
+    example: {
+      label: 'OFFICIAL ALERT',
+      title: 'A job offer becomes an operational doorway',
+      text: 'False online job advertisements can recruit people into scam compounds where they are coerced into performing digital fraud.',
+      fields: [{ label: 'entry point', value: 'false job advertisement' }, { label: 'labour condition', value: 'coercion / forced criminality' }, { label: 'visible output', value: 'online investment fraud' }],
+      note: 'This example shows a reported recruitment pathway; it does not map the people or services in this demo to a trafficking operation.',
+      accent: 'coral',
+    },
+  },
 ];
 
 const sourceStackLayers = (source: ResearchSource): StackLayer[] => {
@@ -374,6 +393,7 @@ const sourceStackLayers = (source: ResearchSource): StackLayer[] => {
   if (source.id === 'amazon-copurchase-network') return ['Platforms & distribution', 'Data & brokerage'];
   if (source.id === 'ecommerce-dark-patterns') return ['Commercial services', 'Interfaces & operations'];
   if (source.id === 'disinfodex') return ['Visible story / reporting', 'Platforms & distribution'];
+  if (source.id === 'fbi-labor-trafficking-scam-alert') return ['Visible story / reporting', 'Platforms & distribution', 'Interfaces & operations'];
   return ['Commercial services', 'Data & brokerage', 'Interfaces & operations'];
 };
 
@@ -448,6 +468,13 @@ const collectionProfiles: Record<string, CollectionProfile> = {
     recordShape: 'Practices, actors, companies, services, country contexts, and explanatory case material.',
     limitations: 'It is an organising research project rather than a live exhaustive registry; categories and examples need contextual reading.',
     researchQuestion: 'Where does value move between data, analysis, targeting, platforms, and persuasion?',
+  },
+  'fbi-labor-trafficking-scam-alert': {
+    scope: 'An official public alert describing false online job advertisements linked to labour trafficking at scam compounds in Southeast Asia.',
+    dateRange: 'Alert published 2023; reported patterns may span earlier periods',
+    recordShape: 'Recruitment pathway, labour conditions, scam-compound operations, and online fraud indicators.',
+    limitations: 'The alert addresses specific reported trafficking patterns; it does not establish that any ordinary platform or service is implicated in every case.',
+    researchQuestion: 'Where do recruitment, coercion, digital work, and operational infrastructure intersect—and what remains invisible to public reporting?',
   },
 };
 
