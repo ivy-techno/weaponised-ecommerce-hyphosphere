@@ -933,7 +933,8 @@ function AppMark() {
 }
 
 function EvidenceRibbon({ onOpenExample }: { onOpenExample: (sourceId: string) => void }) {
-  return <section className="evidence-ribbon" aria-label="Evidence preview ribbon"><div className="evidence-ribbon-head"><span><Sparkles size={12} /> FIELD NOTES</span><small>source-shaped previews · select to inspect</small></div><div className="evidence-ribbon-track">{externalSources.slice(0, 6).map((source) => <button type="button" className={`evidence-ribbon-card ribbon-${sourceVisualKind(source)}`} key={source.id} onClick={() => onOpenExample(source.id)} aria-label={`Open preview for ${source.title}`}><ExampleThumbnail source={source} compact /><span className="evidence-ribbon-label"><strong>{source.title}</strong><small>{source.kind}</small></span></button>)}</div></section>;
+  const ribbonSources = externalSources.slice(0, 6);
+  return <section className="evidence-ribbon" aria-label="Evidence preview ribbon"><div className="evidence-ribbon-head"><span><Sparkles size={12} /> FIELD NOTES</span><small>one continuous visual field · select a panel to inspect</small></div><div className="evidence-ribbon-track"><div className="evidence-ribbon-art"><div className="evidence-ribbon-hotspots" aria-label="Clickable source panels">{ribbonSources.map((source, index) => <button type="button" className={`evidence-ribbon-hotspot ribbon-hotspot-${index + 1}`} key={source.id} onClick={() => onOpenExample(source.id)} aria-label={`Open preview for ${source.title}`}><span className="evidence-ribbon-hotspot-label"><b>{(index + 1).toString().padStart(2, '0')}</b><span><strong>{source.title}</strong><small>{source.kind}</small></span></span></button>)}</div></div></div></section>;
 }
 
 export default function Home() {
