@@ -446,6 +446,16 @@ body.evidence-drawer-peeking .evidence-drawer::before { opacity: 1; }
 
 /* WE repository surfaces keep concepts and artifacts visibly separate. */
 .corpus-view { min-width: 0; min-height: 680px; padding: 27px 28px 24px; background: rgb(251 253 249 / 75%); border: 1px solid #cbdad5; border-radius: 14px; box-shadow: var(--shadow); }
+.possible-outputs-view { min-width: 0; min-height: 680px; padding: 27px 28px 24px; background: rgb(251 253 249 / 75%); border: 1px solid #cbdad5; border-radius: 14px; box-shadow: var(--shadow); }
+.possible-outputs-view .possible-output-panel { margin-bottom: 0; }
+.possible-output-method { margin-top: 14px; padding: 16px; background: #f6faf6; border: 1px solid #d6e3de; border-radius: 10px; }
+.possible-output-method h3 { margin: 7px 0 0; color: var(--ink); font-family: var(--display); font-size: 18px; letter-spacing: -.05em; }
+.possible-output-method-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-top: 14px; }
+.possible-output-method-grid > div { min-width: 0; padding: 11px; background: #fff; border: 1px solid #d6e3de; border-radius: 8px; }
+.possible-output-method-grid b { color: var(--teal); font-family: var(--display); font-size: 16px; }
+.possible-output-method-grid strong { display: block; margin-top: 5px; color: var(--ink); font-size: 10px; }
+.possible-output-method-grid p { margin: 5px 0 0; color: var(--ink-soft); font-size: 9px; line-height: 1.4; overflow-wrap: anywhere; }
+.possible-output-method-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 .possible-output-panel { min-width: 0; margin-bottom: 24px; padding: 16px; background: #183134; border: 1px solid #2b5551; border-radius: 10px; box-shadow: 0 10px 22px rgb(28 61 57 / 10%); }
 .possible-output-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
 .possible-output-head > div { min-width: 0; }
@@ -514,11 +524,14 @@ body.evidence-drawer-peeking .evidence-drawer::before { opacity: 1; }
 
 @media (max-width: 900px) {
   .corpus-view { min-height: 620px; }
+  .possible-outputs-view { min-height: 620px; }
   .external-source-list { grid-template-columns: 1fr; }
+  .possible-output-method-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
   .corpus-view { min-height: 610px; padding: 20px 15px 18px; border-radius: 10px; }
+  .possible-outputs-view { min-height: 610px; padding: 20px 15px 18px; border-radius: 10px; }
   .concept-grid { grid-template-columns: 1fr; gap: 8px; }
   .concept-card { padding: 13px; }
   .artifact-row { grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; padding: 10px; }
@@ -527,6 +540,8 @@ body.evidence-drawer-peeking .evidence-drawer::before { opacity: 1; }
   .artifact-copy p { display: block; }
   .external-source-shelf-head { display: block; }
   .external-source-shelf-head > span { display: block; margin-top: 7px; }
+  .possible-output-method-actions { display: grid; }
+  .possible-output-method-actions > * { width: 100%; }
 }
 
 /* Final containment pass for the public first-arrival surface. */
@@ -548,7 +563,7 @@ body { overflow-x: hidden; }
 .stage-heading-actions { flex-wrap: wrap; }
 .orientation-copy p, .orientation-agent-note { max-width: 100%; }
 .canvas-callout { max-width: calc(100% - 30px); }
-.map-surface-shell, .research-canvas, .thread-view, .corpus-view, .terrain-view, .evidence-view, .compare-view { max-width: 100%; }
+.map-surface-shell, .research-canvas, .thread-view, .corpus-view, .possible-outputs-view, .terrain-view, .evidence-view, .compare-view { max-width: 100%; }
 .evidence-drawer { height: 100vh; max-height: 100vh; }
 
 @media (max-width: 1120px) {
