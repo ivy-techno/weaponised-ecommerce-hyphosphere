@@ -259,7 +259,6 @@ button { cursor: pointer; }
 @media (max-width: 1120px) {
   .topbar { grid-template-columns: 220px minmax(240px, 1fr) 190px; padding: 0 22px; }
   .main-stage { padding-inline: 25px; }.stage-content { grid-template-columns: minmax(0, 1fr) 220px; }.terrain-label { display: none; }.node-card { width: 145px; }.canvas-callout { width: 185px; }
-  .sound-toggle-label { display: none; }.sound-toggle { width: 28px; padding: 0; }
 }
 
 @media (max-width: 900px) {
@@ -1160,11 +1159,10 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .map-explainer { background: linear-gradient(115deg, #153d3d 0%, #183134 58%, #2e4f46 100%); box-shadow: 0 11px 24px rgb(24 49 52 / 15%); }
 @keyframes story-pulse { 0%, 100% { opacity: .82; box-shadow: 0 0 0 5px rgb(240 201 127 / 14%), 0 0 10px rgb(240 201 127 / 22%); } 50% { opacity: 1; box-shadow: 0 0 0 6px rgb(240 201 127 / 18%), 0 0 17px rgb(240 201 127 / 38%); } }
 
-/* Optional sensory layer: quiet by default, user-controlled, and clearly labelled. */
-.sound-toggle { min-width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 7px; color: var(--ink-faint); background: transparent; border: 1px solid transparent; border-radius: 99px; font-size: 7px; font-weight: 800; letter-spacing: .08em; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+/* Optional sensory layer: quiet by default, user-controlled, and represented by a familiar icon. */
+.sound-toggle { width: 28px; height: 28px; display: grid; place-items: center; padding: 0; color: var(--ink-faint); background: transparent; border: 1px solid transparent; border-radius: 50%; }
 .sound-toggle:hover, .sound-toggle:focus-visible, .sound-toggle.is-on { color: var(--teal-deep); background: #e5f2ed; border-color: #c3ddd3; outline: none; }
 .sound-toggle.is-on { box-shadow: 0 0 0 3px rgb(131 209 176 / 12%); }
-.sound-toggle-label { display: inline-block; }
 
 /* A single in-flow image ribbon gives the source collection a continuous, clickable presence. */
 .evidence-ribbon { max-width: 1420px; position: relative; z-index: 2; margin: -7px auto 22px; padding: 7px 10px 9px; background: rgb(251 253 249 / 86%); border: 1px solid #c9ddd5; border-radius: 10px; box-shadow: 0 10px 22px rgb(47 81 75 / 7%); }
