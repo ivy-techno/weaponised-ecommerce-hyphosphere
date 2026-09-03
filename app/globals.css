@@ -1300,6 +1300,12 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .agent-brief-field { display: flex; align-items: baseline; gap: 8px; color: var(--teal-deep); }
 .agent-brief-field > span { font-size: 9px; font-weight: 800; letter-spacing: .13em; }
 .agent-brief-field > small { color: var(--ink-faint); font-size: 8px; }
+.agent-brief-scope { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+.agent-brief-scope > span { color: var(--ink-faint); font-size: 8px; font-weight: 800; letter-spacing: .1em; }
+.agent-brief-scope > div { display: flex; flex-wrap: wrap; gap: 4px; }
+.agent-brief-scope-option { padding: 6px 8px; color: var(--ink-soft); background: rgb(255 255 255 / 58%); border: 1px solid #c9ddd5; border-radius: 6px; font-size: 8px; font-weight: 800; cursor: pointer; }
+.agent-brief-scope-option:hover, .agent-brief-scope-option:focus-visible, .agent-brief-scope-option.is-selected { color: #fff; background: var(--teal); border-color: var(--teal); outline: none; }
+.agent-brief-scope > small { color: var(--ink-faint); font-size: 8px; }
 .agent-brief-controls { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; margin-top: 7px; }
 .agent-brief-controls input { min-width: 0; height: 36px; padding: 0 11px; color: var(--ink); background: #fbfdf9; border: 1px solid #c7dcd3; border-radius: 7px; font: inherit; font-size: 10px; outline: none; }
 .agent-brief-controls input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgb(44 143 135 / 13%); }
@@ -1312,6 +1318,8 @@ button.stack-layer-evidence-row { cursor: pointer; }
 .agent-brief-results-head > div { min-width: 0; }
 .agent-brief-results-head h3 { min-width: 0; margin: 6px 0 0; color: var(--ink); font-family: var(--display); font-size: 19px; line-height: 1; letter-spacing: -.045em; overflow-wrap: anywhere; }
 .agent-brief-results-head > span { flex: 0 0 auto; color: var(--ink-faint); font-size: 8px; font-weight: 700; }
+.agent-brief-scope-note { display: flex; align-items: flex-start; gap: 6px; margin: 9px 0 0; padding: 8px 9px; color: var(--ink-soft); background: rgb(255 255 255 / 46%); border: 1px solid rgb(201 221 213 / 80%); border-radius: 6px; font-size: 8px; line-height: 1.4; }
+.agent-brief-scope-note svg { flex: 0 0 auto; color: var(--teal-deep); }
 .agent-brief-result-layout { min-width: 0; display: grid; grid-template-columns: minmax(190px, .65fr) minmax(0, 1.35fr); gap: 12px; margin-top: 12px; }
 .agent-brief-visual { min-width: 0; min-height: 245px; position: relative; display: flex; flex-direction: column; justify-content: center; gap: 10px; overflow: hidden; padding: 15px; background: radial-gradient(circle at 50% 42%, rgb(242 207 141 / 32%), transparent 29%), linear-gradient(145deg, #173f42, #2a756f); border: 1px solid #1b625f; border-radius: 9px; }
 .agent-brief-visual::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgb(255 255 255 / 7%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 7%) 1px, transparent 1px); background-size: 30px 30px; pointer-events: none; }
