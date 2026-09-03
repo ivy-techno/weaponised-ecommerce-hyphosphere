@@ -141,6 +141,10 @@ button { cursor: pointer; }
 .sidebar-footer p { max-width: 160px; margin: 8px 0 0; color: var(--ink-faint); font-size: 10px; line-height: 1.45; }
 
 .main-stage { min-width: 0; padding: 34px 37px 38px; }
+.concept-demo-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; max-width: 1420px; margin: 0 auto 18px; }
+.concept-demo-heading > div { min-width: 0; }
+.concept-demo-heading h1 { margin: 10px 0 7px; color: var(--ink); font-family: var(--display); font-size: clamp(27px, 3vw, 42px); line-height: .98; letter-spacing: -.07em; text-wrap: balance; }
+.concept-demo-heading p { max-width: 720px; margin: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.5; }
 .stage-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; max-width: 1420px; margin: 0 auto 25px; }
 .eyebrow, .panel-overline, .eyebrow-label, .drawer-label { display: flex; align-items: center; gap: 10px; color: var(--ink-faint); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
 .eyebrow-line { width: 23px; height: 1px; background: #adbfbc; }
@@ -1461,6 +1465,8 @@ button.stack-layer-evidence-row { cursor: pointer; }
   .research-primer-junction::after { display: none; }
   .primer-card, .primer-bridge { height: auto; }
   .primer-bridge { min-height: 128px; }
+  .concept-demo-heading { display: block; }
+  .concept-demo-heading .primary-button { margin-top: 14px; }
   .agent-brief-head { grid-template-columns: 1fr; gap: 10px; }
   .agent-brief-status { justify-items: start; text-align: left; }
   .agent-brief-status small { max-width: none; }
