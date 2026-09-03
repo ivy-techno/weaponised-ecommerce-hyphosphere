@@ -866,13 +866,9 @@ export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(false);
   const [scrollPromptVisible, setScrollPromptVisible] = useState(false);
-  const [evidencePeeking, setEvidencePeeking] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const stageContentRef = useRef<HTMLDivElement>(null);
   const previousViewRef = useRef(view);
-  const evidencePeekTimerRef = useRef<number | null>(null);
-  const evidencePeekDelayRef = useRef<number | null>(null);
-  const pointerWasInEvidenceRef = useRef(true);
   const [connectionStatusOpen, setConnectionStatusOpen] = useState(false);
   const webmcpReady = typeof document !== 'undefined' && Boolean((document as Document & { modelContext?: unknown }).modelContext);
   const [trail, setTrail] = useState([
@@ -913,62 +909,6 @@ export default function Home() {
       previousViewRef.current = view;
     }
   }, [view]);
-
-  useEffect(() => {
-    if (!evidenceOpen) {
-      pointerWasInEvidenceRef.current = true;
-      if (evidencePeekTimerRef.current !== null) window.clearTimeout(evidencePeekTimerRef.current);
-      if (evidencePeekDelayRef.current !== null) window.clearTimeout(evidencePeekDelayRef.current);
-      evidencePeekTimerRef.current = null;
-      evidencePeekDelayRef.current = null;
-      return;
-    }
-
-    pointerWasInEvidenceRef.current = true;
-    const handlePointerMove = (event: PointerEvent) => {
-      if (event.pointerType && event.pointerType !== 'mouse') return;
-      const drawer = document.querySelector<HTMLDialogElement>('.evidence-drawer');
-      if (!drawer) return;
-      const bounds = drawer.getBoundingClientRect();
-      const pointerInDrawer = bounds.left <= event.clientX && event.clientX <= bounds.right && bounds.top <= event.clientY && event.clientY <= bounds.bottom;
-      const pointerInReturnZone = event.clientX >= window.innerWidth - 72 && bounds.top <= event.clientY && event.clientY <= bounds.bottom;
-      if (pointerInDrawer || pointerInReturnZone) {
-        pointerWasInEvidenceRef.current = true;
-        setEvidencePeeking(false);
-        if (evidencePeekTimerRef.current !== null) window.clearTimeout(evidencePeekTimerRef.current);
-        if (evidencePeekDelayRef.current !== null) window.clearTimeout(evidencePeekDelayRef.current);
-        evidencePeekTimerRef.current = null;
-        evidencePeekDelayRef.current = null;
-        return;
-      }
-      if (!pointerWasInEvidenceRef.current) return;
-      pointerWasInEvidenceRef.current = false;
-      if (evidencePeekDelayRef.current !== null) window.clearTimeout(evidencePeekDelayRef.current);
-      if (evidencePeekTimerRef.current !== null) window.clearTimeout(evidencePeekTimerRef.current);
-      evidencePeekDelayRef.current = window.setTimeout(() => {
-        setEvidencePeeking(true);
-        evidencePeekDelayRef.current = null;
-        evidencePeekTimerRef.current = window.setTimeout(() => {
-          setEvidencePeeking(false);
-          evidencePeekTimerRef.current = null;
-        }, 2400);
-      }, 260);
-    };
-
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      if (evidencePeekTimerRef.current !== null) window.clearTimeout(evidencePeekTimerRef.current);
-      if (evidencePeekDelayRef.current !== null) window.clearTimeout(evidencePeekDelayRef.current);
-      evidencePeekTimerRef.current = null;
-      evidencePeekDelayRef.current = null;
-    };
-  }, [evidenceOpen]);
-
-  useEffect(() => {
-    document.body.classList.toggle('evidence-drawer-peeking', evidenceOpen && evidencePeeking);
-    return () => document.body.classList.remove('evidence-drawer-peeking');
-  }, [evidenceOpen, evidencePeeking]);
 
   useEffect(() => {
     const refreshScrollPrompt = () => {
@@ -1061,7 +1001,6 @@ export default function Home() {
     const targetId = id ?? stateRef.current.selectedId;
     setSelectedId(targetId);
     setEvidenceCardIds((current) => [...current.filter((cardId) => cardId !== targetId), targetId].slice(-5));
-    setEvidencePeeking(false);
     setEvidenceOpen(true);
     setAgentMessage(`Evidence drawer opened for ${nodeById(targetId).label}.`);
   }, []);
